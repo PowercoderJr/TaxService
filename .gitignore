@@ -1,5 +1,6 @@
 ### Intellij IDEA
-.idea/
+.idea/workspace.xml
+.idea/libraries/
 out/
 
 # Compiled class file
@@ -40,4 +41,4 @@ buildNumber.properties
 !/.mvn/wrapper/maven-wrapper.jar
 
 ### Hibernate
-ServerPart/src/main/resources/hibernate.cfg.xml
+#ServerPart/src/main/resources/hibernate.cfg.xml
