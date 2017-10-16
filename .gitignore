@@ -40,4 +40,4 @@ buildNumber.properties
 !/.mvn/wrapper/maven-wrapper.jar
 
 ### Hibernate
-src/main/resources/hibernate.cfg.xml
+ServerPart/src/main/resources/hibernate.cfg.xml
