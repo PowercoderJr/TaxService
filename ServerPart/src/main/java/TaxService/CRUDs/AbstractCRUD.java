@@ -1,4 +1,4 @@
-package TaxService.Services;
+package TaxService.CRUDs;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -6,12 +6,12 @@ import org.hibernate.SessionFactory;
 import java.io.Serializable;
 import java.util.List;
 
-public abstract class Service<T>
+public abstract class AbstractCRUD<T>
 {
 	protected SessionFactory factory;
 	protected Session session;
 
-	public Service(SessionFactory factory)
+	public AbstractCRUD(SessionFactory factory)
 	{
 		this.factory = factory;
 	}

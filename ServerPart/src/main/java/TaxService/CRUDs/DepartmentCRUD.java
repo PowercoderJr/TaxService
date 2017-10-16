@@ -1,4 +1,4 @@
-package TaxService.Services;
+package TaxService.CRUDs;
 
 import java.io.Serializable;
 import java.util.List;
@@ -6,9 +6,9 @@ import javax.persistence.TypedQuery;
 import org.hibernate.SessionFactory;
 import TaxService.DAO.Department;
 
-public class DepartmentService extends Service<Department>
+public class DepartmentCRUD extends AbstractCRUD<Department>
 {
-	public DepartmentService(SessionFactory factory)
+	public DepartmentCRUD(SessionFactory factory)
 	{
 		super(factory);
 	}
@@ -52,7 +52,7 @@ public class DepartmentService extends Service<Department>
 	{
 		connect();
 
-		TypedQuery<Department> query = session.createQuery("SELECT a FROM department a", Department.class);
+		TypedQuery<Department> query = session.createQuery("SELECT a FROM Department a", Department.class);
 		session.getTransaction().commit();
 
 		return query.getResultList();

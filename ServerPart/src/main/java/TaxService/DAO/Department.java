@@ -4,43 +4,44 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table (name = "departments")
+@Table(name = "Department")
+//@SequenceGenerator(name = "DepartmentSqGen", allocationSize = 1000000)
 public class Department implements Serializable
 {
     private static final long serialVersionID = 666000123210001L;
 
     //id SERIAL NOT NULL
     @Id
-    @Column (name = "id", unique = true, nullable = false)
+    @Column(name = "id", unique = true, nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
 
     //deptype_id INTEGER NOT NULL REFERENCES deptypes(id)
-    //@Column (name = "deptype_id", nullable = false)
+    //@Column(name = "deptype_id", nullable = false)
     //private long deptype_id
 
     //name VARCHAR(100) NOT NULL
-    @Column (name = "name", length = 100, nullable = false)
+    @Column(name = "name", length = 100, nullable = false)
     private String name;
 
     //startyear SMALLINT NOT NULL
-    @Column (name = "startyear", nullable = false)
+    @Column(name = "startyear", nullable = false)
     private short startyear;
 
     //phone VARCHAR(13) NOT NULL
-    @Column (name = "phone", length = 13, nullable = false)
+    @Column(name = "phone", length = 13, nullable = false)
     private String phone;
 
     //city VARCHAR(30) NOT NULL
-    @Column (name = "city", length = 30, nullable = false)
+    @Column(name = "city", length = 30, nullable = false)
     private String city;
 
     //street VARCHAR(30) NOT NULL
-    @Column (name = "street", length = 30, nullable = false)
+    @Column(name = "street", length = 30, nullable = false)
     private String street;
 
     //house VARCHAR(6) NOT NULL
-    @Column (name = "house", length = 6, nullable = false)
+    @Column(name = "house", length = 6, nullable = false)
     private String house;
 
 
