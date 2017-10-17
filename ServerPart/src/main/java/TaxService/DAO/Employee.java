@@ -30,8 +30,9 @@ public class Employee implements Serializable
 	private String patronymic;
 
 	//dep_id INTEGER NOT NULL REFERENCES departments(id)
-	//@Column (name = "dep_id", nullable = false)
-	//private long dep_id
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "Department", nullable = false)
+	private Department department;
 
     //birthdate DATE NOT NULL
 	@Column(name = "birthdate", nullable = false)
@@ -46,22 +47,25 @@ public class Employee implements Serializable
 	private int salary;
 
     //edu_id INTEGER NOT NULL REFERENCES educations(id)
-	//@Column (name = "edu_id", nullable = false)
-	//private long edu_id
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "Education", nullable = false)
+	private Education education;
 
-	public Employee()
-	{
-		;
-	}
-
-	public Employee(String surname, String name, String patronymic, Date birthdate, String post, int salary)
+	public Employee(String surname, String name, String patronymic, Department department, Date birthdate, String post, int salary, Education education)
 	{
 		this.surname = surname;
 		this.name = name;
 		this.patronymic = patronymic;
+		this.department = department;
 		this.birthdate = birthdate;
 		this.post = post;
 		this.salary = salary;
+		this.education = education;
+	}
+
+	public Employee()
+	{
+		;
 	}
 
 	public long getId()
@@ -99,6 +103,16 @@ public class Employee implements Serializable
 		this.patronymic = patronymic;
 	}
 
+	public Department getDepartment()
+	{
+		return department;
+	}
+
+	public void setDepartment(Department department)
+	{
+		this.department = department;
+	}
+
 	public Date getBirthdate()
 	{
 		return birthdate;
@@ -129,9 +143,19 @@ public class Employee implements Serializable
 		this.salary = salary;
 	}
 
+	public Education getEducation()
+	{
+		return education;
+	}
+
+	public void setEducation(Education education)
+	{
+		this.education = education;
+	}
+
 	@Override
 	public String toString()
 	{
-		return "Employee{" + "id=" + id + ", surname='" + surname + '\'' + ", name='" + name + '\'' + ", patronymic='" + patronymic + '\'' + ", birthdate=" + birthdate + ", post='" + post + '\'' + ", salary=" + salary + '}';
+		return "Employee{" + "id=" + id + ", surname='" + surname + '\'' + ", name='" + name + '\'' + ", patronymic='" + patronymic + '\'' + ", department=" + department + ", birthdate=" + birthdate + ", post='" + post + '\'' + ", salary=" + salary + ", education=" + education + '}';
 	}
 }

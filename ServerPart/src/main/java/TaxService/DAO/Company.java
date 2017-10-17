@@ -2,6 +2,7 @@ package TaxService.DAO;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Entity
 @Table (name = "Company")
@@ -20,32 +21,34 @@ public class Company implements Serializable
     private String name;
 
     //owntype_id INTEGER NOT NULL REFERENCES owntypes(id)
-	//@Column (name = "owntype_id", nullable = false)
-	//private long owntype_id
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "Owntype", nullable = false)
+	private Owntype owntype;
 
     //phone VARCHAR(13) NOT NULL
 	@Column(name = "phone", length = 13, nullable = false)
 	private String phone;
 
     //startyear SMALLINT NOT NULL
-	@Column(name = "startyear", nullable = false)
-	private short startyear;
+	@Column(name = "startyear", precision = 4, scale = 0, nullable = false)
+	private BigDecimal startyear;
 
     //statesize INTEGER NOT NULL
 	@Column(name = "statesize", nullable = false)
 	private int statesize;
 
-	public Company()
-	{
-		;
-	}
-
-	public Company(String name, String phone, short startyear, int statesize)
+	public Company(String name, Owntype owntype, String phone, BigDecimal startyear, int statesize)
 	{
 		this.name = name;
+		this.owntype = owntype;
 		this.phone = phone;
 		this.startyear = startyear;
 		this.statesize = statesize;
+	}
+
+	public Company()
+	{
+		;
 	}
 
 	public long getId()
@@ -63,6 +66,16 @@ public class Company implements Serializable
 		this.name = name;
 	}
 
+	public Owntype getOwntype()
+	{
+		return owntype;
+	}
+
+	public void setOwntype(Owntype owntype)
+	{
+		this.owntype = owntype;
+	}
+
 	public String getPhone()
 	{
 		return phone;
@@ -73,12 +86,12 @@ public class Company implements Serializable
 		this.phone = phone;
 	}
 
-	public short getStartyear()
+	public BigDecimal getStartyear()
 	{
 		return startyear;
 	}
 
-	public void setStartyear(short startyear)
+	public void setStartyear(BigDecimal startyear)
 	{
 		this.startyear = startyear;
 	}
@@ -96,6 +109,6 @@ public class Company implements Serializable
 	@Override
 	public String toString()
 	{
-		return "Company{" + "id=" + id + ", name='" + name + '\'' + ", phone='" + phone + '\'' + ", startyear=" + startyear + ", statesize=" + statesize + '}';
+		return "Company{" + "id=" + id + ", name='" + name + '\'' + ", owntype=" + owntype + ", phone='" + phone + '\'' + ", startyear=" + startyear + ", statesize=" + statesize + '}';
 	}
 }

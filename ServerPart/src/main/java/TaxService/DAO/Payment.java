@@ -18,8 +18,9 @@ public class Payment implements Serializable
     private long id;
 
     //paytype_id INTEGER NOT NULL REFERENCES paytypes(id)
-    //@Column(name = "deptype_id", nullable = false)
-    //private long deptype_id
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "Paytype", nullable = false)
+	private Paytype paytype;
 
     //date DATE NOT NULL
 	@Column(name = "date", nullable = false)
@@ -30,32 +31,48 @@ public class Payment implements Serializable
 	private BigDecimal amount;
 
     //emp_id INTEGER NOT NULL REFERENCES employees(id)
-    //@Column(name = "deptype_id", nullable = false)
-    //private long deptype_id
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "Employee", nullable = false)
+	private Employee employee;
 
     //dep_id INTEGER NOT NULL REFERENCES departments(id)
-    //@Column(name = "deptype_id", nullable = false)
-    //private long deptype_id
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "Department", nullable = false)
+	private Department department;
 
     //company_id INTEGER NOT NULL REFERENCES companies(id)
-    //@Column(name = "deptype_id", nullable = false)
-    //private long deptype_id
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "Company", nullable = false)
+	private Company company;
 
+	public Payment(Paytype paytype, Date date, BigDecimal amount, Employee employee, Department department, Company company)
+	{
+		this.paytype = paytype;
+		this.date = date;
+		this.amount = amount;
+		this.employee = employee;
+		this.department = department;
+		this.company = company;
+	}
 
 	public Payment()
 	{
 		;
 	}
 
-	public Payment(Date date, BigDecimal amount)
-	{
-		this.date = date;
-		this.amount = amount;
-	}
-
 	public long getId()
 	{
 		return id;
+	}
+
+	public Paytype getPaytype()
+	{
+		return paytype;
+	}
+
+	public void setPaytype(Paytype paytype)
+	{
+		this.paytype = paytype;
 	}
 
 	public Date getDate()
@@ -78,9 +95,39 @@ public class Payment implements Serializable
 		this.amount = amount;
 	}
 
+	public Employee getEmployee()
+	{
+		return employee;
+	}
+
+	public void setEmployee(Employee employee)
+	{
+		this.employee = employee;
+	}
+
+	public Department getDepartment()
+	{
+		return department;
+	}
+
+	public void setDepartment(Department department)
+	{
+		this.department = department;
+	}
+
+	public Company getCompany()
+	{
+		return company;
+	}
+
+	public void setCompany(Company company)
+	{
+		this.company = company;
+	}
+
 	@Override
 	public String toString()
 	{
-		return "Payment{" + "id=" + id + ", date=" + date + ", amount=" + amount + '}';
+		return "Payment{" + "id=" + id + ", paytype=" + paytype + ", date=" + date + ", amount=" + amount + ", employee=" + employee + ", department=" + department + ", company=" + company + '}';
 	}
 }

@@ -2,6 +2,7 @@ package TaxService.DAO;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "Department")
@@ -17,16 +18,17 @@ public class Department implements Serializable
     private long id;
 
     //deptype_id INTEGER NOT NULL REFERENCES deptypes(id)
-    //@Column(name = "deptype_id", nullable = false)
-    //private long deptype_id
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "Deptype", nullable = false)
+    private Deptype deptype;
 
     //name VARCHAR(100) NOT NULL
     @Column(name = "name", length = 100, nullable = false)
     private String name;
 
     //startyear SMALLINT NOT NULL
-    @Column(name = "startyear", nullable = false)
-    private short startyear;
+    @Column(name = "startyear", precision = 4, scale = 0, nullable = false)
+    private BigDecimal startyear;
 
     //phone VARCHAR(13) NOT NULL
     @Column(name = "phone", length = 13, nullable = false)
@@ -44,20 +46,20 @@ public class Department implements Serializable
     @Column(name = "house", length = 6, nullable = false)
     private String house;
 
-
-    public Department()
-    {
-        ;
-    }
-
-    public Department(String name, short startyear, String phone, String city, String street, String house)
+    public Department(String name, Deptype deptype, BigDecimal startyear, String phone, String city, String street, String house)
     {
         this.name = name;
+        this.deptype = deptype;
         this.startyear = startyear;
         this.phone = phone;
         this.city = city;
         this.street = street;
         this.house = house;
+    }
+
+    public Department()
+    {
+        ;
     }
 
     public long getId() {
@@ -72,11 +74,21 @@ public class Department implements Serializable
         this.name = name;
     }
 
-    public short getStartyear() {
+    public Deptype getDeptype()
+    {
+        return deptype;
+    }
+
+    public void setDeptype(Deptype deptype)
+    {
+        this.deptype = deptype;
+    }
+
+    public BigDecimal getStartyear() {
         return startyear;
     }
 
-    public void setStartyear(short startyear) {
+    public void setStartyear(BigDecimal startyear) {
         this.startyear = startyear;
     }
 
@@ -113,15 +125,8 @@ public class Department implements Serializable
     }
 
     @Override
-    public String toString() {
-        return "Department{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", startyear=" + startyear +
-                ", phone='" + phone + '\'' +
-                ", city='" + city + '\'' +
-                ", street='" + street + '\'' +
-                ", house='" + house + '\'' +
-                '}';
+    public String toString()
+    {
+        return "Department{" + "id=" + id + ", deptype=" + deptype + ", name='" + name + '\'' + ", startyear=" + startyear + ", phone='" + phone + '\'' + ", city='" + city + '\'' + ", street='" + street + '\'' + ", house='" + house + '\'' + '}';
     }
 }

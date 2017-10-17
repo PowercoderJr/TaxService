@@ -16,17 +16,17 @@ public class Deptype implements Serializable
     private long id;
 
     //name VARCHAR(40) NOT NULL
-    @Column(name = "name", length = 40, nullable = false)
+    @Column(name = "name", length = 40, unique = true, nullable = false)
     private String name;
-
-	public Deptype()
-	{
-		;
-	}
 
 	public Deptype(String name)
 	{
 		this.name = name;
+	}
+
+	public Deptype()
+	{
+		;
 	}
 
 	public long getId()
@@ -42,5 +42,11 @@ public class Deptype implements Serializable
 	public void setName(String name)
 	{
 		this.name = name;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "Deptype{" + "id=" + id + ", name='" + name + '\'' + '}';
 	}
 }
