@@ -49,5 +49,12 @@
             <artifactId>commons-codec</artifactId>
             <version>1.10</version>
         </dependency>
+
+        <!-- Соседний модуль -->
+        <dependency>
+            <groupId>TaxService</groupId>
+            <artifactId>DBModel</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>
