@@ -17,45 +17,42 @@ public class CompanyCRUD extends AbstractCRUD<Company>
 	public void create(Company object)
 	{
 		connect();
-
 		session.save(object);
 		session.getTransaction().commit();
 	}
 
-	public boolean remove(Serializable id)
+	public boolean delete(Serializable id)
 	{
 		connect();
-
 		Company company = session.get(Company.class, id);
-
 		if (company != null)
 		{
+			session.delete(company);
 			session.getTransaction().commit();
-			session.remove(company);
-
 			return true;
 		}
-
 		return false;
 	}
 
-	public Company find(Serializable id)
+	public Company get(Serializable id)
 	{
 		connect();
-
-		Company company = session.find(Company.class, id);
+		Company company = session.get(Company.class, id);
 		session.getTransaction().commit();
-
 		return company;
 	}
 
-	public List<Company> findAll()
+	public List<Company> getAll()
 	{
 		connect();
-
 		TypedQuery<Company> query = session.createQuery("SELECT a FROM Company a", Company.class);
 		session.getTransaction().commit();
-
 		return query.getResultList();
+	}
+
+	@Override
+	protected Company generateRandomBean()
+	{
+		return null;
 	}
 }

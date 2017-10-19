@@ -13,7 +13,7 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="ClientPart" target="1.5" />
-      <module name="DBModel" target="1.5" />
+      <module name="DBModel" target="1.8" />
       <module name="ServerPart" target="1.8" />
     </bytecodeTargetLevel>
   </component>

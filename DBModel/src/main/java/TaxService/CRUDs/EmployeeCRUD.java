@@ -1,6 +1,5 @@
 package TaxService.CRUDs;
 
-import TaxService.DAO.Department;
 import TaxService.DAO.Employee;
 import org.hibernate.SessionFactory;
 
@@ -18,45 +17,42 @@ public class EmployeeCRUD extends AbstractCRUD<Employee>
 	public void create(Employee object)
 	{
 		connect();
-
 		session.save(object);
 		session.getTransaction().commit();
 	}
 
-	public boolean remove(Serializable id)
+	public boolean delete(Serializable id)
 	{
 		connect();
-
 		Employee employee = session.get(Employee.class, id);
-
 		if (employee != null)
 		{
+			session.delete(employee);
 			session.getTransaction().commit();
-			session.remove(employee);
-
 			return true;
 		}
-
 		return false;
 	}
 
-	public Employee find(Serializable id)
+	public Employee get(Serializable id)
 	{
 		connect();
-
-		Employee employee = session.find(Employee.class, id);
+		Employee employee = session.get(Employee.class, id);
 		session.getTransaction().commit();
-
 		return employee;
 	}
 
-	public List<Employee> findAll()
+	public List<Employee> getAll()
 	{
 		connect();
-
 		TypedQuery<Employee> query = session.createQuery("SELECT a FROM Employee a", Employee.class);
 		session.getTransaction().commit();
-
 		return query.getResultList();
+	}
+
+	@Override
+	protected Employee generateRandomBean()
+	{
+		return null;
 	}
 }

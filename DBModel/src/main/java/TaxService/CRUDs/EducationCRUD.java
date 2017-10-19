@@ -17,45 +17,42 @@ public class EducationCRUD extends AbstractCRUD<Education>
 	public void create(Education object)
 	{
 		connect();
-
 		session.save(object);
 		session.getTransaction().commit();
 	}
 
-	public boolean remove(Serializable id)
+	public boolean delete(Serializable id)
 	{
 		connect();
-
 		Education education = session.get(Education.class, id);
-
 		if (education != null)
 		{
+			session.delete(education);
 			session.getTransaction().commit();
-			session.remove(education);
-
 			return true;
 		}
-
 		return false;
 	}
 
-	public Education find(Serializable id)
+	public Education get(Serializable id)
 	{
 		connect();
-
-		Education education = session.find(Education.class, id);
+		Education education = session.get(Education.class, id);
 		session.getTransaction().commit();
-
 		return education;
 	}
 
-	public List<Education> findAll()
+	public List<Education> getAll()
 	{
 		connect();
-
 		TypedQuery<Education> query = session.createQuery("SELECT a FROM Education a", Education.class);
 		session.getTransaction().commit();
-
 		return query.getResultList();
+	}
+
+	@Override
+	protected Education generateRandomBean()
+	{
+		return null;
 	}
 }

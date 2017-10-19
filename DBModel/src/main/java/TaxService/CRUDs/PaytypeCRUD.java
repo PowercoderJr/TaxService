@@ -17,45 +17,42 @@ public class PaytypeCRUD extends AbstractCRUD<Paytype>
 	public void create(Paytype object)
 	{
 		connect();
-
 		session.save(object);
 		session.getTransaction().commit();
 	}
 
-	public boolean remove(Serializable id)
+	public boolean delete(Serializable id)
 	{
 		connect();
-
 		Paytype paytype = session.get(Paytype.class, id);
-
 		if (paytype != null)
 		{
+			session.delete(paytype);
 			session.getTransaction().commit();
-			session.remove(paytype);
-
 			return true;
 		}
-
 		return false;
 	}
 
-	public Paytype find(Serializable id)
+	public Paytype get(Serializable id)
 	{
 		connect();
-
-		Paytype paytype = session.find(Paytype.class, id);
+		Paytype paytype = session.get(Paytype.class, id);
 		session.getTransaction().commit();
-
 		return paytype;
 	}
 
-	public List<Paytype> findAll()
+	public List<Paytype> getAll()
 	{
 		connect();
-
 		TypedQuery<Paytype> query = session.createQuery("SELECT a FROM Paytype a", Paytype.class);
 		session.getTransaction().commit();
-
 		return query.getResultList();
+	}
+
+	@Override
+	protected Paytype generateRandomBean()
+	{
+		return null;
 	}
 }

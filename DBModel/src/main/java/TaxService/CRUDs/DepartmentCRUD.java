@@ -16,45 +16,42 @@ public class DepartmentCRUD extends AbstractCRUD<Department>
 	public void create(Department object)
 	{
 		connect();
-
 		session.save(object);
 		session.getTransaction().commit();
 	}
 
-	public boolean remove(Serializable id)
+	public boolean delete(Serializable id)
 	{
 		connect();
-
 		Department department = session.get(Department.class, id);
-
 		if (department != null)
 		{
+			session.delete(department);
 			session.getTransaction().commit();
-			session.remove(department);
-
 			return true;
 		}
-
 		return false;
 	}
 
-	public Department find(Serializable id)
+	public Department get(Serializable id)
 	{
 		connect();
-
-		Department department = session.find(Department.class, id);
+		Department department = session.get(Department.class, id);
 		session.getTransaction().commit();
-
 		return department;
 	}
 
-	public List<Department> findAll()
+	public List<Department> getAll()
 	{
 		connect();
-
 		TypedQuery<Department> query = session.createQuery("SELECT a FROM Department a", Department.class);
 		session.getTransaction().commit();
-
 		return query.getResultList();
+	}
+
+	@Override
+	protected Department generateRandomBean()
+	{
+		return null;
 	}
 }
