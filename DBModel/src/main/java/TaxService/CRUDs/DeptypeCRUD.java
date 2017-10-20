@@ -49,10 +49,4 @@ public class DeptypeCRUD extends AbstractCRUD<Deptype>
 		session.getTransaction().commit();
 		return query.getResultList();
 	}
-
-	@Override
-	protected Deptype generateRandomBean()
-	{
-		return null;
-	}
 }

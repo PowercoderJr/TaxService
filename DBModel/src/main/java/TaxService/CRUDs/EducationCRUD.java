@@ -49,10 +49,4 @@ public class EducationCRUD extends AbstractCRUD<Education>
 		session.getTransaction().commit();
 		return query.getResultList();
 	}
-
-	@Override
-	protected Education generateRandomBean()
-	{
-		return null;
-	}
 }

@@ -49,10 +49,4 @@ public class PaytypeCRUD extends AbstractCRUD<Paytype>
 		session.getTransaction().commit();
 		return query.getResultList();
 	}
-
-	@Override
-	protected Paytype generateRandomBean()
-	{
-		return null;
-	}
 }

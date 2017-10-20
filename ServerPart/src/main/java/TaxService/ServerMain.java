@@ -15,10 +15,10 @@ public class ServerMain
 	{
 		try (SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory())
 		{
-			AbstractCRUD<Department> departmentCRUD = new DepartmentCRUD(sessionFactory);
-			AbstractCRUD<Employee> employeeCRUD = new EmployeeCRUD(sessionFactory);
-			AbstractCRUD<Company> companyCRUD = new CompanyCRUD(sessionFactory);
-			AbstractCRUD<Payment> paymentCRUD = new PaymentCRUD(sessionFactory);
+			AbstractRandomableCRUD<Department> departmentCRUD = new DepartmentCRUD(sessionFactory);
+			AbstractRandomableCRUD<Employee> employeeCRUD = new EmployeeCRUD(sessionFactory);
+			AbstractRandomableCRUD<Company> companyCRUD = new CompanyCRUD(sessionFactory);
+			AbstractRandomableCRUD<Payment> paymentCRUD = new PaymentCRUD(sessionFactory);
 			AbstractCRUD<Deptype> deptypeCRUD = new DeptypeCRUD(sessionFactory);
 			AbstractCRUD<Education> educationCRUD = new EducationCRUD(sessionFactory);
 			AbstractCRUD<Paytype> paytypeCRUD = new PaytypeCRUD(sessionFactory);
@@ -41,7 +41,10 @@ public class ServerMain
 			Payment payment = new Payment(paytype, Date.valueOf(LocalDate.of(2017, 5, 6)), new BigDecimal(1500.00), employee, department, company);
 			paymentCRUD.create(payment);
 
-			paymentCRUD.insertRandomBeans(5);
+			departmentCRUD.insertRandomBeans(20);
+			employeeCRUD.insertRandomBeans(20);
+			companyCRUD.insertRandomBeans(20);
+			paymentCRUD.insertRandomBeans(20);
 
 			departmentCRUD.disconnect();
 			employeeCRUD.disconnect();

@@ -49,10 +49,4 @@ public class OwntypeCRUD extends AbstractCRUD<Owntype>
 		session.getTransaction().commit();
 		return query.getResultList();
 	}
-
-	@Override
-	protected Owntype generateRandomBean()
-	{
-		return null;
-	}
 }

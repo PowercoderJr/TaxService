@@ -16,8 +16,8 @@ public class Company implements Serializable
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
 
-    //name VARCHAR(50) NOT NULL
-    @Column(name = "name", length = 50, nullable = false)
+    //name VARCHAR(100) NOT NULL
+    @Column(name = "name", length = 100, nullable = false)
     private String name;
 
     //owntype_id INTEGER NOT NULL REFERENCES owntypes(id)
