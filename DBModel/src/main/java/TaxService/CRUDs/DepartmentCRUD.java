@@ -14,43 +14,7 @@ public class DepartmentCRUD extends AbstractRandomableCRUD<Department>
 {
 	public DepartmentCRUD(SessionFactory factory)
 	{
-		super(factory);
-	}
-
-	public void create(Department object)
-	{
-		connect();
-		session.save(object);
-		session.getTransaction().commit();
-	}
-
-	public boolean delete(Serializable id)
-	{
-		connect();
-		Department department = session.get(Department.class, id);
-		if (department != null)
-		{
-			session.delete(department);
-			session.getTransaction().commit();
-			return true;
-		}
-		return false;
-	}
-
-	public Department get(Serializable id)
-	{
-		connect();
-		Department department = session.get(Department.class, id);
-		session.getTransaction().commit();
-		return department;
-	}
-
-	public List<Department> getAll()
-	{
-		connect();
-		TypedQuery<Department> query = session.createQuery("SELECT a FROM Department a", Department.class);
-		session.getTransaction().commit();
-		return query.getResultList();
+		super(factory, Department.class);
 	}
 
 	@Override

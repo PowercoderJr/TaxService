@@ -8,6 +8,7 @@ import org.hibernate.cfg.Configuration;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.List;
 
 public class ServerMain
 {
@@ -45,6 +46,10 @@ public class ServerMain
 			employeeCRUD.insertRandomBeans(20);
 			companyCRUD.insertRandomBeans(20);
 			paymentCRUD.insertRandomBeans(20);
+
+			List<Department> departments = departmentCRUD.getAll();
+			for (Department d : departments)
+				departmentCRUD.delete(d);
 
 			departmentCRUD.disconnect();
 			employeeCRUD.disconnect();

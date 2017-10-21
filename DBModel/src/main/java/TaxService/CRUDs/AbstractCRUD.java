@@ -3,6 +3,7 @@ package TaxService.CRUDs;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
+import javax.persistence.TypedQuery;
 import java.io.Serializable;
 import java.util.List;
 
@@ -10,10 +11,12 @@ public abstract class AbstractCRUD<T>
 {
 	protected SessionFactory factory;
 	protected Session session;
+	protected Class<T> clazz;
 
-	public AbstractCRUD(SessionFactory factory)
+	public AbstractCRUD(SessionFactory factory, Class<T> clazz)
 	{
 		this.factory = factory;
+		this.clazz = clazz;
 	}
 
 	public void connect()
@@ -30,11 +33,46 @@ public abstract class AbstractCRUD<T>
 			session.close();
 	}
 
-	public abstract void create(T object);
+	public void create(T object)
+	{
+		connect();
+		session.save(object);
+		session.getTransaction().commit();
+	};
 
-	public abstract boolean delete(Serializable id);
+	public boolean delete(Serializable id)
+	{
+		connect();
+		T object = session.get(clazz, id);
+		if (object != null)
+		{
+			session.delete(object);
+			session.getTransaction().commit();
+			return true;
+		}
+		return false;
+	};
 
-	public abstract T get(Serializable id);
+	public void delete(T object)
+	{
+		connect();
+		session.delete(object);
+		session.getTransaction().commit();
+	};
 
-	public abstract List<T> getAll();
+	public T get(Serializable id)
+	{
+		connect();
+		T object = session.get(clazz, id);
+		session.getTransaction().commit();
+		return object;
+	};
+
+	public List<T> getAll()
+	{
+		connect();
+		TypedQuery<T> query = session.createQuery("SELECT a FROM " + clazz.getSimpleName() + " a", clazz);
+		session.getTransaction().commit();
+		return query.getResultList();
+	};
 }

@@ -17,43 +17,7 @@ public class PaymentCRUD extends AbstractRandomableCRUD<Payment>
 {
 	public PaymentCRUD(SessionFactory factory)
 	{
-		super(factory);
-	}
-
-	public void create(Payment object)
-	{
-		connect();
-		session.save(object);
-		session.getTransaction().commit();
-	}
-
-	public boolean delete(Serializable id)
-	{
-		connect();
-		Payment payment = session.get(Payment.class, id);
-		if (payment != null)
-		{
-			session.delete(payment);
-			session.getTransaction().commit();
-			return true;
-		}
-		return false;
-	}
-
-	public Payment get(Serializable id)
-	{
-		connect();
-		Payment payment = session.get(Payment.class, id);
-		session.getTransaction().commit();
-		return payment;
-	}
-
-	public List<Payment> getAll()
-	{
-		connect();
-		TypedQuery<Payment> query = session.createQuery("SELECT a FROM Payment a", Payment.class);
-		session.getTransaction().commit();
-		return query.getResultList();
+		super(factory, Payment.class);
 	}
 
 	@Override

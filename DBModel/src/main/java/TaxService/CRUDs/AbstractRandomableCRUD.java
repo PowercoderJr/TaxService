@@ -4,9 +4,9 @@ import org.hibernate.SessionFactory;
 
 public abstract class AbstractRandomableCRUD<T> extends AbstractCRUD<T>
 {
-	public AbstractRandomableCRUD(SessionFactory factory)
+	public AbstractRandomableCRUD(SessionFactory factory, Class<T> clazz)
 	{
-		super(factory);
+		super(factory, clazz);
 	}
 
 	protected abstract T generateRandomBean();
