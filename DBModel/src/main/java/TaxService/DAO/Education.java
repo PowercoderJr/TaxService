@@ -2,9 +2,10 @@ package TaxService.DAO;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
-@Table (name = "Education")
+@Table(name = "Education")
 public class Education implements Serializable
 {
     private static final long serialVersionID = 666000123210006L;
@@ -18,6 +19,9 @@ public class Education implements Serializable
     //name VARCHAR(40) NOT NULL
     @Column(name = "name", length = 40, unique = true, nullable = false)
     private String name;
+
+    @OneToMany(mappedBy = "education", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Employee> employees;
 
     public Education(String name)
     {

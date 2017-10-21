@@ -3,6 +3,7 @@ package TaxService.DAO;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table (name = "Company")
@@ -36,6 +37,9 @@ public class Company implements Serializable
     //statesize INTEGER NOT NULL
 	@Column(name = "statesize", nullable = false)
 	private int statesize;
+
+	@OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<Payment> payments;
 
 	public Company(String name, Owntype owntype, String phone, BigDecimal startyear, int statesize)
 	{

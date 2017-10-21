@@ -2,9 +2,10 @@ package TaxService.DAO;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
-@Table (name = "Owntype")
+@Table(name = "Owntype")
 public class Owntype implements Serializable
 {
     private static final long serialVersionID = 666000123210008L;
@@ -18,6 +19,9 @@ public class Owntype implements Serializable
     //name VARCHAR(40) NOT NULL
     @Column(name = "name", length = 40, unique = true, nullable = false)
     private String name;
+
+    @OneToMany(mappedBy = "owntype", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Company> companies;
 
     public Owntype(String name)
     {

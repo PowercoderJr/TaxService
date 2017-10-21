@@ -7,7 +7,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "Department")
-//@SequenceGenerator(name = "DepartmentSqGen", allocationSize = 1000000)
 public class Department implements Serializable
 {
     private static final long serialVersionID = 666000123210001L;
@@ -47,8 +46,11 @@ public class Department implements Serializable
     @Column(name = "house", length = 6, nullable = false)
     private String house;
 
-    //@OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    //private List<Employee> employees;
+    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Employee> employees;
+
+	@OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<Payment> payments;
 
     public Department(String name, Deptype deptype, BigDecimal startyear, String phone, String city, String street, String house)
     {

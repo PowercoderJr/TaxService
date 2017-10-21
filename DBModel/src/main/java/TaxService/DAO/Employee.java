@@ -3,10 +3,10 @@ package TaxService.DAO;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "Employee")
-//@SequenceGenerator(name = "EmployeeSqGen", allocationSize = 1000000)
 public class Employee implements Serializable
 {
     private static final long serialVersionID = 666000123210002L;
@@ -50,6 +50,9 @@ public class Employee implements Serializable
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "Education", nullable = false)
 	private Education education;
+
+	@OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<Payment> payments;
 
 	public Employee(String surname, String name, String patronymic, Department department, Date birthdate, String post, int salary, Education education)
 	{

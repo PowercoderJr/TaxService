@@ -48,8 +48,11 @@ public class ServerMain
 			paymentCRUD.insertRandomBeans(20);
 
 			List<Department> departments = departmentCRUD.getAll();
-			for (Department d : departments)
-				departmentCRUD.delete(d);
+			departmentCRUD.delete(departments.get(0));
+			departmentCRUD.delete(departments.get(1));
+			departmentCRUD.delete(departments.get(2));
+			departmentCRUD.delete(departments.get(3));
+			departmentCRUD.delete(departments.get(4));
 
 			departmentCRUD.disconnect();
 			employeeCRUD.disconnect();
