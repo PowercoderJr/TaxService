@@ -2,13 +2,16 @@ package TaxService;
 
 import TaxService.CRUDs.*;
 import TaxService.DAO.*;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.codec.digest.Sha2Crypt;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+import java.io.*;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Scanner;
 
 public class ServerMain
 {
@@ -16,6 +19,7 @@ public class ServerMain
 	{
 		try (SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory())
 		{
+			AbstractCRUD<StrangeThing> strangeThingCRUD = new StrangeThingCRUD(sessionFactory);
 			AbstractRandomableCRUD<Department> departmentCRUD = new DepartmentCRUD(sessionFactory);
 			AbstractRandomableCRUD<Employee> employeeCRUD = new EmployeeCRUD(sessionFactory);
 			AbstractRandomableCRUD<Company> companyCRUD = new CompanyCRUD(sessionFactory);
@@ -25,6 +29,8 @@ public class ServerMain
 			AbstractCRUD<Paytype> paytypeCRUD = new PaytypeCRUD(sessionFactory);
 			AbstractCRUD<Owntype> owntypeCRUD = new OwntypeCRUD(sessionFactory);
 
+			StrangeThing thing = new StrangeThing("admin", DigestUtils.sha256Hex(DigestUtils.sha256Hex("pass")), StrangeThing.Role.ADMIN);
+			strangeThingCRUD.create(thing);
 			Deptype deptype = new Deptype("Областной");
 			deptypeCRUD.create(deptype);
 			Education education = new Education("Высшее");
@@ -42,18 +48,12 @@ public class ServerMain
 			Payment payment = new Payment(paytype, Date.valueOf(LocalDate.of(2017, 5, 6)), new BigDecimal(1500.00), employee, department, company);
 			paymentCRUD.create(payment);
 
-			departmentCRUD.insertRandomBeans(20);
-			employeeCRUD.insertRandomBeans(20);
-			companyCRUD.insertRandomBeans(20);
-			paymentCRUD.insertRandomBeans(20);
+			departmentCRUD.insertRandomBeans(10);
+			employeeCRUD.insertRandomBeans(10);
+			companyCRUD.insertRandomBeans(10);
+			paymentCRUD.insertRandomBeans(10);
 
-			List<Department> departments = departmentCRUD.getAll();
-			departmentCRUD.delete(departments.get(0));
-			departmentCRUD.delete(departments.get(1));
-			departmentCRUD.delete(departments.get(2));
-			departmentCRUD.delete(departments.get(3));
-			departmentCRUD.delete(departments.get(4));
-
+			strangeThingCRUD.disconnect();
 			departmentCRUD.disconnect();
 			employeeCRUD.disconnect();
 			companyCRUD.disconnect();
@@ -63,6 +63,29 @@ public class ServerMain
 			paytypeCRUD.disconnect();
 			owntypeCRUD.disconnect();
 		}
-		System.out.println( "Hello, I'm Server!\nBAC 3AAPEWTOBAHO!" );
+
+		/*Scanner in = new Scanner(System.in);
+		System.out.println("Who's there?");
+		boolean acceed = false;
+		String login, fineLogin, pass, finePass;
+		login = in.nextLine();
+		pass = in.nextLine();
+		try (BufferedReader f = new BufferedReader(new FileReader("src/main/java/TaxService/strangefile")))
+		{
+			fineLogin = f.readLine();
+			finePass = f.readLine();
+			if (login.compareTo(fineLogin) == 0 && DigestUtils.md5Hex(pass).compareTo(finePass) == 0)
+				acceed = true;
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+
+		if (acceed)
+			System.out.println("Hello, I'm Server!\nBAC 3AAPEWTOBAHO!");
+		else
+			System.out.println("Get out!");*/
+		System.out.println("Hello, I'm Server!\nBAC 3AAPEWTOBAHO!");
 	}
 }

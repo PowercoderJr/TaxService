@@ -38,7 +38,7 @@ public class Company implements Serializable
 	@Column(name = "statesize", nullable = false)
 	private int statesize;
 
-	@OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Payment> payments;
 
 	public Company(String name, Owntype owntype, String phone, BigDecimal startyear, int statesize)

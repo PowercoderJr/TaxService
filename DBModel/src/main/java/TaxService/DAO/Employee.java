@@ -31,7 +31,7 @@ public class Employee implements Serializable
 
 	//dep_id INTEGER NOT NULL REFERENCES departments(id)
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "Department", nullable = false)
+	@JoinColumn(name = "department", nullable = false)
 	private Department department;
 
     //birthdate DATE NOT NULL
