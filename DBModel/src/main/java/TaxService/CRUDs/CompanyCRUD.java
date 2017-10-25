@@ -23,8 +23,7 @@ public class CompanyCRUD extends AbstractRandomableCRUD<Company>
 		String name = RandomHelper.getRandomCompany();
 
 		OwntypeCRUD owntypeCRUD = new OwntypeCRUD(factory);
-		List<Owntype> owntypes = owntypeCRUD.getAll();
-		Owntype owntype = owntypes.get((int) (Math.random() * owntypes.size()));
+		Owntype owntype = owntypeCRUD.getRandom();
 		owntypeCRUD.disconnect();
 
 		String phone = RandomHelper.getRandomPhone();

@@ -18,7 +18,7 @@ public abstract class AbstractRandomableCRUD<T> extends AbstractCRUD<T>
 		connect();
 		for (int i = 0, j = 0; i < n; i += j)
 		{
-			for (j = 0; j < 20 && j < n - i; ++j) //j < batch size
+			for (j = 0; j < 640 && j < n - i; ++j) //j < batch size
 				session.save(generateRandomBean());
 			session.flush();
 			session.clear();

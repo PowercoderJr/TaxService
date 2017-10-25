@@ -23,8 +23,7 @@ public class DepartmentCRUD extends AbstractRandomableCRUD<Department>
 		String name = "Уникальное название";
 
 		DeptypeCRUD deptypeCRUD = new DeptypeCRUD(factory);
-		List<Deptype> deptypes = deptypeCRUD.getAll();
-		Deptype deptype = deptypes.get((int) (Math.random() * deptypes.size()));
+		Deptype deptype = deptypeCRUD.getRandom();
 		deptypeCRUD.disconnect();
 
 		BigDecimal startyear = new BigDecimal(1960 + (int)(Math.random() * 55));

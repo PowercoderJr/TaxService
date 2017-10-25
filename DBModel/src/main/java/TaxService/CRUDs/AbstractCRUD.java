@@ -2,6 +2,7 @@ package TaxService.CRUDs;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.NativeQuery;
 
 import javax.persistence.TypedQuery;
 import java.io.Serializable;
@@ -75,4 +76,13 @@ public abstract class AbstractCRUD<T>
 		session.getTransaction().commit();
 		return query.getResultList();
 	};
+
+	public T getRandom()
+	{
+		connect();
+		//TypedQuery<T> query = session.createQuery("SELECT a FROM " + clazz.getSimpleName() + " a OFFSET FLOOR(RANDOM()*(SELECT COUNT(a) FROM " + clazz.getSimpleName() + " a)) LIMIT 1", clazz);
+		NativeQuery query = session.createSQLQuery("SELECT * FROM " + clazz.getSimpleName() + " OFFSET FLOOR(RANDOM()*(SELECT COUNT(*) FROM " + clazz.getSimpleName() + ")) LIMIT 1").addEntity(clazz);
+		session.getTransaction().commit();
+		return (T) query.getSingleResult();
+	}
 }

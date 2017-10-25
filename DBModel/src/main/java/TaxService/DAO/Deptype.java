@@ -16,8 +16,8 @@ public class Deptype implements Serializable
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
 
-    //name VARCHAR(40) NOT NULL
-    @Column(name = "name", length = 40, unique = true, nullable = false)
+    //name VARCHAR(100) NOT NULL
+    @Column(name = "name", length = 100, unique = true, nullable = false)
     private String name;
 
 	@OneToMany(mappedBy = "deptype", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

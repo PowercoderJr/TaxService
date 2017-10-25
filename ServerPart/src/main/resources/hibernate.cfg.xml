@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+    <session-factory>
+
+        <!-- Settings -->
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://localhost/TaxService</property>
+        <property name="hibernate.connection.username">postgres</property>
+        <property name="hibernate.connection.password">****</property>
+        <property name="hibernate.jdbc.batch_size">640</property> <!-- Best practice: batch size = (2^n)*10 -->
+
+        <!-- SQL dialect -->
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQL95Dialect</property>
+
+        <!-- Print executed SQL to stdout -->
+        <property name="show_sql">true</property>
+
+        <!-- ... all database on startup -->
+        <property name="hibernate.hbm2ddl.auto">create</property>
+
+        <!-- Annotated entity classes -->
+        <mapping class="TaxService.DAO.StrangeThing" />
+        <mapping class="TaxService.DAO.Department" />
+        <mapping class="TaxService.DAO.Employee" />
+        <mapping class="TaxService.DAO.Company" />
+        <mapping class="TaxService.DAO.Payment" />
+        <mapping class="TaxService.DAO.Deptype" />
+        <mapping class="TaxService.DAO.Education" />
+        <mapping class="TaxService.DAO.Paytype" />
+        <mapping class="TaxService.DAO.Owntype" />
+    </session-factory>
+</hibernate-configuration>

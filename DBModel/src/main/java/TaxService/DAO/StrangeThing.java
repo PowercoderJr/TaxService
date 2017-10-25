@@ -1,4 +1,4 @@
-package TaxService;
+package TaxService.DAO;
 
 import javax.persistence.*;
 
@@ -13,7 +13,7 @@ public class StrangeThing
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private long id;
 
-	@Column(name = "login", length = 50, nullable = false)
+	@Column(name = "login", length = 50, unique = true, nullable = false)
 	private String login;
 
 	@Column(name = "digest", length = 64, nullable = false)

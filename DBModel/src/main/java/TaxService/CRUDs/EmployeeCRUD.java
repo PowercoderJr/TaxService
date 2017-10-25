@@ -28,8 +28,7 @@ public class EmployeeCRUD extends AbstractRandomableCRUD<Employee>
 		String patronymic = RandomHelper.getRandomPatronymic(gender);
 
 		DepartmentCRUD departmentCRUD = new DepartmentCRUD(factory);
-		List<Department> departments = departmentCRUD.getAll();
-		Department department = departments.get((int) (Math.random() * departments.size()));
+		Department department = departmentCRUD.getRandom();
 		departmentCRUD.disconnect();
 
 		Date birthdate = RandomHelper.getRandomDateBetween(LocalDate.of(1950, 1, 1), LocalDate.of(1990, 12, 31));
@@ -39,8 +38,7 @@ public class EmployeeCRUD extends AbstractRandomableCRUD<Employee>
 		int salary = (int)(20 + Math.random() * 180) * 1000;
 
 		EducationCRUD educationCRUD = new EducationCRUD(factory);
-		List<Education> educations = educationCRUD.getAll();
-		Education education = educations.get((int) (Math.random() * educations.size()));
+		Education education = educationCRUD.getRandom();
 		educationCRUD.disconnect();
 
 		return new Employee(surname, name, patronymic, department, birthdate, post, salary, education);
