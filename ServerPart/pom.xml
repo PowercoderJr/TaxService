@@ -60,7 +60,7 @@
         <!-- Соседний модуль -->
         <dependency>
             <groupId>TaxService</groupId>
-            <artifactId>DBModel</artifactId>
+            <artifactId>Protocol</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>

@@ -49,5 +49,13 @@
             <artifactId>netty-all</artifactId>
             <version>4.1.16.Final</version>
         </dependency>
+
+
+        <!-- Соседний модуль -->
+        <dependency>
+            <groupId>TaxService</groupId>
+            <artifactId>Protocol</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>

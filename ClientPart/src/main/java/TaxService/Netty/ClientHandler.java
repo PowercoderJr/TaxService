@@ -1,13 +1,14 @@
 package TaxService.Netty;
 
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.SimpleChannelInboundHandler;
 
-public class ClientHandler extends SimpleChannelInboundHandler<String>
+public class ClientHandler extends ChannelInboundHandlerAdapter
 {
 	@Override
-	protected void channelRead0(ChannelHandlerContext ctx, String s) throws Exception
+	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception
 	{
-		System.out.println("Server: " + s);
+		System.out.println("Server: " + msg);
 	}
 }

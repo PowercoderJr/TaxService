@@ -3,18 +3,22 @@ package TaxService;
 import TaxService.CRUDs.*;
 import TaxService.DAO.*;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+import java.io.IOException;
+
+import static TaxService.Dictionary.PORT;
+
 public class ServerMain
 {
-	public static final int PORT = 10650;
 	public static void main( String[] args )
 	{
-		try (SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory())
+		/*try (SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory())
 		{
 			AbstractCRUD<StrangeThing> strangeThingCRUD = new StrangeThingCRUD(sessionFactory);
 			AbstractRandomableCRUD<Department> departmentCRUD = new DepartmentCRUD(sessionFactory);
@@ -26,7 +30,7 @@ public class ServerMain
 			AbstractCRUD<Paytype> paytypeCRUD = new PaytypeCRUD(sessionFactory);
 			AbstractCRUD<Owntype> owntypeCRUD = new OwntypeCRUD(sessionFactory);
 
-			/*strangeThingCRUD.create(new StrangeThing("admin", DigestUtils.sha256Hex(DigestUtils.sha256Hex("pass")), StrangeThing.Role.ADMIN));
+			strangeThingCRUD.create(new StrangeThing("admin", DigestUtils.sha256Hex(DigestUtils.sha256Hex("pass")), StrangeThing.Role.ADMIN));
 			String[] deptypes =
 					{
 							"Районный",
@@ -224,30 +228,17 @@ public class ServerMain
 			companyCRUD.insertRandomBeans(30000);
 			paymentCRUD.insertRandomBeans(40000);*/
 
-			//https://metabroadcast.com/blog/java-socket-programming-with-netty
-			NioEventLoopGroup acceptorGroup = new NioEventLoopGroup(2);
-			NioEventLoopGroup handlerGroup = new NioEventLoopGroup(10);
-			try
-			{
-				ServerBootstrap bootstrap = new ServerBootstrap();
-				bootstrap.group(acceptorGroup, handlerGroup)
-						.channel(NioServerSocketChannel.class)
-						.childHandler(new ServerInitializer())
-						.option(ChannelOption.SO_BACKLOG, 5)
-						.childOption(ChannelOption.SO_KEEPALIVE, true);
-				bootstrap.localAddress(PORT).bind().sync().channel().closeFuture().sync();
-			}
-			catch (InterruptedException e)
-			{
-				e.printStackTrace();
-			}
-			finally
-			{
-				acceptorGroup.shutdownGracefully();
-				handlerGroup.shutdownGracefully();
-			}
-
-			strangeThingCRUD.disconnect();
+		//ServerAgent.getInstance();
+		try
+		{
+			ServerAgent.getInstance();
+			ServerAgent.getInstance().close();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		/*	strangeThingCRUD.disconnect();
 			departmentCRUD.disconnect();
 			employeeCRUD.disconnect();
 			companyCRUD.disconnect();
@@ -256,7 +247,7 @@ public class ServerMain
 			educationCRUD.disconnect();
 			paytypeCRUD.disconnect();
 			owntypeCRUD.disconnect();
-		}
+		}*/
 
 		System.out.println("BAC 3AAPEWTOBAHO!");
 	}
