@@ -8,6 +8,12 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import org.apache.commons.codec.digest.DigestUtils;
 
+import java.lang.reflect.InvocationTargetException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+import static TaxService.Dictionary.PORT;
+
 public class AuthController
 {
 	public TextField loginField;
@@ -20,9 +26,23 @@ public class AuthController
 
 	public void signin(ActionEvent actionEvent)
 	{
+		statusLabel.setVisible(false);
 		String msg = Dictionary.SIGN_IN + Dictionary.SEPARATOR;
 		msg += loginField.getText() + Dictionary.SEPARATOR;
 		msg += DigestUtils.sha256Hex(DigestUtils.sha256Hex(passField.getText()));
-		ClientAgent.getInstance().send(msg);
+		try
+		{
+			ClientAgent.buildInstance(InetAddress.getLocalHost(), PORT);
+			ClientAgent.getInstance().send(msg);
+		}
+		catch (InvocationTargetException e)
+		{
+			statusLabel.setText("Соединение не установлено");
+			statusLabel.setVisible(true);
+		}
+		catch (UnknownHostException e)
+		{
+			e.printStackTrace();
+		}
 	}
 }

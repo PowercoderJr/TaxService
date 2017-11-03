@@ -28,42 +28,13 @@ public class ClientMain extends Application
     public static void main(String[] args)
     {
         launch(args);
-        /*BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        EventLoopGroup group = new NioEventLoopGroup();
-        System.out.println(group.isShutdown() + " " + group.isTerminated() + " " + group.isShuttingDown());
-        try
-        {
-            Bootstrap bootstrap = new Bootstrap().group(group)
-                    .channel(NioSocketChannel.class)
-                    .option(ChannelOption.TCP_NODELAY, true)
-                    .handler(new ClientInitializer());
-            ChannelFuture future = bootstrap.connect(InetAddress.getLocalHost(), 10650).sync();
-            System.out.println(group.isShutdown() + " " + group.isTerminated() + " " + group.isShuttingDown());
-
-            String msg;
-            //do            {
-                msg = in.readLine();
-                System.out.println("Me: " + msg);
-                future.channel().writeAndFlush("through channel: " + msg);
-                future.sync();
-            //} while (!msg.equals("stop"));
-        }
-        catch (InterruptedException | IOException e)
-        {
-            e.printStackTrace();
-        }
-        finally
-        {
-            System.out.println(group.isShutdown() + " " + group.isTerminated() + " " + group.isShuttingDown());
-            group.shutdownGracefully();
-            System.out.println(group.isShutdown() + " " + group.isTerminated() + " " + group.isShuttingDown());
-        }*/
     }
 
     @Override
     public void stop() throws Exception
     {
         super.stop();
-        ClientAgent.getInstance().close();
+        if (ClientAgent.getInstance() != null)
+            ClientAgent.getInstance().close();
     }
 }

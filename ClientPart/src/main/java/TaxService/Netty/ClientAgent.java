@@ -8,6 +8,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
 import java.io.Closeable;
+import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -20,16 +21,29 @@ public class ClientAgent implements Closeable
 
 	public static ClientAgent getInstance()
 	{
-		if (instance == null)
-			try
-			{
-				instance = new ClientAgent(InetAddress.getLocalHost(), PORT);
-			}
-			catch (UnknownHostException e)
-			{
-				e.printStackTrace();
-			}
 		return instance;
+	}
+
+	public static void buildInstance(InetAddress inetAddress, int port) throws InvocationTargetException
+	{
+		if (instance != null)
+			instance.close();
+
+		instance = new ClientAgent(inetAddress, port);
+		try
+		{
+			if (instance.future.isSuccess())
+				instance.future.sync();
+			else
+			{
+				instance.close();
+				throw new InvocationTargetException(null);
+			}
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	private ChannelFuture future;
@@ -37,14 +51,14 @@ public class ClientAgent implements Closeable
 
 	private ClientAgent(InetAddress inetAddress, int port)
 	{
+		group = new NioEventLoopGroup();
+		Bootstrap bootstrap = new Bootstrap().group(group)
+				.channel(NioSocketChannel.class)
+				.option(ChannelOption.TCP_NODELAY, true)
+				.handler(new ClientInitializer());
 		try
 		{
-			group = new NioEventLoopGroup();
-			Bootstrap bootstrap = new Bootstrap().group(group)
-					.channel(NioSocketChannel.class)
-					.option(ChannelOption.TCP_NODELAY, true)
-					.handler(new ClientInitializer());
-			future = bootstrap.connect(inetAddress, port).sync();
+			future = bootstrap.connect(inetAddress, port).await();
 		}
 		catch (InterruptedException e)
 		{
@@ -67,7 +81,11 @@ public class ClientAgent implements Closeable
 
 	public void close()
 	{
-		group.shutdownGracefully();
+		//future.channel().closeFuture();
+		if (group != null)
+			group.shutdownGracefully();
+		if (instance != null)
+			instance = null;
 	}
 
 	protected void finalize()

@@ -58,7 +58,7 @@ public class ServerAgent implements Closeable
 
 	// TODO: 01.11.2017 Закрыть как полагается
 	@Override
-	public void close() throws IOException
+	public void close()
 	{
 		try
 		{
@@ -74,12 +74,15 @@ public class ServerAgent implements Closeable
 
 	public boolean signup(String login, String digest)
 	{
-		boolean accessed = false;
+		boolean accessed;
 		try (Session session = sessionFactory.openSession())
 		{
 			List<StrangeThing> rl = session.createQuery("SELECT a FROM StrangeThing a WHERE login='" + login+"'", StrangeThing.class).getResultList();
-			if (!rl.isEmpty())
-				accessed = login.equals(rl.get(0).getLogin()) && digest.equals(rl.get(0).getDigest());
+			accessed = !rl.isEmpty() && login.equals(rl.get(0).getLogin()) && digest.equals(rl.get(0).getDigest());
+		}
+		catch (Exception e)
+		{
+			accessed = false;
 		}
 		return accessed;
 	}

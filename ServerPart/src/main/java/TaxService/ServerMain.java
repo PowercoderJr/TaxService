@@ -229,15 +229,7 @@ public class ServerMain
 			paymentCRUD.insertRandomBeans(40000);*/
 
 		//ServerAgent.getInstance();
-		try
-		{
-			ServerAgent.getInstance();
-			ServerAgent.getInstance().close();
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
+		ServerAgent.getInstance().close();
 		/*	strangeThingCRUD.disconnect();
 			departmentCRUD.disconnect();
 			employeeCRUD.disconnect();
