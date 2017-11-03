@@ -28,7 +28,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 					String login = content.substring(0, content.indexOf(Dictionary.SEPARATOR));
 					String digest = content.substring(content.indexOf(Dictionary.SEPARATOR) + 1);
 					boolean acceessed = ServerAgent.getInstance().signup(login, digest);
-					ctx.channel().writeAndFlush(acceessed ? Dictionary.ACCESSED : Dictionary.DENIED);
+					ctx.channel().writeAndFlush(Dictionary.ACCESS + Dictionary.SEPARATOR + (acceessed ? Dictionary.YES : Dictionary.NO));
 					break;
 			}
 		}

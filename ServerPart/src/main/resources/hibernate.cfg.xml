@@ -10,7 +10,7 @@
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
         <property name="hibernate.connection.url">jdbc:postgresql://localhost/TaxService</property>
         <property name="hibernate.connection.username">postgres</property>
-        <property name="hibernate.connection.password">****</property>
+        <property name="hibernate.connection.password">userpass</property>
         <property name="hibernate.jdbc.batch_size">640</property> <!-- Best practice: batch size = (2^n)*10 -->
 
         <!-- SQL dialect -->

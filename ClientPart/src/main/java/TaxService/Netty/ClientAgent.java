@@ -1,23 +1,26 @@
 package TaxService.Netty;
 
+import TaxService.Callback;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import sun.awt.Mutex;
 
 import java.io.Closeable;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
-
-import static TaxService.Dictionary.PORT;
-
+import java.util.ArrayList;
 
 public class ClientAgent implements Closeable
 {
+	//STATIC SECTION
 	private static ClientAgent instance = null;
+
+	private static Mutex authSubscribersMutex = new Mutex();
+	public static ArrayList<Callback> authSubscribers = new ArrayList<>();
 
 	public static ClientAgent getInstance()
 	{
@@ -46,6 +49,29 @@ public class ClientAgent implements Closeable
 		}
 	}
 
+	public static void subscribeAuth(Callback s)
+	{
+		authSubscribersMutex.lock();
+		authSubscribers.add(s);
+		authSubscribersMutex.unlock();
+	}
+
+	public static void unsubscribeAuth(Callback s)
+	{
+		authSubscribersMutex.lock();
+		authSubscribers.remove(s);
+		authSubscribersMutex.unlock();
+	}
+
+	public static void publishAuth(boolean accessed)
+	{
+		authSubscribersMutex.lock();
+		for (Callback s : authSubscribers)
+			s.callback(accessed);
+		authSubscribersMutex.unlock();
+	}
+
+	//NON-STATIC SECTION
 	private ChannelFuture future;
 	private EventLoopGroup group;
 

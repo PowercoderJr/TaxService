@@ -1,7 +1,9 @@
 package TaxService.SceneControllers;
 
+import TaxService.Callback;
 import TaxService.Dictionary;
 import TaxService.Netty.ClientAgent;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -20,8 +22,21 @@ public class AuthController
 	public PasswordField passField;
 	public Label statusLabel;
 
+	private Callback onAuth;
+
 	public void initialize()
 	{
+		onAuth = new Callback()
+		{
+			@Override
+			public void callback(Object o)
+			{
+				final boolean accessed = (boolean) o;
+				statusLabel.setVisible(true);
+				Platform.runLater(() -> statusLabel.setText(accessed ? "Доступ разрешён" : "Доступ запрещён"));
+			}
+		};
+		ClientAgent.subscribeAuth(onAuth);
 	}
 
 	public void signin(ActionEvent actionEvent)
