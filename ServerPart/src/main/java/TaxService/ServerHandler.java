@@ -2,9 +2,6 @@ package TaxService;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.channel.SimpleChannelInboundHandler;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter
 {
@@ -24,7 +21,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 
 			switch (codegramm)
 			{
-				case Dictionary.SIGN_IN:
+				case Dictionary.AUTH:
 					String login = content.substring(0, content.indexOf(Dictionary.SEPARATOR));
 					String digest = content.substring(content.indexOf(Dictionary.SEPARATOR) + 1);
 					boolean acceessed = ServerAgent.getInstance().signup(login, digest);

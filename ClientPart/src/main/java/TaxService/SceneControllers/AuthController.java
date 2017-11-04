@@ -1,18 +1,21 @@
 package TaxService.SceneControllers;
 
-import TaxService.Callback;
-import TaxService.Dictionary;
+import TaxService.*;
 import TaxService.Netty.ClientAgent;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import org.apache.commons.codec.digest.DigestUtils;
 
+import java.awt.*;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import static TaxService.Dictionary.PORT;
 
@@ -32,17 +35,42 @@ public class AuthController
 			public void callback(Object o)
 			{
 				final boolean accessed = (boolean) o;
-				statusLabel.setVisible(true);
-				Platform.runLater(() -> statusLabel.setText(accessed ? "Доступ разрешён" : "Доступ запрещён"));
+				Platform.runLater(() ->
+				{
+					if (accessed)
+					{
+						try
+						{
+							Stage stage = ClientMain.sceneManager.getStage();
+							stage.setTitle("База данных налоговой инспекции");
+							Parent mainSceneFXML = FXMLLoader.load(ClientMain.class.getResource("/MainScene/interface.fxml"));
+							ManagedScene mainScene = new ManagedScene(mainSceneFXML, ClientMain.DEFAULT_WINDOW_WIDTH, ClientMain.DEFAULT_WINDOW_HEIGHT, ClientMain.sceneManager);
+							mainScene.getStylesheets().add("/MainScene/style.css");
+							ClientMain.sceneManager.pushScene(mainScene);
+							//stage.setX((Toolkit.getDefaultToolkit().getScreenSize().width - ClientMain.DEFAULT_WINDOW_WIDTH) / 2);
+							//stage.setY((Toolkit.getDefaultToolkit().getScreenSize().height - ClientMain.DEFAULT_WINDOW_HEIGHT) / 2);
+							stage.setFullScreen(true);
+						}
+						catch (IOException e)
+						{
+							e.printStackTrace();
+						}
+					}
+					else
+					{
+						statusLabel.setText("Доступ запрещён");
+						statusLabel.setVisible(true);
+					}
+				});
 			}
 		};
 		ClientAgent.subscribeAuth(onAuth);
 	}
 
-	public void signin(ActionEvent actionEvent)
+	public void auth(ActionEvent actionEvent) throws IOException
 	{
 		statusLabel.setVisible(false);
-		String msg = Dictionary.SIGN_IN + Dictionary.SEPARATOR;
+		String msg = Dictionary.AUTH + Dictionary.SEPARATOR;
 		msg += loginField.getText() + Dictionary.SEPARATOR;
 		msg += DigestUtils.sha256Hex(DigestUtils.sha256Hex(passField.getText()));
 		try
@@ -54,10 +82,6 @@ public class AuthController
 		{
 			statusLabel.setText("Соединение не установлено");
 			statusLabel.setVisible(true);
-		}
-		catch (UnknownHostException e)
-		{
-			e.printStackTrace();
 		}
 	}
 }

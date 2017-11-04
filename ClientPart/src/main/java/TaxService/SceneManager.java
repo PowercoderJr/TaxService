@@ -24,10 +24,10 @@ public class SceneManager
     public void pushScene(ManagedScene scene)
     {
         scenes.push(scene);
-        double w = stage.getWidth(), h = stage.getHeight();
+        //double w = stage.getWidth(), h = stage.getHeight();
         stage.setScene(scene);
-        stage.setWidth(w);
-        stage.setHeight(h);
+        //stage.setWidth(w);
+        //stage.setHeight(h);
     }
 
     /** Извлекает последнюю сцнеу из стека и переключает stage на предыдущую. Если последняя сцена была единственной, закрывает stage.
@@ -77,5 +77,10 @@ public class SceneManager
     public ManagedScene getCurrScene()
     {
         return scenes.peek();
+    }
+
+    public Stage getStage()
+    {
+        return stage;
     }
 }

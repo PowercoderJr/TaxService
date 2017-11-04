@@ -6,8 +6,8 @@ public class Dictionary
 	public static final char SEPARATOR = '$';
 	public static final String WRONG_SYMBOLS = "$\"\'";
 
-	public static final String SIGN_IN = "sign_i";
-	public static final String SIGN_OUT = "sign_o";
+	public static final String AUTH = "auth";
+	public static final String BYE = "bye";
 	public static final String ACCESS = "access";
 	public static final String YES = "+";
 	public static final String NO = "-";

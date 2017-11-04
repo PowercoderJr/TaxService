@@ -8,20 +8,20 @@ import javafx.stage.Stage;
 
 public class ClientMain extends Application
 {
-    public static final int DEFAULT_SCREEN_WIDTH = 1280;
-    public static final int DEFAULT_SCREEN_HEIGHT = 720;
+    public static final int DEFAULT_WINDOW_WIDTH = 1280;
+    public static final int DEFAULT_WINDOW_HEIGHT = 720;
     public static SceneManager sceneManager;
 
     @Override
     public void start(Stage primaryStage) throws Exception
     {
+        primaryStage.setResizable(false);
         sceneManager = new SceneManager(primaryStage);
-
-        Parent auth = FXMLLoader.load(getClass().getResource("/AuthScene/interface.fxml"));
+        Parent authSceneFXML = FXMLLoader.load(getClass().getResource("/AuthScene/interface.fxml"));
         primaryStage.setTitle("Авторизация");
-        ManagedScene mainScene = new ManagedScene(auth, 400, 250, sceneManager);
-        mainScene.getStylesheets().add("/AuthScene/style.css");
-        primaryStage.setScene(mainScene);
+        ManagedScene authScene = new ManagedScene(authSceneFXML, 400, 250, sceneManager);
+        authScene.getStylesheets().add("/AuthScene/style.css");
+        primaryStage.setScene(authScene);
         primaryStage.show();
     }
 

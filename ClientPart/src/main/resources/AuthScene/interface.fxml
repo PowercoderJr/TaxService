@@ -25,7 +25,7 @@
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
       </rowConstraints>
     </GridPane>
-    <Button mnemonicParsing="false" text="Вход в систему" textAlignment="CENTER" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" onAction="#signin"/>
+    <Button mnemonicParsing="false" text="Вход в систему" textAlignment="CENTER" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" onAction="#auth"/>
     <Label fx:id="statusLabel" text="Статусная строка" visible="false" textAlignment="CENTER" textFill="#660000" GridPane.columnIndex="0" GridPane.rowIndex="2" />
   </children>
   <columnConstraints>
