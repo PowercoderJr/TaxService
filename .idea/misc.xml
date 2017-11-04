@@ -6,6 +6,7 @@
         <option value="$PROJECT_DIR$/ClientPart/pom.xml" />
         <option value="$PROJECT_DIR$/ServerPart/pom.xml" />
         <option value="$PROJECT_DIR$/DBModel/pom.xml" />
+        <option value="$PROJECT_DIR$/Protocol/pom.xml" />
       </list>
     </option>
   </component>

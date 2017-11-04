@@ -2,19 +2,23 @@ package TaxService;
 
 import TaxService.CRUDs.*;
 import TaxService.DAO.*;
-import org.apache.commons.codec.digest.DigestUtils;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.time.LocalDate;
+import java.io.IOException;
+
+import static TaxService.Dictionary.PORT;
 
 public class ServerMain
 {
 	public static void main( String[] args )
 	{
-		try (SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory())
+		/*try (SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory())
 		{
 			AbstractCRUD<StrangeThing> strangeThingCRUD = new StrangeThingCRUD(sessionFactory);
 			AbstractRandomableCRUD<Department> departmentCRUD = new DepartmentCRUD(sessionFactory);
@@ -222,9 +226,11 @@ public class ServerMain
 			departmentCRUD.insertRandomBeans(500);
 			employeeCRUD.insertRandomBeans(20000);
 			companyCRUD.insertRandomBeans(30000);
-			paymentCRUD.insertRandomBeans(40000);
+			paymentCRUD.insertRandomBeans(40000);*/
 
-			strangeThingCRUD.disconnect();
+		//ServerAgent.getInstance();
+		ServerAgent.getInstance().close();
+		/*	strangeThingCRUD.disconnect();
 			departmentCRUD.disconnect();
 			employeeCRUD.disconnect();
 			companyCRUD.disconnect();
@@ -233,7 +239,7 @@ public class ServerMain
 			educationCRUD.disconnect();
 			paytypeCRUD.disconnect();
 			owntypeCRUD.disconnect();
-		}
+		}*/
 
 		System.out.println("BAC 3AAPEWTOBAHO!");
 	}
