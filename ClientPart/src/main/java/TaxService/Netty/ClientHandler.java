@@ -1,9 +1,9 @@
 package TaxService.Netty;
 
+import TaxService.POJO;
 import TaxService.Dictionary;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.channel.SimpleChannelInboundHandler;
 
 public class ClientHandler extends ChannelInboundHandlerAdapter
 {
@@ -27,6 +27,10 @@ public class ClientHandler extends ChannelInboundHandlerAdapter
 					ClientAgent.publishAuth(content.equals(Dictionary.YES));
 					break;
 			}
+		}
+		else if (msg instanceof POJO)
+		{
+			ClientAgent.publishSelect(msg);
 		}
 	}
 }

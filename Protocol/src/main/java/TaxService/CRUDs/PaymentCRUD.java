@@ -1,17 +1,12 @@
 package TaxService.CRUDs;
 
-import TaxService.DAO.*;
+import TaxService.DAOs.*;
 import TaxService.RandomHelper;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Projections;
 
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.List;
 
 public class PaymentCRUD extends AbstractRandomableCRUD<Payment>
 {

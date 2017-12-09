@@ -20,17 +20,17 @@
         <property name="show_sql">true</property>
 
         <!-- ... all database on startup -->
-        <property name="hibernate.hbm2ddl.auto">update</property>
+        <property name="hibernate.hbm2ddl.auto">create</property>
 
         <!-- Annotated entity classes -->
-        <mapping class="TaxService.DAO.StrangeThing" />
-        <mapping class="TaxService.DAO.Department" />
-        <mapping class="TaxService.DAO.Employee" />
-        <mapping class="TaxService.DAO.Company" />
-        <mapping class="TaxService.DAO.Payment" />
-        <mapping class="TaxService.DAO.Deptype" />
-        <mapping class="TaxService.DAO.Education" />
-        <mapping class="TaxService.DAO.Paytype" />
-        <mapping class="TaxService.DAO.Owntype" />
+        <mapping class="TaxService.DAOs.StrangeThing" />
+        <mapping class="TaxService.DAOs.Department" />
+        <mapping class="TaxService.DAOs.Employee" />
+        <mapping class="TaxService.DAOs.Company" />
+        <mapping class="TaxService.DAOs.Payment" />
+        <mapping class="TaxService.DAOs.Deptype" />
+        <mapping class="TaxService.DAOs.Education" />
+        <mapping class="TaxService.DAOs.Paytype" />
+        <mapping class="TaxService.DAOs.Owntype" />
     </session-factory>
 </hibernate-configuration>

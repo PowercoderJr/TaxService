@@ -1,14 +1,11 @@
 package TaxService.CRUDs;
 
-import TaxService.DAO.Company;
-import TaxService.DAO.Owntype;
+import TaxService.DAOs.Company;
+import TaxService.DAOs.Owntype;
 import TaxService.RandomHelper;
 import org.hibernate.SessionFactory;
 
-import javax.persistence.TypedQuery;
-import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.List;
 
 public class CompanyCRUD extends AbstractRandomableCRUD<Company>
 {

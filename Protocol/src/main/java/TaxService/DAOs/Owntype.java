@@ -1,12 +1,13 @@
-package TaxService.DAO;
+package TaxService.DAOs;
+
+import TaxService.POJO;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Table(name = "Owntype")
-public class Owntype implements Serializable
+public class Owntype extends POJO
 {
     private static final long serialVersionID = 666000123210008L;
 

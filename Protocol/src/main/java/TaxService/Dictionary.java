@@ -11,6 +11,7 @@ public class Dictionary
 	public static final String ACCESS = "access";
 	public static final String YES = "+";
 	public static final String NO = "-";
+	public static final String SELECT = "select";
 
 	private Dictionary()
 	{

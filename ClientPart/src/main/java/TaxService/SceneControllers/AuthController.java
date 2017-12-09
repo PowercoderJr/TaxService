@@ -41,6 +41,7 @@ public class AuthController
 					{
 						try
 						{
+							ClientAgent.unsubscribeAuth(this);
 							Stage stage = ClientMain.sceneManager.getStage();
 							stage.setTitle("База данных налоговой инспекции");
 							Parent mainSceneFXML = FXMLLoader.load(ClientMain.class.getResource("/MainScene/interface.fxml"));

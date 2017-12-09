@@ -1,6 +1,6 @@
 package TaxService.CRUDs;
 
-import TaxService.DAO.Owntype;
+import TaxService.DAOs.Owntype;
 import org.hibernate.SessionFactory;
 
 public class OwntypeCRUD extends AbstractCRUD<Owntype>

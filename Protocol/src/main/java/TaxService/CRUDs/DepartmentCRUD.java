@@ -1,14 +1,11 @@
 package TaxService.CRUDs;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.List;
-import javax.persistence.TypedQuery;
 
-import TaxService.DAO.Deptype;
+import TaxService.DAOs.Deptype;
 import TaxService.RandomHelper;
 import org.hibernate.SessionFactory;
-import TaxService.DAO.Department;
+import TaxService.DAOs.Department;
 
 public class DepartmentCRUD extends AbstractRandomableCRUD<Department>
 {

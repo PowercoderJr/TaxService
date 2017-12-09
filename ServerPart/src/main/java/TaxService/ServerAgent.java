@@ -1,7 +1,6 @@
 package TaxService;
 
-import TaxService.CRUDs.*;
-import TaxService.DAO.*;
+import TaxService.DAOs.StrangeThing;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -11,10 +10,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
-import javax.persistence.TypedQuery;
 import java.io.Closeable;
-import java.io.IOException;
-import java.util.List;
 
 import static TaxService.Dictionary.PORT;
 
@@ -72,13 +68,13 @@ public class ServerAgent implements Closeable
 		handlerGroup.shutdownGracefully();
 	}
 
-	public boolean signup(String login, String digest)
+	public boolean signIn(String login, String digest)
 	{
 		boolean accessed;
 		try (Session session = sessionFactory.openSession())
 		{
-			List<StrangeThing> rl = session.createQuery("SELECT a FROM StrangeThing a WHERE login='" + login+"'", StrangeThing.class).getResultList();
-			accessed = !rl.isEmpty() && login.equals(rl.get(0).getLogin()) && digest.equals(rl.get(0).getDigest());
+			StrangeThing result = session.createQuery("SELECT a FROM StrangeThing a WHERE login='" + login+"'", StrangeThing.class).getSingleResult();
+			accessed = result != null && login.equals(result.getLogin()) && digest.equals(result.getDigest());
 		}
 		catch (Exception e)
 		{

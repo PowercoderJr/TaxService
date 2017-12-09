@@ -21,6 +21,8 @@ public class ClientAgent implements Closeable
 
 	private static Mutex authSubscribersMutex = new Mutex();
 	public static ArrayList<Callback> authSubscribers = new ArrayList<>();
+	private static Mutex selectSubscribersMutex = new Mutex();
+	public static ArrayList<Callback> selectSubscribers = new ArrayList<>();
 
 	public static ClientAgent getInstance()
 	{
@@ -69,6 +71,28 @@ public class ClientAgent implements Closeable
 		for (Callback s : authSubscribers)
 			s.callback(accessed);
 		authSubscribersMutex.unlock();
+	}
+
+	public static void subscribeSelect(Callback s)
+	{
+		selectSubscribersMutex.lock();
+		selectSubscribers.add(s);
+		selectSubscribersMutex.unlock();
+	}
+
+	public static void unsubscribeSelect(Callback s)
+	{
+		selectSubscribersMutex.lock();
+		selectSubscribers.remove(s);
+		selectSubscribersMutex.unlock();
+	}
+
+	public static void publishSelect(Object result)
+	{
+		selectSubscribersMutex.lock();
+		for (Callback s : selectSubscribers)
+			s.callback(result);
+		selectSubscribersMutex.unlock();
 	}
 
 	//NON-STATIC SECTION

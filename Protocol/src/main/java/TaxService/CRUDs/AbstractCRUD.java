@@ -34,7 +34,7 @@ public abstract class AbstractCRUD<T>
 			session.close();
 	}
 
-	public void create(T object)
+	public void add(T object)
 	{
 		connect();
 		session.save(object);
@@ -80,7 +80,6 @@ public abstract class AbstractCRUD<T>
 	public T getRandom()
 	{
 		connect();
-		//TypedQuery<T> query = session.createQuery("SELECT a FROM " + clazz.getSimpleName() + " a OFFSET FLOOR(RANDOM()*(SELECT COUNT(a) FROM " + clazz.getSimpleName() + " a)) LIMIT 1", clazz);
 		NativeQuery query = session.createSQLQuery("SELECT * FROM " + clazz.getSimpleName() + " OFFSET FLOOR(RANDOM()*(SELECT COUNT(*) FROM " + clazz.getSimpleName() + ")) LIMIT 1").addEntity(clazz);
 		session.getTransaction().commit();
 		return (T) query.getSingleResult();

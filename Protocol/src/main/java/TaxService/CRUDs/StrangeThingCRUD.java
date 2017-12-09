@@ -1,7 +1,6 @@
 package TaxService.CRUDs;
 
-import TaxService.CRUDs.AbstractCRUD;
-import TaxService.DAO.StrangeThing;
+import TaxService.DAOs.StrangeThing;
 import org.hibernate.SessionFactory;
 
 public class StrangeThingCRUD extends AbstractCRUD<StrangeThing>

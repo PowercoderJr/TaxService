@@ -1,13 +1,14 @@
-package TaxService.DAO;
+package TaxService.DAOs;
+
+import TaxService.POJO;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Date;
 
 @Entity
 @Table(name = "Payment")
-public class Payment implements Serializable
+public class Payment extends POJO
 {
     private static final long serialVersionID = 666000123210004L;
 

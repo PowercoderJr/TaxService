@@ -1,10 +1,12 @@
-package TaxService.DAO;
+package TaxService.DAOs;
+
+import TaxService.POJO;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "StrangeThing")
-public class StrangeThing
+public class StrangeThing extends POJO
 {
 	public enum Role {ADMIN, USER}
 

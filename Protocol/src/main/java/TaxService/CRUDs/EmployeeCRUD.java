@@ -1,16 +1,13 @@
 package TaxService.CRUDs;
 
-import TaxService.DAO.Department;
-import TaxService.DAO.Education;
-import TaxService.DAO.Employee;
+import TaxService.DAOs.Department;
+import TaxService.DAOs.Education;
+import TaxService.DAOs.Employee;
 import TaxService.RandomHelper;
 import org.hibernate.SessionFactory;
 
-import javax.persistence.TypedQuery;
-import java.io.Serializable;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.List;
 
 public class EmployeeCRUD extends AbstractRandomableCRUD<Employee>
 {

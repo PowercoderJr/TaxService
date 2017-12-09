@@ -1,12 +1,13 @@
-package TaxService.DAO;
+package TaxService.DAOs;
+
+import TaxService.POJO;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Table(name = "Paytype")
-public class Paytype implements Serializable
+public class Paytype extends POJO
 {
     private static final long serialVersionID = 666000123210007L;
 
