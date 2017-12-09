@@ -9,7 +9,7 @@ import java.util.List;
 @Table(name = "Education")
 public class Education extends POJO
 {
-    private static final long serialVersionID = 666000123210006L;
+    private static final long serialVersionID = 666000123210007L;
 
     //id SERIAL NOT NULL
     @Id

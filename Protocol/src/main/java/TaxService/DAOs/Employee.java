@@ -39,9 +39,9 @@ public class Employee extends POJO
 	@Column(name = "birthdate", nullable = false)
 	private Date birthdate;
 
-    //post VARCHAR(50) NOT NULL
-	@Column (name = "post", length = 50, nullable = false)
-	private String post;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "Post", nullable = false)
+	private Post post;
 
 	//salary INTEGER NOT NULL
 	@Column(name = "salary", nullable = false)
@@ -55,7 +55,7 @@ public class Employee extends POJO
 	@OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Payment> payments;
 
-	public Employee(String surname, String name, String patronymic, Department department, Date birthdate, String post, int salary, Education education)
+	public Employee(String surname, String name, String patronymic, Department department, Date birthdate, Post post, int salary, Education education)
 	{
 		this.surname = surname;
 		this.name = name;
@@ -127,12 +127,12 @@ public class Employee extends POJO
 		this.birthdate = birthdate;
 	}
 
-	public String getPost()
+	public Post getPost()
 	{
 		return post;
 	}
 
-	public void setPost(String post)
+	public void setPost(Post post)
 	{
 		this.post = post;
 	}

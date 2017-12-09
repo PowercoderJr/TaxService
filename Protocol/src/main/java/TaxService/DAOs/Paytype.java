@@ -9,7 +9,7 @@ import java.util.List;
 @Table(name = "Paytype")
 public class Paytype extends POJO
 {
-    private static final long serialVersionID = 666000123210007L;
+    private static final long serialVersionID = 666000123210008L;
 
     //id SERIAL NOT NULL
     @Id

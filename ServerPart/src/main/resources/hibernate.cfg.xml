@@ -29,6 +29,7 @@
         <mapping class="TaxService.DAOs.Company" />
         <mapping class="TaxService.DAOs.Payment" />
         <mapping class="TaxService.DAOs.Deptype" />
+        <mapping class="TaxService.DAOs.Post" />
         <mapping class="TaxService.DAOs.Education" />
         <mapping class="TaxService.DAOs.Paytype" />
         <mapping class="TaxService.DAOs.Owntype" />

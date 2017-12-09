@@ -18,6 +18,7 @@ public class ServerMain
 			AbstractRandomableCRUD<Company> companyCRUD = new CompanyCRUD(sessionFactory);
 			AbstractRandomableCRUD<Payment> paymentCRUD = new PaymentCRUD(sessionFactory);
 			AbstractCRUD<Deptype> deptypeCRUD = new DeptypeCRUD(sessionFactory);
+			AbstractCRUD<Post> postCRUD = new PostCRUD(sessionFactory);
 			AbstractCRUD<Education> educationCRUD = new EducationCRUD(sessionFactory);
 			AbstractCRUD<Paytype> paytypeCRUD = new PaytypeCRUD(sessionFactory);
 			AbstractCRUD<Owntype> owntypeCRUD = new OwntypeCRUD(sessionFactory);
@@ -26,6 +27,10 @@ public class ServerMain
 			String[] deptypes = {"Районный", "Городской", "Областной"};
 			for (String str : deptypes)
 				deptypeCRUD.add(new Deptype(str));
+
+			String[] posts = {"Руководитель межрегиональной инспекции", "Заместитель руководителя межрегиональной инспекции", "Руководитель управления", "Заместитель руководителя управления", "Начальник отдела", "Заместитель начальника отдела", "Советник", "Главный государственный налоговый инспектор", "Консультант", "Главный специалист", "Ведущий специалист", "Старший государственный налоговый инспектор", "Государственный налоговый инспектор", "Специалист I категории", "Специалист II категории"};
+			for (String str : posts)
+				postCRUD.add(new Post(str));
 
 			String[] educations = {"Среднее общее", "Среднее профессиональное", "Высшее неполное", "Высшее базовое", "Высшее полное"};
 			for (String str : educations)
@@ -52,6 +57,7 @@ public class ServerMain
 			companyCRUD.disconnect();
 			paymentCRUD.disconnect();
 			deptypeCRUD.disconnect();
+			postCRUD.disconnect();
 			educationCRUD.disconnect();
 			paytypeCRUD.disconnect();
 			owntypeCRUD.disconnect();

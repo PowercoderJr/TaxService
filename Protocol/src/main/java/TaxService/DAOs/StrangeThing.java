@@ -8,6 +8,8 @@ import javax.persistence.*;
 @Table(name = "StrangeThing")
 public class StrangeThing extends POJO
 {
+	private static final long serialVersionID = 666000123210000L;
+
 	public enum Role {ADMIN, USER}
 
 	@Id

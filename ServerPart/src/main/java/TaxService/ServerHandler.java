@@ -1,9 +1,6 @@
 package TaxService;
 
-import TaxService.DAOs.Department;
-import TaxService.DAOs.Deptype;
-import TaxService.DAOs.Education;
-import TaxService.DAOs.Employee;
+import TaxService.DAOs.*;
 import TaxService.Orders.AbstractOrder;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -47,7 +44,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter
 							ctx.channel().writeAndFlush(new Department("Кековское", new Deptype("Районное"), new BigDecimal(2000), "+380914564564", "Danger", "Синяя", "13"));
 							break;
 						case "2":
-							ctx.channel().writeAndFlush(new Employee("Az1", "Az2", "Az3", new Department(), Date.valueOf(LocalDate.of(2013, 12,13)), "Master", 12345, new Education("Super")));
+							ctx.channel().writeAndFlush(new Employee("Az1", "Az2", "Az3", new Department(), Date.valueOf(LocalDate.of(2013, 12,13)), new Post("Master"), 12345, new Education("Super")));
 					}
 			}
 		}

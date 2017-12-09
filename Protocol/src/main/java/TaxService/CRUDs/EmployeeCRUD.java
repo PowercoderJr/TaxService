@@ -3,6 +3,7 @@ package TaxService.CRUDs;
 import TaxService.DAOs.Department;
 import TaxService.DAOs.Education;
 import TaxService.DAOs.Employee;
+import TaxService.DAOs.Post;
 import TaxService.RandomHelper;
 import org.hibernate.SessionFactory;
 
@@ -30,7 +31,9 @@ public class EmployeeCRUD extends AbstractRandomableCRUD<Employee>
 
 		Date birthdate = RandomHelper.getRandomDateBetween(LocalDate.of(1950, 1, 1), LocalDate.of(1990, 12, 31));
 
-		String post = RandomHelper.getRandomPost();
+		PostCRUD postCRUD = new PostCRUD(factory);
+		Post post = postCRUD.getRandom();
+		postCRUD.disconnect();
 
 		int salary = (int)(20 + Math.random() * 180) * 1000;
 

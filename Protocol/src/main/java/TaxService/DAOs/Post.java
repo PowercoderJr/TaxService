@@ -6,10 +6,10 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "Owntype")
-public class Owntype extends POJO
+@Table(name = "Post")
+public class Post extends POJO
 {
-    private static final long serialVersionID = 666000123210009L;
+    private static final long serialVersionID = 666000123210006L;
 
     //id SERIAL NOT NULL
     @Id
@@ -21,15 +21,15 @@ public class Owntype extends POJO
     @Column(name = "name", length = 100, unique = true, nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "owntype", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Company> companies;
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Employee> employees;
 
-    public Owntype(String name)
+    public Post(String name)
     {
         this.name = name;
     }
 
-    public Owntype()
+    public Post()
     {
         ;
     }
@@ -52,6 +52,6 @@ public class Owntype extends POJO
     @Override
     public String toString()
     {
-        return "Owntype{" + "id=" + id + ", name='" + name + '\'' + '}';
+        return "Post{" + "id=" + id + ", name='" + name + '\'' + '}';
     }
 }
