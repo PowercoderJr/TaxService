@@ -1,18 +1,22 @@
 package TaxService.CRUDs;
 
+import TaxService.POJO;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.NativeQuery;
+import org.hibernate.query.Query;
 
 import javax.persistence.TypedQuery;
 import java.io.Serializable;
 import java.util.List;
 
-public abstract class AbstractCRUD<T>
+public abstract class AbstractCRUD<T extends POJO>
 {
 	protected SessionFactory factory;
 	protected Session session;
 	protected Class<T> clazz;
+
+	//public AbstractCRUD(){}
 
 	public AbstractCRUD(SessionFactory factory, Class<T> clazz)
 	{
@@ -34,7 +38,7 @@ public abstract class AbstractCRUD<T>
 			session.close();
 	}
 
-	public void add(T object)
+	public void create(T object)
 	{
 		connect();
 		session.save(object);
@@ -72,7 +76,7 @@ public abstract class AbstractCRUD<T>
 	public List<T> getAll()
 	{
 		connect();
-		TypedQuery<T> query = session.createQuery("SELECT a FROM " + clazz.getSimpleName() + " a", clazz);
+		NativeQuery<T> query = session.createNativeQuery("SELECT * FROM " + clazz.getSimpleName(), clazz);
 		session.getTransaction().commit();
 		return query.getResultList();
 	};
@@ -80,8 +84,8 @@ public abstract class AbstractCRUD<T>
 	public T getRandom()
 	{
 		connect();
-		NativeQuery query = session.createSQLQuery("SELECT * FROM " + clazz.getSimpleName() + " OFFSET FLOOR(RANDOM()*(SELECT COUNT(*) FROM " + clazz.getSimpleName() + ")) LIMIT 1").addEntity(clazz);
+		NativeQuery<T> query = session.createNativeQuery("SELECT * FROM " + clazz.getSimpleName() + " OFFSET FLOOR(RANDOM()*(SELECT COUNT(*) FROM " + clazz.getSimpleName() + ")) LIMIT 1", clazz);
 		session.getTransaction().commit();
-		return (T) query.getSingleResult();
+		return query.getSingleResult();
 	}
 }

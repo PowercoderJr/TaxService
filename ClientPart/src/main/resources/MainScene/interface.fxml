@@ -37,11 +37,16 @@
             <MenuItem mnemonicParsing="false" text="About" />
           </items>
         </Menu>
+        <Menu mnemonicParsing="false" text="TESTING">
+          <items>
+            <MenuItem mnemonicParsing="false" onAction="#testCreateDepType" text="Добавить DepType" />
+          </items>
+        </Menu>
       </menus>
     </MenuBar>
     <GridPane fx:id="tableGrid" prefHeight="696.0" prefWidth="1280.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
       <children>
-        <TableView id="table" fx:id="actuallyTable" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" editable="false">
+        <TableView id="table" fx:id="actuallyTable" editable="false" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
           <columns>
             <TableColumn prefWidth="75.0" text="Column X" />
             <TableColumn prefWidth="75.0" text="Column X" />

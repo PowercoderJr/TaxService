@@ -1,5 +1,8 @@
 package TaxService;
 
+import TaxService.CRUDs.AbstractCRUD;
+import TaxService.CRUDs.DepartmentCRUD;
+import TaxService.DAOs.Department;
 import TaxService.DAOs.StrangeThing;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -11,6 +14,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
 import java.io.Closeable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import static TaxService.Dictionary.PORT;
 
@@ -73,7 +78,7 @@ public class ServerAgent implements Closeable
 		boolean accessed;
 		try (Session session = sessionFactory.openSession())
 		{
-			StrangeThing result = session.createQuery("SELECT a FROM StrangeThing a WHERE login='" + login+"'", StrangeThing.class).getSingleResult();
+			StrangeThing result = session.createNativeQuery("SELECT * FROM StrangeThing WHERE login='" + login + "'", StrangeThing.class).getSingleResult();
 			accessed = result != null && login.equals(result.getLogin()) && digest.equals(result.getDigest());
 		}
 		catch (Exception e)
@@ -81,5 +86,20 @@ public class ServerAgent implements Closeable
 			accessed = false;
 		}
 		return accessed;
+	}
+
+	public void create(POJO dao)
+	{
+		//Reflection
+		try
+		{
+			Class crud = Class.forName("TaxService.CRUDs." + dao.getClass().getSimpleName() + "CRUD");
+			AbstractCRUD instance = (AbstractCRUD) crud.getDeclaredConstructor(SessionFactory.class).newInstance(sessionFactory);
+			instance.create(dao);
+		}
+		catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e)
+		{
+			e.printStackTrace();
+		}
 	}
 }
