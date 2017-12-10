@@ -1,7 +1,7 @@
-package TaxService.Handlers;
+package TaxService.Netty.Handlers;
 
+import TaxService.Netty.ClientAgent;
 import TaxService.Dictionary;
-import TaxService.ServerAgent;
 import io.netty.channel.ChannelHandlerContext;
 
 public class SimpleMessageHandler extends AbstractHandler<String>
@@ -13,11 +13,9 @@ public class SimpleMessageHandler extends AbstractHandler<String>
 		String[] tokens = msg.split("\\" + Dictionary.SEPARATOR);
 		switch (tokens[0])
 		{
-			case Dictionary.AUTH:
-				boolean acceessed = ServerAgent.getInstance().signIn(tokens[1], tokens[2]);
-				ctx.channel().writeAndFlush(Dictionary.ACCESS + Dictionary.SEPARATOR + (acceessed ? Dictionary.YES : Dictionary.NO));
+			case Dictionary.ACCESS:
+				ClientAgent.publishAuth(tokens[1].equals(Dictionary.YES));
 				break;
 		}
 	}
 }
-

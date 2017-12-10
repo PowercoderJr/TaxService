@@ -1,16 +1,14 @@
 package TaxService.Netty;
 
+import TaxService.Netty.Handlers.SimpleMessageHandler;
+import TaxService.Netty.Handlers.TableContentReceiver;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
-import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
-import io.netty.util.CharsetUtil;
 
 public class ClientInitializer extends ChannelInitializer<SocketChannel>
 {
@@ -22,7 +20,8 @@ public class ClientInitializer extends ChannelInitializer<SocketChannel>
 		//pipeline.addLast(LineBasedFrameDecoder.class.getName(), new LineBasedFrameDecoder(256));
 		pipeline.addLast("decoder", new ObjectDecoder(ClassResolvers.cacheDisabled(null)));
 		pipeline.addLast("encoder", new ObjectEncoder());
-		pipeline.addLast(ClientHandler.class.getName(), new ClientHandler());
+		pipeline.addLast(new SimpleMessageHandler());
+		pipeline.addLast(new TableContentReceiver());
 	}
 
 	@Override

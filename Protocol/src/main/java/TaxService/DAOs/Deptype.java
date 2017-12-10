@@ -1,13 +1,11 @@
 package TaxService.DAOs;
 
-import TaxService.POJO;
-
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Table(name = "Deptype")
-public class Deptype extends POJO
+public class Deptype extends AbstractDAO
 {
     private static final long serialVersionID = 666000123210005L;
 

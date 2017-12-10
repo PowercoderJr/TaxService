@@ -1,13 +1,11 @@
 package TaxService.DAOs;
 
-import TaxService.POJO;
-
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Table(name = "Owntype")
-public class Owntype extends POJO
+public class Owntype extends AbstractDAO
 {
     private static final long serialVersionID = 666000123210009L;
 

@@ -21,15 +21,15 @@
         </Menu>
         <Menu mnemonicParsing="false" text="Таблицы">
           <items>
-            <MenuItem mnemonicParsing="false" text="Отделения налоговой инспекции" />
-            <MenuItem mnemonicParsing="false" text="Сотрудники налоговой инспекции" />
-            <MenuItem mnemonicParsing="false" text="Предприятия-плательщики" />
-            <MenuItem mnemonicParsing="false" text="Платежи" />
+            <MenuItem fx:id="switchToDepartmentMenuItem" mnemonicParsing="false" text="Отделения налоговой инспекции"/>
+            <MenuItem fx:id="switchToEmployeeMenuItem" mnemonicParsing="false" text="Сотрудники налоговой инспекции" />
+            <MenuItem fx:id="switchToCompanyMenuItem" mnemonicParsing="false" text="Предприятия-плательщики" />
+            <MenuItem fx:id="switchToPaymentMenuItem" mnemonicParsing="false" text="Платежи" />
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Типы отделений" />
-            <MenuItem mnemonicParsing="false" text="Образования" />
-            <MenuItem mnemonicParsing="false" text="Формы собственности" />
-            <MenuItem mnemonicParsing="false" text="Типы платежей" />
+            <MenuItem fx:id="switchToDeptypeMenuItem" mnemonicParsing="false" text="Типы отделений" />
+            <MenuItem fx:id="switchToEducationMenuItem" mnemonicParsing="false" text="Образования" />
+            <MenuItem fx:id="switchToOwntypeMenuItem" mnemonicParsing="false" text="Формы собственности" />
+            <MenuItem fx:id="switchToPaytypeMenuItem" mnemonicParsing="false" text="Типы платежей" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Help">

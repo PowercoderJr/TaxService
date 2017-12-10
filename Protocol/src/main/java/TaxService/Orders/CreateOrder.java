@@ -1,12 +1,20 @@
 package TaxService.Orders;
 
-import TaxService.POJO;
+import TaxService.DAOs.AbstractDAO;
 
-public class CreateOrder<T extends POJO> extends AbstractOrder<T>
+public class CreateOrder<T extends AbstractDAO> extends AbstractOrder<T>
 {
 	private static final long serialVersionUID = 88005553541L;
-	public CreateOrder(T object, Class itemClazz)
+	protected T object;
+
+	public CreateOrder(Class itemClazz, T object)
 	{
-		super(object, itemClazz);
+		super(itemClazz);
+		this.object = object;
+	}
+
+	public T getObject()
+	{
+		return object;
 	}
 }

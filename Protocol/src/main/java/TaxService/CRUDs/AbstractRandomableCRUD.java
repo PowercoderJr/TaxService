@@ -1,9 +1,9 @@
 package TaxService.CRUDs;
 
-import TaxService.POJO;
+import TaxService.DAOs.AbstractDAO;
 import org.hibernate.SessionFactory;
 
-public abstract class AbstractRandomableCRUD<T extends POJO> extends AbstractCRUD<T>
+public abstract class AbstractRandomableCRUD<T extends AbstractDAO> extends AbstractCRUD<T>
 {
 	public AbstractRandomableCRUD(SessionFactory factory, Class<T> clazz)
 	{

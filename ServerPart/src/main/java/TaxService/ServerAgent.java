@@ -1,8 +1,7 @@
 package TaxService;
 
 import TaxService.CRUDs.AbstractCRUD;
-import TaxService.CRUDs.DepartmentCRUD;
-import TaxService.DAOs.Department;
+import TaxService.DAOs.AbstractDAO;
 import TaxService.DAOs.StrangeThing;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -15,7 +14,7 @@ import org.hibernate.cfg.Configuration;
 
 import java.io.Closeable;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.util.List;
 
 import static TaxService.Dictionary.PORT;
 
@@ -88,18 +87,38 @@ public class ServerAgent implements Closeable
 		return accessed;
 	}
 
-	public void create(POJO dao)
+	public void create(AbstractDAO dao)
 	{
-		//Reflection
+		AbstractCRUD crud = getCrudForClass(dao.getClass());
+		if (crud != null)
+			crud.create(dao);
+	}
+
+	public List readHundred(Class clazz, int hundred)
+	{
+		AbstractCRUD instance = getCrudForClass(clazz);
+		return instance.readHundred(hundred);
+	}
+
+	public void delete(AbstractDAO dao)
+	{
+		AbstractCRUD crud = getCrudForClass(dao.getClass());
+		if (crud != null)
+			crud.delete(dao);
+	}
+
+	private AbstractCRUD getCrudForClass(Class clazz)
+	{
+		AbstractCRUD instance = null;
 		try
 		{
-			Class crud = Class.forName("TaxService.CRUDs." + dao.getClass().getSimpleName() + "CRUD");
-			AbstractCRUD instance = (AbstractCRUD) crud.getDeclaredConstructor(SessionFactory.class).newInstance(sessionFactory);
-			instance.create(dao);
+			Class crudClass = Class.forName("TaxService.CRUDs." + clazz.getSimpleName() + "CRUD");
+			instance = (AbstractCRUD) crudClass.getDeclaredConstructor(SessionFactory.class).newInstance(sessionFactory);
 		}
-		catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e)
+		catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e)
 		{
 			e.printStackTrace();
 		}
+		return instance;
 	}
 }

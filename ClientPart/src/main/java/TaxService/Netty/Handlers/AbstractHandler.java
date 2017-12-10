@@ -1,4 +1,4 @@
-package TaxService.Handlers;
+package TaxService.Netty.Handlers;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;

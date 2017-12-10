@@ -1,14 +1,12 @@
 package TaxService.DAOs;
 
-import TaxService.POJO;
-
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Date;
 
 @Entity
 @Table(name = "Payment")
-public class Payment extends POJO
+public class Payment extends AbstractDAO
 {
     private static final long serialVersionID = 666000123210004L;
 

@@ -1,16 +1,14 @@
 package TaxService.CRUDs;
 
-import TaxService.POJO;
+import TaxService.DAOs.AbstractDAO;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.NativeQuery;
-import org.hibernate.query.Query;
 
-import javax.persistence.TypedQuery;
 import java.io.Serializable;
 import java.util.List;
 
-public abstract class AbstractCRUD<T extends POJO>
+public abstract class AbstractCRUD<T extends AbstractDAO>
 {
 	protected SessionFactory factory;
 	protected Session session;
@@ -43,7 +41,7 @@ public abstract class AbstractCRUD<T extends POJO>
 		connect();
 		session.save(object);
 		session.getTransaction().commit();
-	};
+	}
 
 	public boolean delete(Serializable id)
 	{
@@ -56,30 +54,38 @@ public abstract class AbstractCRUD<T extends POJO>
 			return true;
 		}
 		return false;
-	};
+	}
 
 	public void delete(T object)
 	{
 		connect();
 		session.delete(object);
 		session.getTransaction().commit();
-	};
+	}
 
-	public T get(Serializable id)
+	public T read(Serializable id)
 	{
 		connect();
 		T object = session.get(clazz, id);
 		session.getTransaction().commit();
 		return object;
-	};
+	}
 
-	public List<T> getAll()
+	public List<T> readHundred(int hundred)
+	{
+		connect();
+		NativeQuery<T> query = session.createNativeQuery("SELECT * FROM " + clazz.getSimpleName() + " OFFSET " + (hundred * 100) + "LIMIT 100", clazz);
+		session.getTransaction().commit();
+		return query.getResultList();
+	}
+
+	public List<T> readAll()
 	{
 		connect();
 		NativeQuery<T> query = session.createNativeQuery("SELECT * FROM " + clazz.getSimpleName(), clazz);
 		session.getTransaction().commit();
 		return query.getResultList();
-	};
+	}
 
 	public T getRandom()
 	{

@@ -13,16 +13,17 @@ import java.io.Closeable;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ClientAgent implements Closeable
 {
 	//STATIC SECTION
 	private static ClientAgent instance = null;
 
-	private static Mutex authSubscribersMutex = new Mutex();
-	public static ArrayList<Callback> authSubscribers = new ArrayList<>();
-	private static Mutex selectSubscribersMutex = new Mutex();
-	public static ArrayList<Callback> selectSubscribers = new ArrayList<>();
+	private static Mutex authSubsMutex = new Mutex();
+	public static ArrayList<Callback> authSubs = new ArrayList<>();
+	private static Mutex tcReceivedSubsMutex = new Mutex();
+	public static ArrayList<Callback> tcReceivedSubs = new ArrayList<>();
 
 	public static ClientAgent getInstance()
 	{
@@ -53,46 +54,46 @@ public class ClientAgent implements Closeable
 
 	public static void subscribeAuth(Callback s)
 	{
-		authSubscribersMutex.lock();
-		authSubscribers.add(s);
-		authSubscribersMutex.unlock();
+		authSubsMutex.lock();
+		authSubs.add(s);
+		authSubsMutex.unlock();
 	}
 
 	public static void unsubscribeAuth(Callback s)
 	{
-		authSubscribersMutex.lock();
-		authSubscribers.remove(s);
-		authSubscribersMutex.unlock();
+		authSubsMutex.lock();
+		authSubs.remove(s);
+		authSubsMutex.unlock();
 	}
 
 	public static void publishAuth(boolean accessed)
 	{
-		authSubscribersMutex.lock();
-		for (Callback s : authSubscribers)
+		authSubsMutex.lock();
+		for (Callback s : authSubs)
 			s.callback(accessed);
-		authSubscribersMutex.unlock();
+		authSubsMutex.unlock();
 	}
 
-	public static void subscribeSelect(Callback s)
+	public static void subscribeTableContentReceived(Callback s)
 	{
-		selectSubscribersMutex.lock();
-		selectSubscribers.add(s);
-		selectSubscribersMutex.unlock();
+		tcReceivedSubsMutex.lock();
+		tcReceivedSubs.add(s);
+		tcReceivedSubsMutex.unlock();
 	}
 
-	public static void unsubscribeSelect(Callback s)
+	public static void unsubscribeTableContentReceived(Callback s)
 	{
-		selectSubscribersMutex.lock();
-		selectSubscribers.remove(s);
-		selectSubscribersMutex.unlock();
+		tcReceivedSubsMutex.lock();
+		tcReceivedSubs.remove(s);
+		tcReceivedSubsMutex.unlock();
 	}
 
-	public static void publishSelect(Object result)
+	public static void publishTableContentReceived(List content)
 	{
-		selectSubscribersMutex.lock();
-		for (Callback s : selectSubscribers)
-			s.callback(result);
-		selectSubscribersMutex.unlock();
+		tcReceivedSubsMutex.lock();
+		for (Callback s : tcReceivedSubs)
+			s.callback(content);
+		tcReceivedSubsMutex.unlock();
 	}
 
 	//NON-STATIC SECTION

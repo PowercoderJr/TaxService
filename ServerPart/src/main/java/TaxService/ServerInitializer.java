@@ -1,9 +1,6 @@
 package TaxService;
 
-import TaxService.Handlers.AbstractHandler;
-import TaxService.Handlers.CreateOrderHandler;
-import TaxService.Handlers.ObjectHandler;
-import TaxService.Handlers.SimpleMessageHandler;
+import TaxService.Handlers.*;
 import io.netty.channel.*;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.serialization.ClassResolvers;
@@ -22,6 +19,7 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel>
 		pipeline.addLast("encoder", new ObjectEncoder());
 		pipeline.addLast(new SimpleMessageHandler());
 		pipeline.addLast(new CreateOrderHandler());
+		pipeline.addLast(new ReadHundredOrderHandler());
 		pipeline.addLast(new ObjectHandler());
 	}
 }
