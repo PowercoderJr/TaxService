@@ -20,7 +20,7 @@
         <property name="show_sql">true</property>
 
         <!-- ... all database on startup -->
-        <property name="hibernate.hbm2ddl.auto">update</property>
+        <property name="hibernate.hbm2ddl.auto">create</property>
 
         <!-- Annotated entity classes -->
         <mapping class="TaxService.DAOs.StrangeThing" />

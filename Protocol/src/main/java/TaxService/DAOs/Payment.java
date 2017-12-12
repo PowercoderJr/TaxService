@@ -1,48 +1,18 @@
 package TaxService.DAOs;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.sql.Date;
 
-@Entity
-@Table(name = "Payment")
 public class Payment extends AbstractDAO
 {
-    private static final long serialVersionID = 666000123210004L;
-
-	//id SERIAL NOT NULL
-    @Id
-    @Column (name = "id", unique = true, nullable = false)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private long id;
-
-    //paytype_id INTEGER NOT NULL REFERENCES paytypes(id)
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "Paytype", nullable = false)
-	private Paytype paytype;
-
-    //date DATE NOT NULL
-	@Column(name = "date", nullable = false)
-	private Date date;
-
-    //amount NUMERIC(12, 2) NOT NULL
-	@Column(name = "amount", precision = 12, scale = 2, nullable = false)
-	private BigDecimal amount;
-
-    //emp_id INTEGER NOT NULL REFERENCES employees(id)
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "Employee", nullable = false)
-	private Employee employee;
-
-    //dep_id INTEGER NOT NULL REFERENCES departments(id)
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "Department", nullable = false)
-	private Department department;
-
-    //company_id INTEGER NOT NULL REFERENCES companies(id)
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "Company", nullable = false)
-	private Company company;
+    public static final long serialVersionID = 666000123210004L;
+    public long id;
+	public Paytype paytype;
+	public Date date;
+	public BigDecimal amount;
+	public Employee employee;
+	public Department department;
+	public Company company;
 
 	public Payment(Paytype paytype, Date date, BigDecimal amount, Employee employee, Department department, Company company)
 	{

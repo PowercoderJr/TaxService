@@ -5,16 +5,16 @@ import TaxService.DAOs.Education;
 import TaxService.DAOs.Employee;
 import TaxService.DAOs.Post;
 import TaxService.RandomHelper;
-import org.hibernate.SessionFactory;
 
+import java.sql.Connection;
 import java.sql.Date;
 import java.time.LocalDate;
 
 public class EmployeeCRUD extends AbstractRandomableCRUD<Employee>
 {
-	public EmployeeCRUD(SessionFactory factory)
+	public EmployeeCRUD(Connection connection)
 	{
-		super(factory, Employee.class);
+		super(connection, Employee.class);
 	}
 
 	@Override

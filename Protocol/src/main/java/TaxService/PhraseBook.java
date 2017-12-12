@@ -1,6 +1,6 @@
 package TaxService;
 
-public class Dictionary
+public class PhraseBook
 {
 	public static final int PORT = 10650;
 	public static final char SEPARATOR = '$';
@@ -13,7 +13,7 @@ public class Dictionary
 	public static final String NO = "-";
 	public static final String SELECT = "select";
 
-	private Dictionary()
+	private PhraseBook()
 	{
 		;
 	}

@@ -12,12 +12,11 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.apache.commons.codec.digest.DigestUtils;
 
-import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 
-import static TaxService.Dictionary.PORT;
+import static TaxService.PhraseBook.PORT;
 
 public class AuthController
 {
@@ -61,6 +60,7 @@ public class AuthController
 					{
 						statusLabel.setText("Доступ запрещён");
 						statusLabel.setVisible(true);
+						ClientAgent.getInstance().close();
 					}
 				});
 			}
@@ -70,19 +70,22 @@ public class AuthController
 
 	public void auth(ActionEvent actionEvent) throws IOException
 	{
-		statusLabel.setVisible(false);
-		String msg = Dictionary.AUTH + Dictionary.SEPARATOR;
-		msg += loginField.getText() + Dictionary.SEPARATOR;
-		msg += DigestUtils.sha256Hex(DigestUtils.sha256Hex(passField.getText()));
-		try
+		if (ClientAgent.getInstance() != null)
 		{
-			ClientAgent.buildInstance(InetAddress.getLocalHost(), PORT);
-			ClientAgent.getInstance().send(msg);
-		}
-		catch (InvocationTargetException e)
-		{
-			statusLabel.setText("Соединение не установлено");
-			statusLabel.setVisible(true);
+			statusLabel.setVisible(false);
+			String msg = PhraseBook.AUTH + PhraseBook.SEPARATOR;
+			msg += loginField.getText() + PhraseBook.SEPARATOR;
+			msg += DigestUtils.sha256Hex(DigestUtils.sha256Hex(passField.getText()));
+			try
+			{
+				ClientAgent.buildInstance(InetAddress.getLocalHost(), PORT);
+				ClientAgent.getInstance().send(msg);
+			}
+			catch (InvocationTargetException e)
+			{
+				statusLabel.setText("Соединение не установлено");
+				statusLabel.setVisible(true);
+			}
 		}
 	}
 }

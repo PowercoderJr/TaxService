@@ -1,7 +1,7 @@
 package TaxService.Netty.Handlers;
 
 import TaxService.Netty.ClientAgent;
-import TaxService.Dictionary;
+import TaxService.PhraseBook;
 import io.netty.channel.ChannelHandlerContext;
 
 public class SimpleMessageHandler extends AbstractHandler<String>
@@ -10,11 +10,11 @@ public class SimpleMessageHandler extends AbstractHandler<String>
 	protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception
 	{
 		super.channelRead0(ctx, msg);
-		String[] tokens = msg.split("\\" + Dictionary.SEPARATOR);
+		String[] tokens = msg.split("\\" + PhraseBook.SEPARATOR);
 		switch (tokens[0])
 		{
-			case Dictionary.ACCESS:
-				ClientAgent.publishAuth(tokens[1].equals(Dictionary.YES));
+			case PhraseBook.ACCESS:
+				ClientAgent.publishAuth(tokens[1].equals(PhraseBook.YES));
 				break;
 		}
 	}

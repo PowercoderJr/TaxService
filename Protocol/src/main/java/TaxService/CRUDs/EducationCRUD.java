@@ -1,12 +1,13 @@
 package TaxService.CRUDs;
 
 import TaxService.DAOs.Education;
-import org.hibernate.SessionFactory;
+
+import java.sql.Connection;
 
 public class EducationCRUD extends AbstractCRUD<Education>
 {
-	public EducationCRUD(SessionFactory factory)
+	public EducationCRUD(Connection connection)
 	{
-		super(factory, Education.class);
+		super(connection, Education.class);
 	}
 }

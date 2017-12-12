@@ -1,13 +1,13 @@
 package TaxService.CRUDs;
 
-import TaxService.DAOs.Education;
 import TaxService.DAOs.Post;
-import org.hibernate.SessionFactory;
+
+import java.sql.Connection;
 
 public class PostCRUD extends AbstractCRUD<Post>
 {
-	public PostCRUD(SessionFactory factory)
+	public PostCRUD(Connection connection)
 	{
-		super(factory, Post.class);
+		super(connection, Post.class);
 	}
 }

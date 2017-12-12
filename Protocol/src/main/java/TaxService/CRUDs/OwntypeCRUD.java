@@ -1,12 +1,13 @@
 package TaxService.CRUDs;
 
 import TaxService.DAOs.Owntype;
-import org.hibernate.SessionFactory;
+
+import java.sql.Connection;
 
 public class OwntypeCRUD extends AbstractCRUD<Owntype>
 {
-	public OwntypeCRUD(SessionFactory factory)
+	public OwntypeCRUD(Connection connection)
 	{
-		super(factory, Owntype.class);
+		super(connection, Owntype.class);
 	}
 }

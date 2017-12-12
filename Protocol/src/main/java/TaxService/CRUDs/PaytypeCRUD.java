@@ -1,12 +1,13 @@
 package TaxService.CRUDs;
 
 import TaxService.DAOs.Paytype;
-import org.hibernate.SessionFactory;
+
+import java.sql.Connection;
 
 public class PaytypeCRUD extends AbstractCRUD<Paytype>
 {
-	public PaytypeCRUD(SessionFactory factory)
+	public PaytypeCRUD(Connection connection)
 	{
-		super(factory, Paytype.class);
+		super(connection, Paytype.class);
 	}
 }

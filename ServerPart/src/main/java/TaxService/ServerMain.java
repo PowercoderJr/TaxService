@@ -3,8 +3,6 @@ package TaxService;
 import TaxService.CRUDs.*;
 import TaxService.DAOs.*;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
 public class ServerMain
 {

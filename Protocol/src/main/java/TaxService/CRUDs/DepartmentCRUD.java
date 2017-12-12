@@ -1,17 +1,17 @@
 package TaxService.CRUDs;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
 
 import TaxService.DAOs.Deptype;
 import TaxService.RandomHelper;
-import org.hibernate.SessionFactory;
 import TaxService.DAOs.Department;
 
 public class DepartmentCRUD extends AbstractRandomableCRUD<Department>
 {
-	public DepartmentCRUD(SessionFactory factory)
+	public DepartmentCRUD(Connection connection)
 	{
-		super(factory, Department.class);
+		super(connection, Department.class);
 	}
 
 	@Override

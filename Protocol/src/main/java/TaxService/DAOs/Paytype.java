@@ -1,26 +1,11 @@
 package TaxService.DAOs;
 
-import javax.persistence.*;
-import java.util.List;
-
-@Entity
-@Table(name = "Paytype")
 public class Paytype extends AbstractDAO
 {
     private static final long serialVersionID = 666000123210008L;
 
-    //id SERIAL NOT NULL
-    @Id
-    @Column (name = "id", unique = true, nullable = false)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private long id;
-
-    //name VARCHAR(100) NOT NULL
-    @Column(name = "name", length = 100, unique = true, nullable = false)
-    private String name;
-
-    @OneToMany(mappedBy = "paytype", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Payment> payments;
+    public long id;
+    public String name;
 
     public Paytype(String name)
     {

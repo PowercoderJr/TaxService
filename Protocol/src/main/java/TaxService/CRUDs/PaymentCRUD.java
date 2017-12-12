@@ -2,17 +2,17 @@ package TaxService.CRUDs;
 
 import TaxService.DAOs.*;
 import TaxService.RandomHelper;
-import org.hibernate.SessionFactory;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.sql.Date;
 import java.time.LocalDate;
 
 public class PaymentCRUD extends AbstractRandomableCRUD<Payment>
 {
-	public PaymentCRUD(SessionFactory factory)
+	public PaymentCRUD(Connection connection)
 	{
-		super(factory, Payment.class);
+		super(connection, Payment.class);
 	}
 
 	@Override

@@ -1,44 +1,17 @@
 package TaxService.DAOs;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.List;
 
-@Entity
-@Table (name = "Company")
 public class Company extends AbstractDAO
 {
     private static final long serialVersionID = 666000123210003L;
 
-    //id SERIAL NOT NULL
-    @Id
-    @Column(name = "id", unique = true, nullable = false)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private long id;
-
-    //name VARCHAR(100) NOT NULL
-    @Column(name = "name", length = 100, nullable = false)
-    private String name;
-
-    //owntype_id INTEGER NOT NULL REFERENCES owntypes(id)
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "Owntype", nullable = false)
-	private Owntype owntype;
-
-    //phone VARCHAR(13) NOT NULL
-	@Column(name = "phone", length = 13, nullable = false)
-	private String phone;
-
-    //startyear SMALLINT NOT NULL
-	@Column(name = "startyear", precision = 4, scale = 0, nullable = false)
-	private BigDecimal startyear;
-
-    //statesize INTEGER NOT NULL
-	@Column(name = "statesize", nullable = false)
-	private int statesize;
-
-	@OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<Payment> payments;
+    public long id;
+    public String name;
+	public Owntype owntype;
+	public String phone;
+	public BigDecimal startyear;
+	public int statesize;
 
 	public Company(String name, Owntype owntype, String phone, BigDecimal startyear, int statesize)
 	{

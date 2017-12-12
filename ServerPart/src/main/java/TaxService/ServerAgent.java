@@ -2,21 +2,18 @@ package TaxService;
 
 import TaxService.CRUDs.AbstractCRUD;
 import TaxService.DAOs.AbstractDAO;
-import TaxService.DAOs.StrangeThing;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
 import java.io.Closeable;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
 import java.util.List;
 
-import static TaxService.Dictionary.PORT;
+import static TaxService.PhraseBook.PORT;
 
 public class ServerAgent implements Closeable
 {
@@ -29,7 +26,8 @@ public class ServerAgent implements Closeable
 		return instance;
 	}
 
-	private SessionFactory sessionFactory;
+	//https://docs.oracle.com/cd/E13222_01/wls/docs81/ConsoleHelp/jdbc_connection_pools.html ?
+	private java.util.Dictionary <String, Connection> connections;
 	private NioEventLoopGroup acceptorGroup;
 	private NioEventLoopGroup handlerGroup;
 	private ChannelFuture future;
@@ -53,7 +51,7 @@ public class ServerAgent implements Closeable
 		{
 			e.printStackTrace();
 		}
-		sessionFactory = new Configuration().configure().buildSessionFactory();
+		//sessionFactory = new Configuration().configure().buildSessionFactory();
 	}
 
 	// TODO: 01.11.2017 Закрыть как полагается
@@ -120,5 +118,10 @@ public class ServerAgent implements Closeable
 			e.printStackTrace();
 		}
 		return instance;
+	}
+
+	public java.util.Dictionary<String, Connection> getConnections()
+	{
+		return connections;
 	}
 }

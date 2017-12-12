@@ -1,57 +1,20 @@
 package TaxService.DAOs;
 
-import javax.persistence.*;
 import java.sql.Date;
-import java.util.List;
 
-@Entity
-@Table(name = "Employee")
 public class Employee extends AbstractDAO
 {
     private static final long serialVersionID = 666000123210002L;
 
-    //id SERIAL NOT NULL
-    @Id
-    @Column(name = "id", unique = true, nullable = false)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private long id;
-
-    //surname VARCHAR(30) NOT NULL
-	@Column(name = "surname", length = 30, nullable = false)
-	private String surname;
-
-    //name VARCHAR(30) NOT NULL
-	@Column(name = "name", length = 30, nullable = false)
-	private String name;
-
-	//patronymic VARCHAR(30) NOT NULL
-	@Column(name = "patronymic", length = 30, nullable = false)
-	private String patronymic;
-
-	//dep_id INTEGER NOT NULL REFERENCES departments(id)
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "department", nullable = false)
-	private Department department;
-
-    //birthdate DATE NOT NULL
-	@Column(name = "birthdate", nullable = false)
-	private Date birthdate;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "Post", nullable = false)
-	private Post post;
-
-	//salary INTEGER NOT NULL
-	@Column(name = "salary", nullable = false)
-	private int salary;
-
-    //edu_id INTEGER NOT NULL REFERENCES educations(id)
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "Education", nullable = false)
-	private Education education;
-
-	@OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<Payment> payments;
+    public long id;
+	public String surname;
+	public String name;
+	public String patronymic;
+	public Department department;
+	public Date birthdate;
+	public Post post;
+	public int salary;
+	public Education education;
 
 	public Employee(String surname, String name, String patronymic, Department department, Date birthdate, Post post, int salary, Education education)
 	{

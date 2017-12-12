@@ -3,15 +3,15 @@ package TaxService.CRUDs;
 import TaxService.DAOs.Company;
 import TaxService.DAOs.Owntype;
 import TaxService.RandomHelper;
-import org.hibernate.SessionFactory;
 
 import java.math.BigDecimal;
+import java.sql.Connection;
 
 public class CompanyCRUD extends AbstractRandomableCRUD<Company>
 {
-	public CompanyCRUD(SessionFactory factory)
+	public CompanyCRUD(Connection connection)
 	{
-		super(factory, Company.class);
+		super(connection, Company.class);
 	}
 
 	@Override

@@ -1,12 +1,13 @@
 package TaxService.CRUDs;
 
 import TaxService.DAOs.Deptype;
-import org.hibernate.SessionFactory;
+
+import java.sql.Connection;
 
 public class DeptypeCRUD extends AbstractCRUD<Deptype>
 {
-	public DeptypeCRUD(SessionFactory factory)
+	public DeptypeCRUD(Connection connection)
 	{
-		super(factory, Deptype.class);
+		super(connection, Deptype.class);
 	}
 }

@@ -1,8 +1,13 @@
 package TaxService.Handlers;
 
-import TaxService.Dictionary;
+import TaxService.PhraseBook;
 import TaxService.ServerAgent;
 import io.netty.channel.ChannelHandlerContext;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Dictionary;
 
 public class SimpleMessageHandler extends AbstractHandler<String>
 {
@@ -10,12 +15,34 @@ public class SimpleMessageHandler extends AbstractHandler<String>
 	protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception
 	{
 		super.channelRead0(ctx, msg);
-		String[] tokens = msg.split("\\" + Dictionary.SEPARATOR);
+		String[] tokens = msg.split("\\" + PhraseBook.SEPARATOR);
 		switch (tokens[0])
 		{
-			case Dictionary.AUTH:
-				boolean acceessed = ServerAgent.getInstance().signIn(tokens[1], tokens[2]);
-				ctx.channel().writeAndFlush(Dictionary.ACCESS + Dictionary.SEPARATOR + (acceessed ? Dictionary.YES : Dictionary.NO));
+			case PhraseBook.AUTH:
+				boolean acceessed = false;
+				Connection newConnection;
+				try
+				{
+					Dictionary<String, Connection> connections = ServerAgent.getInstance().getConnections();
+					Connection oldConnection = connections.get(tokens[1]);
+					//TODO: пересмотреть участок после определения порядка авторизации и деавторизации
+					if (oldConnection == null || !oldConnection.isValid(10))
+					{
+						if (oldConnection != null)
+						{
+							oldConnection.close();
+							connections.remove(tokens[1]);
+						}
+						newConnection = DriverManager.getConnection("jdbc:postgresql://localhost/TaxService", tokens[1], tokens[2]);
+						connections.put(tokens[1], newConnection);
+						acceessed = true;
+					}
+				}
+				catch (SQLException e)
+				{
+					e.printStackTrace();
+				}
+				ctx.channel().writeAndFlush(PhraseBook.ACCESS + PhraseBook.SEPARATOR + (acceessed ? PhraseBook.YES : PhraseBook.NO));
 				break;
 		}
 	}

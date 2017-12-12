@@ -1,55 +1,19 @@
 package TaxService.DAOs;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.List;
 
-@Entity
-@Table(name = "Department")
 public class Department extends AbstractDAO
 {
     private static final long serialVersionID = 666000123210001L;
 
-    //id SERIAL NOT NULL
-    @Id
-    @Column(name = "id", unique = true, nullable = false)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private long id;
-
-    //deptype_id INTEGER NOT NULL REFERENCES deptypes(id)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "Deptype", nullable = false)
-    private Deptype deptype;
-
-    //name VARCHAR(100) NOT NULL
-    @Column(name = "name", length = 100, nullable = false)
-    private String name;
-
-    //startyear SMALLINT NOT NULL
-    @Column(name = "startyear", precision = 4, scale = 0, nullable = false)
-    private BigDecimal startyear;
-
-    //phone VARCHAR(13) NOT NULL
-    @Column(name = "phone", length = 13, nullable = false)
-    private String phone;
-
-    //city VARCHAR(30) NOT NULL
-    @Column(name = "city", length = 30, nullable = false)
-    private String city;
-
-    //street VARCHAR(30) NOT NULL
-    @Column(name = "street", length = 30, nullable = false)
-    private String street;
-
-    //house VARCHAR(6) NOT NULL
-    @Column(name = "house", length = 6, nullable = false)
-    private String house;
-
-    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Employee> employees;
-
-	@OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<Payment> payments;
+    public long id;
+    public Deptype deptype;
+    public String name;
+    public BigDecimal startyear;
+    public String phone;
+    public String city;
+    public String street;
+    public String house;
 
     public Department(String name, Deptype deptype, BigDecimal startyear, String phone, String city, String street, String house)
     {
