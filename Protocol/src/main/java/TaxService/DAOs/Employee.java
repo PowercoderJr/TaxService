@@ -6,7 +6,6 @@ public class Employee extends AbstractDAO
 {
     private static final long serialVersionID = 666000123210002L;
 
-    public long id;
 	public String surname;
 	public String name;
 	public String patronymic;
@@ -26,16 +25,6 @@ public class Employee extends AbstractDAO
 		this.post = post;
 		this.salary = salary;
 		this.education = education;
-	}
-
-	public Employee()
-	{
-		;
-	}
-
-	public long getId()
-	{
-		return id;
 	}
 
 	public String getSurname()

@@ -6,7 +6,6 @@ public class Department extends AbstractDAO
 {
     private static final long serialVersionID = 666000123210001L;
 
-    public long id;
     public Deptype deptype;
     public String name;
     public BigDecimal startyear;
@@ -24,15 +23,6 @@ public class Department extends AbstractDAO
         this.city = city;
         this.street = street;
         this.house = house;
-    }
-
-    public Department()
-    {
-        ;
-    }
-
-    public long getId() {
-        return id;
     }
 
     public String getName() {

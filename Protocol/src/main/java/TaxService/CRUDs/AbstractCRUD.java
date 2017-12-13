@@ -47,14 +47,18 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 	public void create(T object) throws SQLException
 	{
 		//на будущее: Super.class.isAssignableFrom(Sub.class)
-		Field[] fields = clazz.getDeclaredFields();
-		String colNames = Arrays.stream(fields).map(item -> item.getName()).collect(Collectors.joining(", "));
-		String values = Arrays.stream(fields).map(item ->
+		List<Field> fields = Arrays.asList(clazz.getDeclaredFields());
+		fields.remove(0);
+		String colNames = fields.stream().map(item -> item.getName()).collect(Collectors.joining(", "));
+		String values = fields.stream().map(item ->
 		{
 			String result = "";
 			try
 			{
-				result = item.get(object).toString();
+				if (AbstractDAO.class.isAssignableFrom(item.getClass()))
+					result = String.valueOf(((AbstractDAO)item.get((object).getId())).getId());
+				else
+					result = String.valueOf(item.get(object));
 			}
 			catch (IllegalAccessException e)
 			{
@@ -122,12 +126,22 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 				{
 					String name = field.getName();
 					String value = rs.getString(name);
-					field.set(object, field.getType().getConstructor(String.class).newInstance(value));
+					if (AbstractDAO.class.isAssignableFrom(field.getClass()))
+					{
+						Class crudClass = Class.forName(field.getClass().getSimpleName() + "CRUD");
+						AbstractCRUD instance = (AbstractCRUD) crudClass.getConstructor(Connection.class).newInstance(connection);
+						AbstractDAO child = instance.read(Long.parseLong(value));
+						field.set(object, child);
+					}
+					else
+					{
+						field.set(object, field.getType().getConstructor(String.class).newInstance(value)); //TODO ?
+					}
 				}
 				list.add(object);
 			}
 		}
-		catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException e)
+		catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e)
 		{
 			e.printStackTrace();
 		}

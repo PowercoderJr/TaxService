@@ -6,7 +6,6 @@ public class Company extends AbstractDAO
 {
     private static final long serialVersionID = 666000123210003L;
 
-    public long id;
     public String name;
 	public Owntype owntype;
 	public String phone;
@@ -20,16 +19,6 @@ public class Company extends AbstractDAO
 		this.phone = phone;
 		this.startyear = startyear;
 		this.statesize = statesize;
-	}
-
-	public Company()
-	{
-		;
-	}
-
-	public long getId()
-	{
-		return id;
 	}
 
 	public String getName()
