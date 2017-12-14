@@ -12,13 +12,16 @@ import java.io.Closeable;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static TaxService.PhraseBook.PORT;
 
 public class ServerAgent implements Closeable
 {
 	private static ServerAgent instance = null;
+	private static final int CONNECTIONS_AVAILABLE = 10;
 
 	public static ServerAgent getInstance()
 	{
@@ -28,7 +31,7 @@ public class ServerAgent implements Closeable
 	}
 
 	//https://docs.oracle.com/cd/E13222_01/wls/docs81/ConsoleHelp/jdbc_connection_pools.html ?
-	private java.util.Dictionary <String, Connection> connections;
+	private Map<String, Connection> connections;
 	private NioEventLoopGroup acceptorGroup;
 	private NioEventLoopGroup handlerGroup;
 	private ChannelFuture future;
@@ -37,7 +40,7 @@ public class ServerAgent implements Closeable
 	{
 		//https://metabroadcast.com/blog/java-socket-programming-with-netty
 		acceptorGroup = new NioEventLoopGroup(2);
-		handlerGroup = new NioEventLoopGroup(10);
+		handlerGroup = new NioEventLoopGroup(CONNECTIONS_AVAILABLE);
 		try
 		{
 			ServerBootstrap bootstrap = new ServerBootstrap();
@@ -52,6 +55,7 @@ public class ServerAgent implements Closeable
 		{
 			e.printStackTrace();
 		}
+		connections = new HashMap<String, Connection>(CONNECTIONS_AVAILABLE);
 		//sessionFactory = new Configuration().configure().buildSessionFactory();
 	}
 
@@ -59,6 +63,15 @@ public class ServerAgent implements Closeable
 	@Override
 	public void close()
 	{
+		try
+		{
+			for (Connection connection : connections.values())
+				connection.close();
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
 		try
 		{
 			future.channel().closeFuture().sync();
@@ -150,7 +163,7 @@ public class ServerAgent implements Closeable
 		return getCrudForClass(clazz, connections.get(sendersLogin));
 	}
 
-	public java.util.Dictionary<String, Connection> getConnections()
+	public Map<String, Connection> getConnections()
 	{
 		return connections;
 	}

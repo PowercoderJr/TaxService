@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -32,22 +33,25 @@ public abstract class AbstractRandomableCRUD<T extends AbstractDAO> extends Abst
 			session.clear();
 		}*/
 		//TODO: разобраться с id, см. todo в AbstractCRUD.java
-		List<Field> fields = Arrays.asList(clazz.getDeclaredFields());
+		List<Field> fields = new ArrayList<>(Arrays.asList(clazz.getDeclaredFields()));
 		fields.remove(0);
 		String colNames = fields.stream().map(item -> item.getName()).collect(Collectors.joining(", "));
 		String qmarks = String.join(", ", Collections.nCopies(fields.size(), "?"));
-		PreparedStatement stmt = connection.prepareStatement("INSERT INTO " + clazz.getSimpleName() + " " + colNames + " VALUES " + qmarks);
-		try
+
+		try (PreparedStatement stmt = connection.prepareStatement("INSERT INTO " + clazz.getSimpleName() + " (" + colNames + ") VALUES (" + qmarks + ")"))
 		{
 			T randomable;
 			for (int i = 0; i < n; ++i)
 			{
 				randomable = generateRandomBean();
 				for (int j = 0; j < fields.size(); ++j)
-					if (AbstractDAO.class.isAssignableFrom(fields.get(j).getClass()))
-						stmt.setLong(j + 1, ((AbstractDAO)fields.get(j).get(randomable)).getId());
+				{
+					if (AbstractDAO.class.isAssignableFrom(fields.get(j).getType()))
+						stmt.setLong(j + 1, ((AbstractDAO) fields.get(j).get(randomable)).getId());
 					else
 						stmt.setObject(j + 1, fields.get(j).get(randomable));
+				}
+				stmt.executeUpdate();
 			}
 		}
 		catch (IllegalAccessException e)

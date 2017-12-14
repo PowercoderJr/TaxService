@@ -99,6 +99,7 @@ public class ClientAgent implements Closeable
 	//NON-STATIC SECTION
 	private ChannelFuture future;
 	private EventLoopGroup group;
+	private String login;
 
 	private ClientAgent(InetAddress inetAddress, int port)
 	{
@@ -137,6 +138,16 @@ public class ClientAgent implements Closeable
 			group.shutdownGracefully();
 		if (instance != null)
 			instance = null;
+	}
+
+	public String getLogin()
+	{
+		return login;
+	}
+
+	public void setLogin(String login)
+	{
+		this.login = login;
 	}
 
 	protected void finalize()

@@ -70,15 +70,17 @@ public class AuthController
 
 	public void auth(ActionEvent actionEvent) throws IOException
 	{
-		if (ClientAgent.getInstance() != null)
+		//if (ClientAgent.getInstance() != null)
 		{
 			statusLabel.setVisible(false);
-			String msg = PhraseBook.AUTH + PhraseBook.SEPARATOR;
-			msg += loginField.getText() + PhraseBook.SEPARATOR;
-			msg += DigestUtils.sha256Hex(DigestUtils.sha256Hex(passField.getText()));
+			String msg = PhraseBook.AUTH + PhraseBook.SEPARATOR +
+					loginField.getText() + PhraseBook.SEPARATOR +
+					passField.getText();
+				//DigestUtils.sha256Hex(DigestUtils.sha256Hex(passField.getText()));
 			try
 			{
 				ClientAgent.buildInstance(InetAddress.getLocalHost(), PORT);
+				ClientAgent.getInstance().setLogin(loginField.getText());
 				ClientAgent.getInstance().send(msg);
 			}
 			catch (InvocationTargetException e)

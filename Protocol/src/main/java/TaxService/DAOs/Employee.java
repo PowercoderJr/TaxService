@@ -4,7 +4,7 @@ import java.sql.Date;
 
 public class Employee extends AbstractDAO
 {
-    private static final long serialVersionID = 666000123210002L;
+    //private static final long serialVersionUID = 666000123210002L;
 
 	public String surname;
 	public String name;
@@ -14,6 +14,11 @@ public class Employee extends AbstractDAO
 	public Post post;
 	public int salary;
 	public Education education;
+
+	public Employee()
+	{
+		super();
+	}
 
 	public Employee(String surname, String name, String patronymic, Department department, Date birthdate, Post post, int salary, Education education)
 	{

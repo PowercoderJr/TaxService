@@ -13,6 +13,11 @@ public class Payment extends AbstractDAO
 	public Department department;
 	public Company company;
 
+	public Payment()
+	{
+		super();
+	}
+
 	public Payment(Paytype paytype, Date date, BigDecimal amount, Employee employee, Department department, Company company)
 	{
 		this.paytype = paytype;

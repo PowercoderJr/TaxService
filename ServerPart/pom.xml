@@ -55,7 +55,7 @@
             <artifactId>netty-all</artifactId>
             <version>4.1.16.Final</version>
         </dependency>
-        <!--https://github.com/ronmamo/reflections-->
+        <!-- https://github.com/ronmamo/reflections -->
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>

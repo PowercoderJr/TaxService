@@ -96,20 +96,22 @@ public class MainController
 	public void testCreateDepType(ActionEvent actionEvent)
 	{
 		Deptype deptype = new Deptype("Осторожно, оно работает!");
-		CreateOrder<Deptype> order = new CreateOrder<Deptype>(Deptype.class, deptype);
+		CreateOrder<Deptype> order = new CreateOrder<Deptype>(Deptype.class, ClientAgent.getInstance().getLogin(), deptype);
 		ClientAgent.getInstance().send(order);
 	}
 
 	public void testCreateDepartment(ActionEvent actionEvent)
 	{
 		Deptype deptype = new Deptype("Осторожно, оно работает!2");
-		Department department = new Department("Тест", deptype, new BigDecimal(1999), "+380664564565", "Neverland", "Pushkina", "H1/N1");
-		CreateOrder<Deptype> order = new CreateOrder<Deptype>(Deptype.class, deptype);
+		CreateOrder<Deptype> order = new CreateOrder<Deptype>(Deptype.class, ClientAgent.getInstance().getLogin(), deptype);
 		ClientAgent.getInstance().send(order);
+		Department department = new Department("Тест", deptype, new BigDecimal(1999), "+380664564565", "Neverland", "Pushkina", "H1/N1");
+		CreateOrder<Department> order2 = new CreateOrder<Department>(Department.class, ClientAgent.getInstance().getLogin(), department);
+		ClientAgent.getInstance().send(order2);
 	}
 
 	public void switchActiveTable(Class<? extends AbstractDAO> clazz)
 	{
-		ClientAgent.getInstance().send(new ReadHundredOrder(clazz, 0));
+		ClientAgent.getInstance().send(new ReadHundredOrder(clazz, ClientAgent.getInstance().getLogin(), 0));
 	}
 }

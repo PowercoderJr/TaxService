@@ -4,13 +4,18 @@ import java.math.BigDecimal;
 
 public class Company extends AbstractDAO
 {
-    private static final long serialVersionID = 666000123210003L;
+    //private static final long serialVersionUID = 666000123210003L;
 
     public String name;
 	public Owntype owntype;
 	public String phone;
 	public BigDecimal startyear;
 	public int statesize;
+
+	public Company()
+	{
+		super();
+	}
 
 	public Company(String name, Owntype owntype, String phone, BigDecimal startyear, int statesize)
 	{

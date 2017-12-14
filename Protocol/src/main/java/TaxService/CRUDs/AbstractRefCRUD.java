@@ -28,13 +28,16 @@ public abstract class AbstractRefCRUD<T extends AbstractRefDAO> extends Abstract
 
 	protected void fillFromSource(String srcPath) throws SQLException
 	{
-		try(InputStream src = RandomHelper.class.getClassLoader().getResourceAsStream(srcPath))
+		try(InputStream src = RandomHelper.class.getClassLoader().getResourceAsStream(srcPath);
+			PreparedStatement stmt = connection.prepareStatement("INSERT INTO " + clazz.getSimpleName() + " (name) VALUES (?)"))
 		{
 			BufferedReader reader = new BufferedReader(new InputStreamReader(src, StandardCharsets.UTF_8));
-			PreparedStatement stmt = connection.prepareStatement("INSERT INTO " + clazz.getSimpleName() + " name VALUES ?");
 			for (String item = reader.readLine(); item != null; item = reader.readLine())
+			{
 				//create(clazz.getConstructor(String.class).newInstance(item));
 				stmt.setObject(1, item);
+				stmt.executeUpdate();
+			}
 		}
 		catch (IOException /*| IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException */e)
 		{

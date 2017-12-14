@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public class Department extends AbstractDAO
 {
-    private static final long serialVersionID = 666000123210001L;
+    //private static final long serialVersionUID = 666000123210001L;
 
     public Deptype deptype;
     public String name;
@@ -13,6 +13,11 @@ public class Department extends AbstractDAO
     public String city;
     public String street;
     public String house;
+
+    public Department()
+    {
+        super();
+    }
 
     public Department(String name, Deptype deptype, BigDecimal startyear, String phone, String city, String street, String house)
     {

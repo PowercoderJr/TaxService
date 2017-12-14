@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Dictionary;
+import java.util.Map;
 
 public class SimpleMessageHandler extends AbstractHandler<String>
 {
@@ -23,7 +24,7 @@ public class SimpleMessageHandler extends AbstractHandler<String>
 				Connection newConnection;
 				try
 				{
-					Dictionary<String, Connection> connections = ServerAgent.getInstance().getConnections();
+					Map<String, Connection> connections = ServerAgent.getInstance().getConnections();
 					Connection oldConnection = connections.get(tokens[1]);
 					//TODO: пересмотреть участок после определения порядка авторизации и деавторизации
 					if (oldConnection == null || !oldConnection.isValid(10))

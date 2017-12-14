@@ -2,6 +2,11 @@ package TaxService.DAOs;
 
 public abstract class AbstractRefDAO extends AbstractDAO
 {
+	public AbstractRefDAO()
+	{
+		super();
+	}
+
 	public AbstractRefDAO(String name)
 	{
 		super();
