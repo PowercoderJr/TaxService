@@ -11,7 +11,7 @@ public class CreateOrderHandler extends AbstractHandler<CreateOrder<? extends Ab
 	protected void channelRead0(ChannelHandlerContext ctx, CreateOrder<? extends AbstractDAO> msg) throws Exception
 	{
 		super.channelRead0(ctx, msg);
-		ServerAgent.getInstance().create(msg.getObject());
+		ServerAgent.getInstance().create(msg.getObject(), msg.getSendersLogin());
 	}
 
 

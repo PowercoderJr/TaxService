@@ -2,6 +2,7 @@ package TaxService.CRUDs;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import TaxService.DAOs.Deptype;
 import TaxService.RandomHelper;
@@ -15,13 +16,12 @@ public class DepartmentCRUD extends AbstractRandomableCRUD<Department>
 	}
 
 	@Override
-	protected Department generateRandomBean()
+	protected Department generateRandomBean() throws SQLException
 	{
 		String name = "Уникальное название";
 
-		DeptypeCRUD deptypeCRUD = new DeptypeCRUD(factory);
+		DeptypeCRUD deptypeCRUD = new DeptypeCRUD(connection);
 		Deptype deptype = deptypeCRUD.getRandom();
-		deptypeCRUD.disconnect();
 
 		BigDecimal startyear = new BigDecimal(1960 + (int)(Math.random() * 55));
 

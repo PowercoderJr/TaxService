@@ -18,7 +18,7 @@ public abstract class AbstractRandomableCRUD<T extends AbstractDAO> extends Abst
 		super(connection, clazz);
 	}
 
-	protected abstract T generateRandomBean();
+	protected abstract T generateRandomBean() throws SQLException;
 
 	//docs.jboss.org/hibernate/orm/4.3/manual/en-US/html/ch15.html
 	//sessionFactory.getConfiguration().getProperty("hibernate.jdbc.batch_size");
@@ -45,9 +45,9 @@ public abstract class AbstractRandomableCRUD<T extends AbstractDAO> extends Abst
 				randomable = generateRandomBean();
 				for (int j = 0; j < fields.size(); ++j)
 					if (AbstractDAO.class.isAssignableFrom(fields.get(j).getClass()))
-						stmt.setLong(j, ((AbstractDAO)fields.get(j).get(randomable)).getId());
+						stmt.setLong(j + 1, ((AbstractDAO)fields.get(j).get(randomable)).getId());
 					else
-						stmt.setObject(j, fields.get(j).get(randomable));
+						stmt.setObject(j + 1, fields.get(j).get(randomable));
 			}
 		}
 		catch (IllegalAccessException e)

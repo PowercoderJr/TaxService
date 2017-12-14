@@ -6,6 +6,7 @@ import TaxService.RandomHelper;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 public class CompanyCRUD extends AbstractRandomableCRUD<Company>
 {
@@ -15,13 +16,12 @@ public class CompanyCRUD extends AbstractRandomableCRUD<Company>
 	}
 
 	@Override
-	protected Company generateRandomBean()
+	protected Company generateRandomBean() throws SQLException
 	{
 		String name = RandomHelper.getRandomCompany();
 
-		OwntypeCRUD owntypeCRUD = new OwntypeCRUD(factory);
+		OwntypeCRUD owntypeCRUD = new OwntypeCRUD(connection);
 		Owntype owntype = owntypeCRUD.getRandom();
-		owntypeCRUD.disconnect();
 
 		String phone = RandomHelper.getRandomPhone();
 

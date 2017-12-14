@@ -14,6 +14,6 @@ public class AbstractDAO implements Serializable
 
 	public AbstractDAO()
 	{
-		;
+
 	}
 }

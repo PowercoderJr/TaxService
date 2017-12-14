@@ -30,36 +30,21 @@ public class RandomHelper
 
 	static
 	{
-		try
+		try(InputStream citiesSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/cities.txt");
+			InputStream companiesSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/companies.txt");
+			InputStream namesFSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/names_f.txt");
+			InputStream namesMSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/names_m.txt");
+			InputStream patronymicsSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/patronymics.txt");
+			InputStream streetsSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/surnames.txt");
+			InputStream surnamesSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/streets.txt"))
 		{
-			try (InputStream src = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/cities.txt"))
-			{
-				cities = new BufferedReader(new InputStreamReader(src, StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
-			}
-			try (InputStream src = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/companies.txt"))
-			{
-				companies = new BufferedReader(new InputStreamReader(src, StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
-			}
-			try (InputStream src = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/names_f.txt"))
-			{
-				namesF = new BufferedReader(new InputStreamReader(src, StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
-			}
-			try (InputStream src = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/names_m.txt"))
-			{
-				namesM = new BufferedReader(new InputStreamReader(src, StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
-			}
-			try (InputStream src = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/patronymics.txt"))
-			{
-				patronymics = new BufferedReader(new InputStreamReader(src, StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
-			}
-			try (InputStream src = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/streets.txt"))
-			{
-				streets = new BufferedReader(new InputStreamReader(src, StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
-			}
-			try (InputStream src = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/surnames.txt"))
-			{
-				surnames = new BufferedReader(new InputStreamReader(src, StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
-			}
+			cities = new BufferedReader(new InputStreamReader(citiesSrc, StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
+			companies = new BufferedReader(new InputStreamReader(companiesSrc, StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
+			namesF = new BufferedReader(new InputStreamReader(namesFSrc, StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
+			namesM = new BufferedReader(new InputStreamReader(namesMSrc, StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
+			patronymics = new BufferedReader(new InputStreamReader(patronymicsSrc, StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
+			streets = new BufferedReader(new InputStreamReader(streetsSrc, StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
+			surnames = new BufferedReader(new InputStreamReader(surnamesSrc, StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
 		}
 		catch (IOException e)
 		{

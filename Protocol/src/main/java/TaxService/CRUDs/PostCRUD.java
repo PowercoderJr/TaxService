@@ -4,7 +4,7 @@ import TaxService.DAOs.Post;
 
 import java.sql.Connection;
 
-public class PostCRUD extends AbstractCRUD<Post>
+public class PostCRUD extends AbstractRefCRUD<Post>
 {
 	public PostCRUD(Connection connection)
 	{

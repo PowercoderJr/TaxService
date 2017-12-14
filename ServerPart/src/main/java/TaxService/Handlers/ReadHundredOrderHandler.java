@@ -13,7 +13,7 @@ public class ReadHundredOrderHandler extends AbstractHandler<ReadHundredOrder<? 
 	protected void channelRead0(ChannelHandlerContext ctx, ReadHundredOrder<? extends AbstractDAO> msg) throws Exception
 	{
 		super.channelRead0(ctx, msg);
-		List list = ServerAgent.getInstance().readHundred(msg.getItemClazz(), msg.getHundred());
+		List list = ServerAgent.getInstance().readHundred(msg.getItemClazz(), msg.getSendersLogin(), msg.getHundred());
 		ctx.writeAndFlush(list);
 	}
 }

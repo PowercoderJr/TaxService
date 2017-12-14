@@ -11,6 +11,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import java.io.Closeable;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 import static TaxService.PhraseBook.PORT;
@@ -70,7 +71,7 @@ public class ServerAgent implements Closeable
 		handlerGroup.shutdownGracefully();
 	}
 
-	public boolean signIn(String login, String digest)
+	/*public boolean signIn(String login, String digest)
 	{
 		boolean accessed;
 		try (Session session = sessionFactory.openSession())
@@ -83,41 +84,70 @@ public class ServerAgent implements Closeable
 			accessed = false;
 		}
 		return accessed;
-	}
+	}*/
 
-	public void create(AbstractDAO dao)
+	public void create(AbstractDAO dao, String sendersLogin)
 	{
-		AbstractCRUD crud = getCrudForClass(dao.getClass());
+		AbstractCRUD crud = getCrudForClass(dao.getClass(), sendersLogin);
 		if (crud != null)
-			crud.create(dao);
+			try
+			{
+				crud.create(dao);
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
 	}
 
-	public List readHundred(Class clazz, int hundred)
+	public List readHundred(Class clazz, String sendersLogin, int hundred)
 	{
-		AbstractCRUD instance = getCrudForClass(clazz);
-		return instance.readHundred(hundred);
+		AbstractCRUD instance = getCrudForClass(clazz, sendersLogin);
+		List result = null;
+		try
+		{
+			result = instance.readHundred(hundred);
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		return result;
 	}
 
-	public void delete(AbstractDAO dao)
+	public void delete(Class<AbstractDAO> clazz, String sendersLogin, long id) throws SQLException
 	{
-		AbstractCRUD crud = getCrudForClass(dao.getClass());
+		AbstractCRUD crud = getCrudForClass(clazz, sendersLogin);
 		if (crud != null)
-			crud.delete(dao);
+			crud.delete(id);
 	}
 
-	private AbstractCRUD getCrudForClass(Class clazz)
+	public void delete(AbstractDAO dao, String sendersLogin) throws SQLException
+	{
+		AbstractCRUD crud = getCrudForClass(dao.getClass(), sendersLogin);
+		if (crud != null)
+			crud.delete(dao.getId());
+	}
+
+	public AbstractCRUD getCrudForClass(Class clazz, Connection connection)
 	{
 		AbstractCRUD instance = null;
 		try
 		{
 			Class crudClass = Class.forName("TaxService.CRUDs." + clazz.getSimpleName() + "CRUD");
-			instance = (AbstractCRUD) crudClass.getDeclaredConstructor(SessionFactory.class).newInstance(sessionFactory);
+			//TODO: обработать исключение, если по ключу не найдено подключенние
+			instance = (AbstractCRUD) crudClass.getDeclaredConstructor(Connection.class).newInstance(connection);
 		}
 		catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e)
 		{
 			e.printStackTrace();
 		}
 		return instance;
+	}
+
+	public AbstractCRUD getCrudForClass(Class clazz, String sendersLogin)
+	{
+		return getCrudForClass(clazz, connections.get(sendersLogin));
 	}
 
 	public java.util.Dictionary<String, Connection> getConnections()

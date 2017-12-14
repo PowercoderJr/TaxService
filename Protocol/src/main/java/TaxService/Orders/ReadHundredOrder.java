@@ -7,9 +7,9 @@ public class ReadHundredOrder<T extends AbstractDAO> extends AbstractOrder<T>
 	private static final long serialVersionUID = 88005553543L;
 	int hundred;
 
-	public ReadHundredOrder(Class itemClazz, int hundred)
+	public ReadHundredOrder(Class itemClazz, String sendersLogin, int hundred)
 	{
-		super(itemClazz);
+		super(itemClazz, sendersLogin);
 		this.hundred = hundred;
 	}
 

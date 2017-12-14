@@ -1,5 +1,6 @@
 package TaxService.SceneControllers;
 
+import TaxService.CRUDs.DepartmentCRUD;
 import TaxService.Callback;
 import TaxService.ClientMain;
 import TaxService.DAOs.*;
@@ -17,6 +18,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.GridPane;
 
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.util.List;
 
 public class MainController
@@ -94,6 +96,14 @@ public class MainController
 	public void testCreateDepType(ActionEvent actionEvent)
 	{
 		Deptype deptype = new Deptype("Осторожно, оно работает!");
+		CreateOrder<Deptype> order = new CreateOrder<Deptype>(Deptype.class, deptype);
+		ClientAgent.getInstance().send(order);
+	}
+
+	public void testCreateDepartment(ActionEvent actionEvent)
+	{
+		Deptype deptype = new Deptype("Осторожно, оно работает!2");
+		Department department = new Department("Тест", deptype, new BigDecimal(1999), "+380664564565", "Neverland", "Pushkina", "H1/N1");
 		CreateOrder<Deptype> order = new CreateOrder<Deptype>(Deptype.class, deptype);
 		ClientAgent.getInstance().send(order);
 	}

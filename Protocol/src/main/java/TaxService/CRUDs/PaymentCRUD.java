@@ -6,6 +6,7 @@ import TaxService.RandomHelper;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.time.LocalDate;
 
 public class PaymentCRUD extends AbstractRandomableCRUD<Payment>
@@ -16,27 +17,23 @@ public class PaymentCRUD extends AbstractRandomableCRUD<Payment>
 	}
 
 	@Override
-	protected Payment generateRandomBean()
+	protected Payment generateRandomBean() throws SQLException
 	{
-		PaytypeCRUD paytypeCRUD = new PaytypeCRUD(factory);
+		PaytypeCRUD paytypeCRUD = new PaytypeCRUD(connection);
 		Paytype paytype = paytypeCRUD.getRandom();
-		paytypeCRUD.disconnect();
 
-		CompanyCRUD companyCRUD = new CompanyCRUD(factory);
+		CompanyCRUD companyCRUD = new CompanyCRUD(connection);
 		Company company = companyCRUD.getRandom();
-		companyCRUD.disconnect();
 
 		Date date = RandomHelper.getRandomDateBetween(LocalDate.of(company.getStartyear().intValue(), 1, 1), LocalDate.now());
 
 		BigDecimal amount = BigDecimal.valueOf(Math.random() * 100000);
 
-		EmployeeCRUD employeeCRUD = new EmployeeCRUD(factory);
+		EmployeeCRUD employeeCRUD = new EmployeeCRUD(connection);
 		Employee employee = employeeCRUD.getRandom();
-		employeeCRUD.disconnect();
 
-		DepartmentCRUD departmentCRUD = new DepartmentCRUD(factory);
+		DepartmentCRUD departmentCRUD = new DepartmentCRUD(connection);
 		Department department = departmentCRUD.getRandom();
-		departmentCRUD.disconnect();
 
 		return new Payment(paytype, date, amount, employee, department, company);
 	}

@@ -8,6 +8,7 @@ import TaxService.RandomHelper;
 
 import java.sql.Connection;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.time.LocalDate;
 
 public class EmployeeCRUD extends AbstractRandomableCRUD<Employee>
@@ -18,28 +19,25 @@ public class EmployeeCRUD extends AbstractRandomableCRUD<Employee>
 	}
 
 	@Override
-	protected Employee generateRandomBean()
+	protected Employee generateRandomBean() throws SQLException
 	{
 		RandomHelper.Gender gender = Math.random() > 0.5 ? RandomHelper.Gender.MALE : RandomHelper.Gender.FEMALE;
 		String surname = RandomHelper.getRandomSurname(gender);
 		String name = RandomHelper.getRandomName(gender);
 		String patronymic = RandomHelper.getRandomPatronymic(gender);
 
-		DepartmentCRUD departmentCRUD = new DepartmentCRUD(factory);
+		DepartmentCRUD departmentCRUD = new DepartmentCRUD(connection);
 		Department department = departmentCRUD.getRandom();
-		departmentCRUD.disconnect();
 
 		Date birthdate = RandomHelper.getRandomDateBetween(LocalDate.of(1950, 1, 1), LocalDate.of(1990, 12, 31));
 
-		PostCRUD postCRUD = new PostCRUD(factory);
+		PostCRUD postCRUD = new PostCRUD(connection);
 		Post post = postCRUD.getRandom();
-		postCRUD.disconnect();
 
 		int salary = (int)(20 + Math.random() * 180) * 1000;
 
-		EducationCRUD educationCRUD = new EducationCRUD(factory);
+		EducationCRUD educationCRUD = new EducationCRUD(connection);
 		Education education = educationCRUD.getRandom();
-		educationCRUD.disconnect();
 
 		return new Employee(surname, name, patronymic, department, birthdate, post, salary, education);
 	}

@@ -4,7 +4,7 @@ import TaxService.DAOs.Deptype;
 
 import java.sql.Connection;
 
-public class DeptypeCRUD extends AbstractCRUD<Deptype>
+public class DeptypeCRUD extends AbstractRefCRUD<Deptype>
 {
 	public DeptypeCRUD(Connection connection)
 	{
