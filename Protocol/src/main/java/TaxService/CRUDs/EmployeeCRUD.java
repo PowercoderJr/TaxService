@@ -21,7 +21,7 @@ public class EmployeeCRUD extends AbstractRandomableCRUD<Employee>
 	@Override
 	protected Employee generateRandomBean() throws SQLException
 	{
-		RandomHelper.Gender gender = Math.random() > 0.5 ? RandomHelper.Gender.MALE : RandomHelper.Gender.FEMALE;
+		RandomHelper.Gender gender = rnd.nextDouble() > 0.5 ? RandomHelper.Gender.MALE : RandomHelper.Gender.FEMALE;
 		String surname = RandomHelper.getRandomSurname(gender);
 		String name = RandomHelper.getRandomName(gender);
 		String patronymic = RandomHelper.getRandomPatronymic(gender);
@@ -34,7 +34,7 @@ public class EmployeeCRUD extends AbstractRandomableCRUD<Employee>
 		PostCRUD postCRUD = new PostCRUD(connection);
 		Post post = postCRUD.getRandom();
 
-		int salary = (int)(20 + Math.random() * 180) * 1000;
+		int salary = 20 + rnd.nextInt(180) * 1000;
 
 		EducationCRUD educationCRUD = new EducationCRUD(connection);
 		Education education = educationCRUD.getRandom();

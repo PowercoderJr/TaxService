@@ -35,8 +35,8 @@ public class RandomHelper
 			InputStream namesFSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/names_f.txt");
 			InputStream namesMSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/names_m.txt");
 			InputStream patronymicsSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/patronymics.txt");
-			InputStream streetsSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/surnames.txt");
-			InputStream surnamesSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/streets.txt"))
+			InputStream streetsSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/streets.txt");
+			InputStream surnamesSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/surnames.txt"))
 		{
 			cities = new BufferedReader(new InputStreamReader(citiesSrc, StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
 			companies = new BufferedReader(new InputStreamReader(companiesSrc, StandardCharsets.UTF_8)).lines().collect(Collectors.toList());

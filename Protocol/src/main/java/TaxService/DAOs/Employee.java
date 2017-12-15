@@ -4,8 +4,6 @@ import java.sql.Date;
 
 public class Employee extends AbstractDAO
 {
-    //private static final long serialVersionUID = 666000123210002L;
-
 	public String surname;
 	public String name;
 	public String patronymic;

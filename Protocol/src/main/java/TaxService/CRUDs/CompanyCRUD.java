@@ -25,9 +25,9 @@ public class CompanyCRUD extends AbstractRandomableCRUD<Company>
 
 		String phone = RandomHelper.getRandomPhone();
 
-		BigDecimal startyear = new BigDecimal(1960 + (int)(Math.random() * 55));
+		BigDecimal startyear = new BigDecimal(1960 + rnd.nextInt(55));
 
-		int statesize = 10 + (int)(Math.random() * 100);
+		int statesize = 10 + rnd.nextInt(100);
 
 		return new Company(name, owntype, phone, startyear, statesize);
 	}

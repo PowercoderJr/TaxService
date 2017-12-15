@@ -18,16 +18,16 @@ public class DepartmentCRUD extends AbstractRandomableCRUD<Department>
 	@Override
 	protected Department generateRandomBean() throws SQLException
 	{
-		String name = "Уникальное название";
+		String city = RandomHelper.getRandomCity();
+
+		String name = "Отделение №" + (rnd.nextInt(90) + 1) + " города " + city;
 
 		DeptypeCRUD deptypeCRUD = new DeptypeCRUD(connection);
 		Deptype deptype = deptypeCRUD.getRandom();
 
-		BigDecimal startyear = new BigDecimal(1960 + (int)(Math.random() * 55));
+		BigDecimal startyear = new BigDecimal(1960 + rnd.nextInt(55));
 
 		String phone = RandomHelper.getRandomPhone();
-
-		String city = RandomHelper.getRandomCity();
 
 		String street = RandomHelper.getRandomStreet();
 

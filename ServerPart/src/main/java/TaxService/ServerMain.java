@@ -2,15 +2,9 @@ package TaxService;
 
 import TaxService.CRUDs.*;
 import TaxService.DAOs.*;
-import javafx.geometry.Pos;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.reflections.Reflections;
-import sun.reflect.Reflection;
 
-import java.lang.reflect.Modifier;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 public class ServerMain
@@ -24,15 +18,29 @@ public class ServerMain
 		{
 			try (Connection superConnection = DriverManager.getConnection("jdbc:postgresql://localhost/TaxService", "postgres", "userpass"))
 			{
+				long timeZero = System.currentTimeMillis();
 				dropNcreate(superConnection);
+				System.out.println("Dropping'n'creating completed in " + (System.currentTimeMillis() - timeZero) / 1000 + " seconds");
+
+				timeZero = System.currentTimeMillis();
 				DepartmentCRUD departmentCRUD = new DepartmentCRUD(superConnection);
-				departmentCRUD.insertRandomBeans(10);
+				departmentCRUD.insertRandomBeans(10000);
+				System.out.println("Departments generation completed in " + (System.currentTimeMillis() - timeZero) / 1000 + " seconds");
+
+				timeZero = System.currentTimeMillis();
 				EmployeeCRUD employeeCRUD = new EmployeeCRUD(superConnection);
-				employeeCRUD.insertRandomBeans(10);
+				employeeCRUD.insertRandomBeans(10000);
+				System.out.println("Employees generation completed in " + (System.currentTimeMillis() - timeZero) / 1000 + " seconds");
+
+				timeZero = System.currentTimeMillis();
 				CompanyCRUD companyCRUD = new CompanyCRUD(superConnection);
-				companyCRUD.insertRandomBeans(10);
+				companyCRUD.insertRandomBeans(10000);
+				System.out.println("Companies generation completed in " + (System.currentTimeMillis() - timeZero) / 1000 + " seconds");
+
+				timeZero = System.currentTimeMillis();
 				PaymentCRUD paymentCRUD = new PaymentCRUD(superConnection);
-				paymentCRUD.insertRandomBeans(10);
+				paymentCRUD.insertRandomBeans(10000);
+				System.out.println("Payments generation completed in " + (System.currentTimeMillis() - timeZero) / 1000 + " seconds");
 			}
 			catch (SQLException e)
 			{
@@ -50,7 +58,6 @@ public class ServerMain
 
 	private static void dropNcreate(Connection connection) throws SQLException
 	{
-		//PreparedStatement dropTable = connection.prepareStatement("DROP TABLE IF EXISTS ? CASCADE");
 		try (Statement stmt = connection.createStatement())
 		{
 			//Пересоздание схемы

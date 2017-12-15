@@ -6,14 +6,13 @@ import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class AbstractRandomableCRUD<T extends AbstractDAO> extends AbstractCRUD<T>
 {
+	protected static Random rnd = new Random();
+
 	public AbstractRandomableCRUD(Connection connection, Class<T> clazz)
 	{
 		super(connection, clazz);
@@ -32,10 +31,10 @@ public abstract class AbstractRandomableCRUD<T extends AbstractDAO> extends Abst
 			session.flush();
 			session.clear();
 		}*/
-		//TODO: разобраться с id, см. todo в AbstractCRUD.java
-		List<Field> fields = new ArrayList<>(Arrays.asList(clazz.getDeclaredFields()));
-		fields.remove(0);
-		String colNames = fields.stream().map(item -> item.getName()).collect(Collectors.joining(", "));
+		List<Field> fields = new ArrayList<>();
+		fields.addAll(Arrays.asList(clazz.getFields()));
+		fields.removeIf(item -> item.getName().equals("id") || item.getName().equals("serialVersionUID"));
+		String colNames = fields.stream().map(item -> AbstractDAO.class.isAssignableFrom(item.getType()) ? item.getName() + "_id" : item.getName()).collect(Collectors.joining(", "));
 		String qmarks = String.join(", ", Collections.nCopies(fields.size(), "?"));
 
 		try (PreparedStatement stmt = connection.prepareStatement("INSERT INTO " + clazz.getSimpleName() + " (" + colNames + ") VALUES (" + qmarks + ")"))

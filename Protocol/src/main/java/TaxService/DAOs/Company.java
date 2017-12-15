@@ -4,8 +4,6 @@ import java.math.BigDecimal;
 
 public class Company extends AbstractDAO
 {
-    //private static final long serialVersionUID = 666000123210003L;
-
     public String name;
 	public Owntype owntype;
 	public String phone;

@@ -5,7 +5,6 @@ import java.sql.Date;
 
 public class Payment extends AbstractDAO
 {
-    public static final long serialVersionID = 666000123210004L;
 	public Paytype paytype;
 	public Date date;
 	public BigDecimal amount;

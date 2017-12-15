@@ -56,7 +56,6 @@ public class ServerAgent implements Closeable
 			e.printStackTrace();
 		}
 		connections = new HashMap<String, Connection>(CONNECTIONS_AVAILABLE);
-		//sessionFactory = new Configuration().configure().buildSessionFactory();
 	}
 
 	// TODO: 01.11.2017 Закрыть как полагается
@@ -72,32 +71,18 @@ public class ServerAgent implements Closeable
 		{
 			e.printStackTrace();
 		}
-		try
+		/*try
 		{
 			future.channel().closeFuture().sync();
 		}
 		catch (InterruptedException e)
 		{
 			e.printStackTrace();
-		}
+		}*/
+		future.channel().closeFuture();
 		acceptorGroup.shutdownGracefully();
 		handlerGroup.shutdownGracefully();
 	}
-
-	/*public boolean signIn(String login, String digest)
-	{
-		boolean accessed;
-		try (Session session = sessionFactory.openSession())
-		{
-			StrangeThing result = session.createNativeQuery("SELECT * FROM StrangeThing WHERE login='" + login + "'", StrangeThing.class).getSingleResult();
-			accessed = result != null && login.equals(result.getLogin()) && digest.equals(result.getDigest());
-		}
-		catch (Exception e)
-		{
-			accessed = false;
-		}
-		return accessed;
-	}*/
 
 	public void create(AbstractDAO dao, String sendersLogin)
 	{

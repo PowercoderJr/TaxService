@@ -4,8 +4,7 @@ import java.io.Serializable;
 
 public class AbstractDAO implements Serializable
 {
-	//private static final long serialVersionUID = 789456123456L;
-
+	protected static final long serialVersionUID = -6857245162865301490L;
 	public long id;
 	public long getId()
 	{

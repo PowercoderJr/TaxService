@@ -27,7 +27,7 @@ public class PaymentCRUD extends AbstractRandomableCRUD<Payment>
 
 		Date date = RandomHelper.getRandomDateBetween(LocalDate.of(company.getStartyear().intValue(), 1, 1), LocalDate.now());
 
-		BigDecimal amount = BigDecimal.valueOf(Math.random() * 100000);
+		BigDecimal amount = BigDecimal.valueOf(rnd.nextDouble() * 100000);
 
 		EmployeeCRUD employeeCRUD = new EmployeeCRUD(connection);
 		Employee employee = employeeCRUD.getRandom();

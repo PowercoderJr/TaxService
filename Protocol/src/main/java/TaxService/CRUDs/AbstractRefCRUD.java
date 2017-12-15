@@ -22,8 +22,20 @@ public abstract class AbstractRefCRUD<T extends AbstractRefDAO> extends Abstract
 
 	public void fillFromSource() throws SQLException
 	{
-		String clazzName = clazz.getSimpleName().toLowerCase();
-		fillFromSource("nomenclature/" + clazzName + (clazzName.charAt(clazzName.length() - 1) != 's' ? "s" : "es") + ".txt");
+		StringBuilder srcPath = new StringBuilder("nomenclature/" + clazz.getSimpleName().toLowerCase());
+		switch (srcPath.charAt(srcPath.length() - 1))
+		{
+			case 's':
+				srcPath.append("e");
+				break;
+			case 'y':
+				srcPath.deleteCharAt(srcPath.length() - 1);
+				srcPath.append("ie");
+				break;
+		}
+		srcPath.append("s.txt");
+
+		fillFromSource(srcPath.toString());
 	}
 
 	protected void fillFromSource(String srcPath) throws SQLException
