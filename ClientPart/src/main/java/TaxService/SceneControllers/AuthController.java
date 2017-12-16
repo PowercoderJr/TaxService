@@ -49,7 +49,6 @@ public class AuthController
 							ClientMain.sceneManager.pushScene(mainScene);
 							//stage.setX((Toolkit.getDefaultToolkit().getScreenSize().width - ClientMain.DEFAULT_WINDOW_WIDTH) / 2);
 							//stage.setY((Toolkit.getDefaultToolkit().getScreenSize().height - ClientMain.DEFAULT_WINDOW_HEIGHT) / 2);
-							stage.setFullScreen(true);
 						}
 						catch (IOException e)
 						{

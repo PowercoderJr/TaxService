@@ -64,7 +64,7 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 
 	public T read(long id) throws SQLException
 	{
-		try (Statement stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
+		try (Statement stmt = connection.createStatement())
 		{
 			ResultSet rs = stmt.executeQuery("SELECT * FROM " + clazz.getSimpleName() + " WHERE id = " + id);
 			List<T> result = reflectResultSet(rs);
@@ -78,7 +78,7 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 
 	public List<T> readHundred(int hundred) throws SQLException
 	{
-		try (Statement stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
+		try (Statement stmt = connection.createStatement())
 		{
 			ResultSet rs = stmt.executeQuery("SELECT * FROM " + clazz.getSimpleName() + " OFFSET " + (hundred * 100) + "LIMIT 100");
 			return reflectResultSet(rs);
@@ -87,7 +87,7 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 
 	public List<T> readAll() throws SQLException
 	{
-		try (Statement stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
+		try (Statement stmt = connection.createStatement())
 		{
 			ResultSet rs = stmt.executeQuery("SELECT * FROM " + clazz.getSimpleName());
 			return reflectResultSet(rs);
@@ -96,7 +96,7 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 
 	public T readRandom() throws SQLException
 	{
-		try (Statement stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
+		try (Statement stmt = connection.createStatement())
 		{
 			ResultSet rs = stmt.executeQuery("SELECT * FROM " + clazz.getSimpleName() + " OFFSET FLOOR(RANDOM()*(SELECT COUNT(*) FROM " +
 					clazz.getSimpleName() + ")) LIMIT 1");

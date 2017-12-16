@@ -6,13 +6,14 @@ public class AbstractDAO implements Serializable
 {
 	protected static final long serialVersionUID = -6857245162865301490L;
 	public long id;
-	public long getId()
-	{
-		return id;
-	}
 
 	public AbstractDAO()
 	{
 
+	}
+
+	public long getId()
+	{
+		return id;
 	}
 }

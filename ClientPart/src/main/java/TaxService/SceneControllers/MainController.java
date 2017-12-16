@@ -4,10 +4,13 @@ import TaxService.CRUDs.DepartmentCRUD;
 import TaxService.Callback;
 import TaxService.ClientMain;
 import TaxService.DAOs.*;
+import TaxService.Deliveries.TableContentDelivery;
 import TaxService.Netty.ClientAgent;
 import TaxService.Orders.CreateOrder;
 import TaxService.Orders.ReadHundredOrder;
 import TaxService.DAOs.AbstractDAO;
+import TaxService.TableColumnsBuilder;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -48,24 +51,15 @@ public class MainController
 			@Override
 			public void callback(Object o)
 			{
-
-				//https://docs.oracle.com/javase/8/javafx/api/javafx/scene/control/TableView.html
-				//https://stackoverflow.com/questions/2126714/java-get-all-variable-names-in-a-class
-
-				/*ObservableList<Person> teamMembers = FXCollections.observableList( (List) o);
-				table.setItems(teamMembers);
-
-				TableColumn<Person,String> firstNameCol = new TableColumn<Person,String>("First Name");
-				firstNameCol.setCellValueFactory(new Callback<CellDataFeatures<Person, String>, ObservableValue<String>>()
+				TableContentDelivery<AbstractDAO> delivery = (TableContentDelivery<AbstractDAO>) o;
+				List<AbstractDAO> content = delivery.getContent();
+				Platform.runLater(() ->
 				{
-					public ObservableValue<String> call(CellDataFeatures<Person, String> p)
-					{
-						// p.getValue() returns the Person instance for a particular TableView row
-						return p.getValue().firstNameProperty();
-					}
-				});*/
-
-				actuallyTable.setItems(FXCollections.observableList( (List) o));
+					actuallyTable.getItems().clear();
+					actuallyTable.getColumns().clear();
+					actuallyTable.getColumns().addAll(TableColumnsBuilder.buildForDAO(delivery.getContentClazz()));
+					actuallyTable.setItems(FXCollections.observableList(content));
+				});
 			}
 		};
 		ClientAgent.subscribeTableContentReceived(onTableContentReceived);
@@ -113,5 +107,10 @@ public class MainController
 	public void switchActiveTable(Class<? extends AbstractDAO> clazz)
 	{
 		ClientAgent.getInstance().send(new ReadHundredOrder(clazz, ClientAgent.getInstance().getLogin(), 0));
+	}
+
+	public void fsMode(ActionEvent actionEvent)
+	{
+		ClientMain.sceneManager.getStage().setFullScreen(true);
 	}
 }

@@ -9,10 +9,10 @@ import java.util.Set;
 
 public class ServerMain
 {
+	private static final boolean fromScratch = false;
+
 	public static void main(String[] args)
 	{
-		boolean fromScratch = true;
-
 		System.out.println("From Scratch Mode is " + (fromScratch ? "ON" : "OFF"));
 		if (fromScratch)
 		{

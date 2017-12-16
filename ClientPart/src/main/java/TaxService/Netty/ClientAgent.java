@@ -1,6 +1,8 @@
 package TaxService.Netty;
 
 import TaxService.Callback;
+import TaxService.DAOs.AbstractDAO;
+import TaxService.Deliveries.TableContentDelivery;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -88,11 +90,11 @@ public class ClientAgent implements Closeable
 		tcReceivedSubsMutex.unlock();
 	}
 
-	public static void publishTableContentReceived(List content)
+	public static void publishTableContentReceived(TableContentDelivery<? extends AbstractDAO> delivery)
 	{
 		tcReceivedSubsMutex.lock();
 		for (Callback s : tcReceivedSubs)
-			s.callback(content);
+			s.callback(delivery);
 		tcReceivedSubsMutex.unlock();
 	}
 

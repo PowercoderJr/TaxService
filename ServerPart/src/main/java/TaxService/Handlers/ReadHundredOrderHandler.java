@@ -1,5 +1,6 @@
 package TaxService.Handlers;
 
+import TaxService.Deliveries.TableContentDelivery;
 import TaxService.Orders.ReadHundredOrder;
 import TaxService.DAOs.AbstractDAO;
 import TaxService.ServerAgent;
@@ -14,6 +15,6 @@ public class ReadHundredOrderHandler extends AbstractHandler<ReadHundredOrder<? 
 	{
 		super.channelRead0(ctx, msg);
 		List list = ServerAgent.getInstance().readHundred(msg.getItemClazz(), msg.getSendersLogin(), msg.getHundred());
-		ctx.writeAndFlush(list);
+		ctx.writeAndFlush(new TableContentDelivery<>(msg.getItemClazz(), list));
 	}
 }
