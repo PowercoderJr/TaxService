@@ -28,6 +28,6 @@ public abstract class AbstractRefDAO extends AbstractDAO
 	@Override
 	public String toString()
 	{
-		return this.getClass().getSimpleName() + "{" + "id=" + id + ", name='" + name + '\'' + '}';
+		return name;
 	}
 }

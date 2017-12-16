@@ -13,9 +13,7 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractCRUD<T extends AbstractDAO>
 {
-	//protected SessionFactory factory;
 	protected Connection connection;
-	//protected Session session;
 	protected Class<T> clazz;
 
 	//public AbstractCRUD(){}
@@ -25,20 +23,6 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 		this.connection = connection;
 		this.clazz = clazz;
 	}
-
-	/*public void connect()
-	{
-		if (session == null || !session.isOpen())
-			session = factory.openSession();
-
-		session.beginTransaction();
-	}
-
-	public void disconnect()
-	{
-		if (session != null && session.isOpen())
-			session.close();
-	}*/
 
 	public void create(T object) throws SQLException
 	{
@@ -83,16 +67,21 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 		try (Statement stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
 		{
 			ResultSet rs = stmt.executeQuery("SELECT * FROM " + clazz.getSimpleName() + " WHERE id = " + id);
-			return rs.next() ? reflectResultSet(rs).get(0) : null;
+			List<T> result = reflectResultSet(rs);
+			return result != null ? result.get(0) : null;
 		}
 	}
+
+	public abstract T readLazy(long id) throws SQLException;
+
+
 
 	public List<T> readHundred(int hundred) throws SQLException
 	{
 		try (Statement stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
 		{
 			ResultSet rs = stmt.executeQuery("SELECT * FROM " + clazz.getSimpleName() + " OFFSET " + (hundred * 100) + "LIMIT 100");
-			return rs.next() ? reflectResultSet(rs) : null;
+			return reflectResultSet(rs);
 		}
 	}
 
@@ -101,63 +90,51 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 		try (Statement stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
 		{
 			ResultSet rs = stmt.executeQuery("SELECT * FROM " + clazz.getSimpleName());
-			return rs.next() ? reflectResultSet(rs) : null;
+			return reflectResultSet(rs);
 		}
 	}
 
-	public T getRandom() throws SQLException
+	public T readRandom() throws SQLException
 	{
 		try (Statement stmt = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
 		{
 			ResultSet rs = stmt.executeQuery("SELECT * FROM " + clazz.getSimpleName() + " OFFSET FLOOR(RANDOM()*(SELECT COUNT(*) FROM " +
 					clazz.getSimpleName() + ")) LIMIT 1");
-			return rs.next() ? reflectResultSet(rs).get(0) : null;
+			List<T> result = reflectResultSet(rs);
+			return result != null ? result.get(0) : null;
 		}
 	}
 
 	//https://stackoverflow.com/questions/21956042/mapping-a-jdbc-resultset-to-an-object
-	//TODO: правильно отражать примитивные типы - https://stackoverflow.com/questions/13943550/how-to-convert-from-string-to-a-primitive-type-or-standard-java-wrapper-types
-	private List<T> reflectResultSet(ResultSet rs) throws SQLException
+	protected List<T> reflectResultSet(ResultSet rs) throws SQLException
 	{
-		//TODO: хорошо ли бефорфёрстить здесь??
-		rs.beforeFirst();
-
-		Field[] fields = clazz.getFields();
-
-		List<T> list = new ArrayList<>();
-		try
+		if (rs.next())
 		{
-			while (rs.next())
+			Field[] fields = clazz.getFields();
+			List<T> list = new ArrayList<>();
+			try
 			{
-				T object = clazz.getConstructor().newInstance();
-
-				for (Field field : fields)
+				do
 				{
-					String name = AbstractDAO.class.isAssignableFrom(field.getType()) ? field.getName() + "_id" : field.getName();
-					String value = rs.getString(name);
-					/*if (AbstractDAO.class.isAssignableFrom(field.getType()))
-					{
-						Class crudClass = Class.forName("TaxService.CRUDs." + field.getType().getSimpleName() + "CRUD");
-						AbstractCRUD instance = (AbstractCRUD) crudClass.getConstructor(Connection.class).newInstance(connection);
-						AbstractDAO child = instance.read(Long.parseLong(value));
-						field.set(object, child);
-					}
-					else
-					{
-						//field.set(object, field.getType().getConstructor(String.class).newInstance(value)); //TODO ?
-						field.set(object, parseObject(field.getType(), value)); //TODO ?
-					}*/
-					field.set(object, parseObject(field.getType(), value));
-				}
-				list.add(object);
-			}
-		}
-		catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e)
-		{
-			e.printStackTrace();
-		}
+					T object = clazz.getConstructor().newInstance();
 
-		return list;
+					for (Field field : fields)
+					{
+						String name = AbstractDAO.class.isAssignableFrom(field.getType()) ? field.getName() + "_id" : field.getName();
+						String value = rs.getString(name);
+						field.set(object, parseObject(field.getType(), value));
+					}
+					list.add(object);
+				} while (rs.next());
+			}
+			catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e)
+			{
+				e.printStackTrace();
+			}
+			return list;
+		}
+		else
+			return null;
 	}
 
 	private Object parseObject(Class clazz, String value ) throws ClassNotFoundException, SQLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException
@@ -176,7 +153,7 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 		{
 			Class crudClass = Class.forName("TaxService.CRUDs." + clazz.getSimpleName() + "CRUD");
 			AbstractCRUD instance = (AbstractCRUD) crudClass.getConstructor(Connection.class).newInstance(connection);
-			return instance.read(Long.parseLong(value));
+			return instance.readLazy(Long.parseLong(value));
 		}
 
 		//Другие

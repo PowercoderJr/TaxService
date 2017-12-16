@@ -113,6 +113,7 @@ public class Employee extends AbstractDAO
 	@Override
 	public String toString()
 	{
-		return "Employee{" + "id=" + id + ", surname='" + surname + '\'' + ", name='" + name + '\'' + ", patronymic='" + patronymic + '\'' + ", department=" + department + ", birthdate=" + birthdate + ", post='" + post + '\'' + ", salary=" + salary + ", education=" + education + '}';
+		//return "Employee{" + "id=" + id + ", surname='" + surname + '\'' + ", name='" + name + '\'' + ", patronymic='" + patronymic + '\'' + ", department=" + department + ", birthdate=" + birthdate + ", post='" + post + '\'' + ", salary=" + salary + ", education=" + education + '}';
+		return surname + " " + name.charAt(0) + ". " + patronymic.charAt(0) + ".";
 	}
 }

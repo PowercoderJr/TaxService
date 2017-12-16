@@ -6,7 +6,9 @@ import TaxService.RandomHelper;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class CompanyCRUD extends AbstractRandomableCRUD<Company>
 {
@@ -21,7 +23,7 @@ public class CompanyCRUD extends AbstractRandomableCRUD<Company>
 		String name = RandomHelper.getRandomCompany();
 
 		OwntypeCRUD owntypeCRUD = new OwntypeCRUD(connection);
-		Owntype owntype = owntypeCRUD.getRandom();
+		Owntype owntype = owntypeCRUD.readRandom();
 
 		String phone = RandomHelper.getRandomPhone();
 
@@ -30,5 +32,23 @@ public class CompanyCRUD extends AbstractRandomableCRUD<Company>
 		int statesize = 10 + rnd.nextInt(100);
 
 		return new Company(name, owntype, phone, startyear, statesize);
+	}
+
+	@Override
+	public Company readLazy(long id) throws SQLException
+	{
+		try (Statement stmt = connection.createStatement())
+		{
+			ResultSet rs = stmt.executeQuery("SELECT id, name FROM company WHERE id = " + id);
+			if (rs.next())
+			{
+				Company result = new Company();
+				result.id = rs.getLong(1);
+				result.name = rs.getString(2);
+				return result;
+			}
+			else
+				return null;
+		}
 	}
 }
