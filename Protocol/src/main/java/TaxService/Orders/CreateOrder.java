@@ -18,4 +18,10 @@ public class CreateOrder<T extends AbstractDAO> extends AbstractOrder<T>
 	{
 		return object;
 	}
+
+	@Override
+	public String toString()
+	{
+		return "CreateOrder for " + itemClazz.getSimpleName() + " - " + object;
+	}
 }

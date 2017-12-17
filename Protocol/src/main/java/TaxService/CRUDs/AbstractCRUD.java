@@ -74,13 +74,11 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 
 	public abstract T readLazy(long id) throws SQLException;
 
-
-
 	public List<T> readHundred(int hundred) throws SQLException
 	{
 		try (Statement stmt = connection.createStatement())
 		{
-			ResultSet rs = stmt.executeQuery("SELECT * FROM " + clazz.getSimpleName() + " OFFSET " + (hundred * 100) + "LIMIT 100");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM " + clazz.getSimpleName() + " OFFSET " + ((hundred - 1) * 100) + "LIMIT 100");
 			return reflectResultSet(rs);
 		}
 	}
@@ -105,13 +103,31 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 		}
 	}
 
+	public int count() throws SQLException
+	{
+		try (Statement stmt = connection.createStatement())
+		{
+			ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM " + clazz.getSimpleName());
+			rs.next();
+			return rs.getInt(1);
+		}
+	}
+
+	public ResultSet executeCustomQuery(String query) throws SQLException
+	{
+		try (Statement stmt = connection.createStatement())
+		{
+			return stmt.executeQuery(query);
+		}
+	}
+
 	//https://stackoverflow.com/questions/21956042/mapping-a-jdbc-resultset-to-an-object
 	protected List<T> reflectResultSet(ResultSet rs) throws SQLException
 	{
+		List<T> list = new ArrayList<>();
 		if (rs.next())
 		{
 			Field[] fields = clazz.getFields();
-			List<T> list = new ArrayList<>();
 			try
 			{
 				do
@@ -131,10 +147,8 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 			{
 				e.printStackTrace();
 			}
-			return list;
 		}
-		else
-			return null;
+		return list;
 	}
 
 	private Object parseObject(Class clazz, String value ) throws ClassNotFoundException, SQLException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException

@@ -4,8 +4,7 @@ import TaxService.DAOs.AbstractDAO;
 
 public class ReadHundredOrder<T extends AbstractDAO> extends AbstractOrder<T>
 {
-	private static final long serialVersionUID = 88005553543L;
-	int hundred;
+	private int hundred;
 
 	public ReadHundredOrder(Class itemClazz, String sendersLogin, int hundred)
 	{
@@ -16,5 +15,11 @@ public class ReadHundredOrder<T extends AbstractDAO> extends AbstractOrder<T>
 	public int getHundred()
 	{
 		return hundred;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "ReadHundredOrder for " + itemClazz.getSimpleName() + " - " + hundred;
 	}
 }

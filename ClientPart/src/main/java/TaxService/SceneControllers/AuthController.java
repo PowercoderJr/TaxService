@@ -28,6 +28,9 @@ public class AuthController
 
 	public void initialize()
 	{
+		ClientMain.sceneManager.getStage().setTitle("Авторизация");
+		ClientMain.sceneManager.getStage().setResizable(false);
+
 		onAuth = new Callback()
 		{
 			@Override
@@ -41,14 +44,10 @@ public class AuthController
 						try
 						{
 							ClientAgent.unsubscribeAuth(this);
-							Stage stage = ClientMain.sceneManager.getStage();
-							stage.setTitle("База данных налоговой инспекции");
 							Parent mainSceneFXML = FXMLLoader.load(ClientMain.class.getResource("/MainScene/interface.fxml"));
 							ManagedScene mainScene = new ManagedScene(mainSceneFXML, ClientMain.DEFAULT_WINDOW_WIDTH, ClientMain.DEFAULT_WINDOW_HEIGHT, ClientMain.sceneManager);
 							mainScene.getStylesheets().add("/MainScene/style.css");
 							ClientMain.sceneManager.pushScene(mainScene);
-							//stage.setX((Toolkit.getDefaultToolkit().getScreenSize().width - ClientMain.DEFAULT_WINDOW_WIDTH) / 2);
-							//stage.setY((Toolkit.getDefaultToolkit().getScreenSize().height - ClientMain.DEFAULT_WINDOW_HEIGHT) / 2);
 						}
 						catch (IOException e)
 						{

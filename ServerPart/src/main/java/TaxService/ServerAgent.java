@@ -11,6 +11,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import java.io.Closeable;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -98,7 +99,7 @@ public class ServerAgent implements Closeable
 			}
 	}
 
-	public List readHundred(Class clazz, String sendersLogin, int hundred)
+	public List readHundred(Class<? extends AbstractDAO> clazz, String sendersLogin, int hundred)
 	{
 		AbstractCRUD instance = getCrudForClass(clazz, sendersLogin);
 		List result = null;
@@ -113,7 +114,7 @@ public class ServerAgent implements Closeable
 		return result;
 	}
 
-	public void delete(Class<AbstractDAO> clazz, String sendersLogin, long id) throws SQLException
+	public void delete(Class<? extends AbstractDAO> clazz, String sendersLogin, long id) throws SQLException
 	{
 		AbstractCRUD crud = getCrudForClass(clazz, sendersLogin);
 		if (crud != null)
@@ -127,7 +128,25 @@ public class ServerAgent implements Closeable
 			crud.delete(dao.getId());
 	}
 
-	public AbstractCRUD getCrudForClass(Class clazz, Connection connection)
+	public int count(Class<? extends AbstractDAO> clazz, String sendersLogin) throws SQLException
+	{
+		AbstractCRUD crud = getCrudForClass(clazz, sendersLogin);
+		if (crud != null)
+			return crud.count();
+		else
+			return -1;
+	}
+
+	public ResultSet executeCustomQuery(Class<? extends AbstractDAO> clazz, String sendersLogin, String query) throws SQLException
+	{
+		AbstractCRUD crud = getCrudForClass(clazz, sendersLogin);
+		if (crud != null)
+			return crud.executeCustomQuery(query);
+		else
+			return null;
+	}
+
+	public AbstractCRUD getCrudForClass(Class<? extends AbstractDAO> clazz, Connection connection)
 	{
 		AbstractCRUD instance = null;
 		try
@@ -143,7 +162,7 @@ public class ServerAgent implements Closeable
 		return instance;
 	}
 
-	public AbstractCRUD getCrudForClass(Class clazz, String sendersLogin)
+	public AbstractCRUD getCrudForClass(Class<? extends AbstractDAO> clazz, String sendersLogin)
 	{
 		return getCrudForClass(clazz, connections.get(sendersLogin));
 	}

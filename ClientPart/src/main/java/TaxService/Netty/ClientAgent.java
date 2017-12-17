@@ -2,7 +2,7 @@ package TaxService.Netty;
 
 import TaxService.Callback;
 import TaxService.DAOs.AbstractDAO;
-import TaxService.Deliveries.TableContentDelivery;
+import TaxService.Deliveries.HundredDelivery;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -15,7 +15,6 @@ import java.io.Closeable;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.List;
 
 public class ClientAgent implements Closeable
 {
@@ -24,8 +23,8 @@ public class ClientAgent implements Closeable
 
 	private static Mutex authSubsMutex = new Mutex();
 	public static ArrayList<Callback> authSubs = new ArrayList<>();
-	private static Mutex tcReceivedSubsMutex = new Mutex();
-	public static ArrayList<Callback> tcReceivedSubs = new ArrayList<>();
+	private static Mutex hundredReceivedSubsMutex = new Mutex();
+	public static ArrayList<Callback> hundredReceivedSubs = new ArrayList<>();
 
 	public static ClientAgent getInstance()
 	{
@@ -76,32 +75,33 @@ public class ClientAgent implements Closeable
 		authSubsMutex.unlock();
 	}
 
-	public static void subscribeTableContentReceived(Callback s)
+	public static void subscribeHundredReceived(Callback s)
 	{
-		tcReceivedSubsMutex.lock();
-		tcReceivedSubs.add(s);
-		tcReceivedSubsMutex.unlock();
+		hundredReceivedSubsMutex.lock();
+		hundredReceivedSubs.add(s);
+		hundredReceivedSubsMutex.unlock();
 	}
 
-	public static void unsubscribeTableContentReceived(Callback s)
+	public static void unsubscribeHundredReceived(Callback s)
 	{
-		tcReceivedSubsMutex.lock();
-		tcReceivedSubs.remove(s);
-		tcReceivedSubsMutex.unlock();
+		hundredReceivedSubsMutex.lock();
+		hundredReceivedSubs.remove(s);
+		hundredReceivedSubsMutex.unlock();
 	}
 
-	public static void publishTableContentReceived(TableContentDelivery<? extends AbstractDAO> delivery)
+	public static void publishHundredReceived(HundredDelivery<? extends AbstractDAO> delivery)
 	{
-		tcReceivedSubsMutex.lock();
-		for (Callback s : tcReceivedSubs)
+		hundredReceivedSubsMutex.lock();
+		for (Callback s : hundredReceivedSubs)
 			s.callback(delivery);
-		tcReceivedSubsMutex.unlock();
+		hundredReceivedSubsMutex.unlock();
 	}
 
 	//NON-STATIC SECTION
 	private ChannelFuture future;
 	private EventLoopGroup group;
 	private String login;
+	private Class<? extends AbstractDAO> currTable;
 
 	private ClientAgent(InetAddress inetAddress, int port)
 	{
@@ -150,6 +150,16 @@ public class ClientAgent implements Closeable
 	public void setLogin(String login)
 	{
 		this.login = login;
+	}
+
+	public Class<? extends AbstractDAO> getCurrTable()
+	{
+		return currTable;
+	}
+
+	public void setCurrTable(Class<? extends AbstractDAO> currTable)
+	{
+		this.currTable = currTable;
 	}
 
 	protected void finalize()

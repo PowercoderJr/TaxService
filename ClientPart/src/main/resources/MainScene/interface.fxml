@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import java.lang.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
@@ -8,62 +9,97 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.GridPane?>
 
-<GridPane alignment="CENTER" hgap="10.0" prefHeight="720.0" prefWidth="1280.0" vgap="10.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="TaxService.SceneControllers.MainController">
-  <children>
-    <MenuBar GridPane.columnIndex="0" GridPane.rowIndex="0">
-      <menus>
-        <Menu mnemonicParsing="false" text="База данных">
-          <items>
-            <MenuItem mnemonicParsing="false" onAction="#fsMode" text="На весь экран" />
-            <MenuItem mnemonicParsing="false" text="Отключиться" />
-            <MenuItem mnemonicParsing="false" onAction="#exit" text="Выход" />
-          </items>
-        </Menu>
-        <Menu mnemonicParsing="false" text="Таблицы">
-          <items>
-            <MenuItem fx:id="switchToDepartmentMenuItem" mnemonicParsing="false" text="Отделения налоговой инспекции"/>
-            <MenuItem fx:id="switchToEmployeeMenuItem" mnemonicParsing="false" text="Сотрудники налоговой инспекции" />
-            <MenuItem fx:id="switchToCompanyMenuItem" mnemonicParsing="false" text="Предприятия-плательщики" />
-            <MenuItem fx:id="switchToPaymentMenuItem" mnemonicParsing="false" text="Платежи" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem fx:id="switchToDeptypeMenuItem" mnemonicParsing="false" text="Типы отделений" />
-            <MenuItem fx:id="switchToEducationMenuItem" mnemonicParsing="false" text="Образования" />
-            <MenuItem fx:id="switchToOwntypeMenuItem" mnemonicParsing="false" text="Формы собственности" />
-            <MenuItem fx:id="switchToPaytypeMenuItem" mnemonicParsing="false" text="Типы платежей" />
-          </items>
-        </Menu>
-        <Menu mnemonicParsing="false" text="Help">
-          <items>
-            <MenuItem mnemonicParsing="false" text="About" />
-          </items>
-        </Menu>
-        <Menu mnemonicParsing="false" text="TESTING">
-          <items>
-          </items>
-        </Menu>
-      </menus>
-    </MenuBar>
-    <GridPane fx:id="tableGrid" prefHeight="696.0" prefWidth="1280.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
-      <children>
-        <TableView id="table" fx:id="actuallyTable" editable="false" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-      </children>
-      <columnConstraints>
-        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="20.0" minWidth="20.0" prefWidth="20.0" />
-        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="20.0" minWidth="20.0" prefWidth="20.0" />
-      </columnConstraints>
-      <rowConstraints>
-        <RowConstraints maxHeight="50.0" minHeight="10.0" percentHeight="5.0" prefHeight="50.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="595.0" minHeight="10.0" percentHeight="90.0" prefHeight="578.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="50.0" minHeight="10.0" percentHeight="5.0" prefHeight="50.0" vgrow="SOMETIMES" />
-      </rowConstraints>
-    </GridPane>
-  </children>
-  <columnConstraints>
-    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
-  </columnConstraints>
-  <rowConstraints>
-    <RowConstraints fillHeight="false" maxHeight="24.0" minHeight="24.0" prefHeight="24.0" valignment="TOP" vgrow="SOMETIMES" />
-    <RowConstraints vgrow="SOMETIMES" />
-  </rowConstraints>
+<GridPane alignment="CENTER" hgap="10.0" prefHeight="720.0" prefWidth="1280.0" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="TaxService.SceneControllers.MainController"> <!-- на самом деле xmlns="http://javafx.com/javafx/8.0.141" -->
+    <children>
+        <MenuBar GridPane.columnIndex="0" GridPane.rowIndex="0">
+            <menus>
+                <Menu mnemonicParsing="false" text="База данных">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#fsMode" text="На весь экран" />
+                        <MenuItem mnemonicParsing="false" text="Отключиться" />
+                        <MenuItem mnemonicParsing="false" onAction="#exit" text="Выход" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Таблицы">
+                    <items>
+                        <MenuItem fx:id="switchToDepartmentMenuItem" mnemonicParsing="false" />
+                        <MenuItem fx:id="switchToEmployeeMenuItem" mnemonicParsing="false" />
+                        <MenuItem fx:id="switchToCompanyMenuItem" mnemonicParsing="false" />
+                        <MenuItem fx:id="switchToPaymentMenuItem" mnemonicParsing="false" />
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem fx:id="switchToDeptypeMenuItem" mnemonicParsing="false" />
+                        <MenuItem fx:id="switchToPostMenuItem" mnemonicParsing="false" />
+                        <MenuItem fx:id="switchToEducationMenuItem" mnemonicParsing="false" />
+                        <MenuItem fx:id="switchToOwntypeMenuItem" mnemonicParsing="false" />
+                        <MenuItem fx:id="switchToPaytypeMenuItem" mnemonicParsing="false" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="TESTING" />
+            </menus>
+        </MenuBar>
+        <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+            <center>
+                <TableView fx:id="actuallyTable" editable="false" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                    <BorderPane.margin>
+                        <Insets left="20.0" right="20.0" />
+                    </BorderPane.margin>
+                    <placeholder>
+                        <Label text="НЕТ ЗАПИСЕЙ" />
+                    </placeholder>
+                </TableView>
+            </center>
+            <bottom>
+                <HBox alignment="CENTER" minHeight="70.0" prefHeight="50.0" prefWidth="200.0" spacing="10.0" BorderPane.alignment="CENTER">
+                    <children>
+                        <Button mnemonicParsing="false" onAction="#gotoFirstPage" text="|&lt;&lt;" />
+                        <Button mnemonicParsing="false" onAction="#gotoPrevPage" text="&lt;" />
+                        <Label fx:id="statusLabel" text="Статусная строка" />
+                        <Button mnemonicParsing="false" onAction="#gotoNextPage" text="&gt;" />
+                        <Button mnemonicParsing="false" onAction="#gotoLastPage" text="&gt;&gt;|" />
+                        <Separator orientation="VERTICAL" />
+                        <Label text="Отобразить" />
+                        <TextField fx:id="hundredField" nodeOrientation="RIGHT_TO_LEFT" onKeyReleased="#onHundredSpinnerKeyReleased" prefWidth="70" text="1" />
+                        <Label text="-ю сотню">
+                            <padding>
+                                <Insets left="-10.0" />
+                            </padding>
+                        </Label>
+                        <Label fx:id="specificPageLabel" text="(1 - 100)" />
+                    </children>
+                </HBox>
+            </bottom>
+            <top>
+                <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" spacing="10.0" BorderPane.alignment="CENTER">
+                    <children>
+                  <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="500.0" HBox.hgrow="NEVER">
+                     <children>
+                        <Label fx:id="currTableLabel" text="..." />
+                     </children>
+                     <HBox.margin>
+                        <Insets left="20.0" />
+                     </HBox.margin>
+                  </HBox>
+                        <Button mnemonicParsing="false" text="Button" />
+                        <Button mnemonicParsing="false" text="Button" />
+                        <Button mnemonicParsing="false" text="Button" />
+                    </children>
+               <BorderPane.margin>
+                  <Insets bottom="5.0" top="5.0" />
+               </BorderPane.margin>
+                </HBox>
+            </top>
+        </BorderPane>
+    </children>
+    <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints fillHeight="false" maxHeight="24.0" minHeight="24.0" prefHeight="24.0" valignment="TOP" vgrow="SOMETIMES" />
+        <RowConstraints vgrow="SOMETIMES" />
+    </rowConstraints>
 </GridPane>

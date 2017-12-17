@@ -3,3 +3,8 @@
 .root
 {
 }
+
+#currTableLabel
+{
+    -fx-font-size: 20pt;
+}

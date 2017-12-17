@@ -5,7 +5,7 @@ import java.util.List;
 
 public class AbstractDelivery<T> implements Serializable
 {
-	private static final long serialVersionUID = -4594850142078035413L;
+	protected static final long serialVersionUID = -4594850142078035413L;
 	protected Class<T> contentClazz;
 	protected List<T> content;
 

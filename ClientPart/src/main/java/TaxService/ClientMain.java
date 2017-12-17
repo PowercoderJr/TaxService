@@ -1,10 +1,14 @@
 package TaxService;
 
+import TaxService.DAOs.*;
 import TaxService.Netty.ClientAgent;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ClientMain extends Application
 {
@@ -36,5 +40,25 @@ public class ClientMain extends Application
         super.stop();
         if (ClientAgent.getInstance() != null)
             ClientAgent.getInstance().close();
+    }
+
+    private static Map<Class<? extends AbstractDAO>, String> niceTableNames;
+    static
+    {
+        niceTableNames = new HashMap<>();
+        niceTableNames.put(Department.class, "Отделения налоговой инспекции");
+        niceTableNames.put(Employee.class, "Сотрудники налоговой инспекции");
+        niceTableNames.put(Company.class, "Предприятия-плательщики");
+        niceTableNames.put(Payment.class, "Платежи");
+        niceTableNames.put(Deptype.class, "Типы отделений");
+        niceTableNames.put(Post.class, "Должности сотрудников инспекции");
+        niceTableNames.put(Education.class, "Степени образования");
+        niceTableNames.put(Owntype.class, "Формы собственности");
+        niceTableNames.put(Paytype.class, "Типы платежей");
+    }
+
+    public static String getNiceTableName(Class<? extends AbstractDAO> clazz)
+    {
+        return niceTableNames.get(clazz);
     }
 }
