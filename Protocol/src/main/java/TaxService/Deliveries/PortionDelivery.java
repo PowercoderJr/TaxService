@@ -4,11 +4,11 @@ import TaxService.DAOs.AbstractDAO;
 
 import java.util.List;
 
-public class HundredDelivery<T extends AbstractDAO> extends AbstractDelivery<T>
+public class PortionDelivery<T extends AbstractDAO> extends AbstractDelivery<T>
 {
 	int first, last, total;
 
-	public HundredDelivery(Class<T> contentClazz, List<T> content, int first, int last, int total)
+	public PortionDelivery(Class<T> contentClazz, List<T> content, int first, int last, int total)
 	{
 		super(contentClazz, content);
 		this.first = first;
@@ -34,6 +34,6 @@ public class HundredDelivery<T extends AbstractDAO> extends AbstractDelivery<T>
 	@Override
 	public String toString()
 	{
-		return "HundredDelivery from " + contentClazz.getSimpleName() + "(" + first + " - " + last + ")";
+		return "PortionDelivery from " + contentClazz.getSimpleName() + "(" + first + " - " + last + ")";
 	}
 }

@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractCRUD<T extends AbstractDAO>
 {
+	public static final int PORTION_SIZE = 100;
+
 	protected Connection connection;
 	protected Class<T> clazz;
 
@@ -74,11 +76,11 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 
 	public abstract T readLazy(long id) throws SQLException;
 
-	public List<T> readHundred(int hundred) throws SQLException
+	public List<T> readPortion(int portion) throws SQLException
 	{
 		try (Statement stmt = connection.createStatement())
 		{
-			ResultSet rs = stmt.executeQuery("SELECT * FROM " + clazz.getSimpleName() + " OFFSET " + ((hundred - 1) * 100) + "LIMIT 100");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM " + clazz.getSimpleName() + " OFFSET " + ((portion - 1) * AbstractCRUD.PORTION_SIZE) + "LIMIT " + AbstractCRUD.PORTION_SIZE);
 			return reflectResultSet(rs);
 		}
 	}

@@ -12,6 +12,12 @@ public class ManagedScene extends Scene
 {
     private SceneManager manager;
 
+    public ManagedScene(Parent root, SceneManager manager)
+    {
+        super(root);
+        this.manager = manager;
+    }
+
     public ManagedScene(Parent root, double width, double height, SceneManager manager)
     {
         super(root, width, height);

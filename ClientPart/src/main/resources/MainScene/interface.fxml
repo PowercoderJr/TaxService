@@ -43,16 +43,6 @@
             </menus>
         </MenuBar>
         <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
-            <center>
-                <TableView fx:id="actuallyTable" editable="false" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-                    <BorderPane.margin>
-                        <Insets left="20.0" right="20.0" />
-                    </BorderPane.margin>
-                    <placeholder>
-                        <Label text="НЕТ ЗАПИСЕЙ" />
-                    </placeholder>
-                </TableView>
-            </center>
             <bottom>
                 <HBox alignment="CENTER" minHeight="70.0" prefHeight="50.0" prefWidth="200.0" spacing="10.0" BorderPane.alignment="CENTER">
                     <children>
@@ -63,7 +53,7 @@
                         <Button mnemonicParsing="false" onAction="#gotoLastPage" text="&gt;&gt;|" />
                         <Separator orientation="VERTICAL" />
                         <Label text="Отобразить" />
-                        <TextField fx:id="hundredField" nodeOrientation="RIGHT_TO_LEFT" onKeyReleased="#onHundredSpinnerKeyReleased" prefWidth="70" text="1" />
+                        <TextField fx:id="portionField" nodeOrientation="RIGHT_TO_LEFT" onKeyReleased="#onPortionSpinnerKeyReleased" prefWidth="70" text="1" />
                         <Label text="-ю сотню">
                             <padding>
                                 <Insets left="-10.0" />
@@ -74,25 +64,52 @@
                 </HBox>
             </bottom>
             <top>
-                <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" spacing="10.0" BorderPane.alignment="CENTER">
+                <HBox alignment="CENTER_LEFT" BorderPane.alignment="CENTER">
                     <children>
-                  <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="500.0" HBox.hgrow="NEVER">
+                  <VBox HBox.hgrow="ALWAYS">
                      <children>
-                        <Label fx:id="currTableLabel" text="..." />
+                        <Label fx:id="currTableLabel" text="Название таблицы" />
+                        <HBox fx:id="editorBoxBox" alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="ALWAYS">
+                           <children>
+                              <GridPane hgap="5.0" vgap="5.0" HBox.hgrow="NEVER">
+                                <columnConstraints>
+                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="-Infinity" />
+                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="-Infinity" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                  <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
+                                </rowConstraints>
+                                 <children>
+                                          <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="110.0" text="Добавить" />
+                                          <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="110.0" text="Обновить" GridPane.columnIndex="1" />
+                                          <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="110.0" text="Фильтровать" GridPane.rowIndex="1" />
+                                    <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="110.0" text="Удалить" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                 </children>
+                              </GridPane>
+                           </children>
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </HBox>
                      </children>
-                     <HBox.margin>
-                        <Insets left="20.0" />
-                     </HBox.margin>
-                  </HBox>
-                        <Button mnemonicParsing="false" text="Button" />
-                        <Button mnemonicParsing="false" text="Button" />
-                        <Button mnemonicParsing="false" text="Button" />
+                  </VBox>
                     </children>
                <BorderPane.margin>
-                  <Insets bottom="5.0" top="5.0" />
+                  <Insets bottom="5.0" left="20.0" right="20.0" top="5.0" />
                </BorderPane.margin>
                 </HBox>
             </top>
+         <center>
+                <TableView fx:id="actuallyTable" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
+                    <BorderPane.margin>
+                        <Insets left="20.0" right="20.0" />
+                    </BorderPane.margin>
+                    <placeholder>
+                        <Label text="НЕТ ЗАПИСЕЙ" />
+                    </placeholder>
+                </TableView>
+         </center>
         </BorderPane>
     </children>
     <columnConstraints>

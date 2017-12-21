@@ -1,12 +1,14 @@
 package TaxService.SceneControllers;
 
+import TaxService.CRUDs.AbstractCRUD;
 import TaxService.Callback;
 import TaxService.ClientMain;
+import TaxService.CustomUI.EditorBoxes.AbstractEditorBox;
+import TaxService.CustomUI.EditorBoxes.DepartmentEditorBox;
 import TaxService.DAOs.*;
-import TaxService.Deliveries.HundredDelivery;
+import TaxService.Deliveries.PortionDelivery;
 import TaxService.Netty.ClientAgent;
-import TaxService.Orders.CreateOrder;
-import TaxService.Orders.ReadHundredOrder;
+import TaxService.Orders.ReadPortionOrder;
 import TaxService.DAOs.AbstractDAO;
 import TaxService.TableColumnsBuilder;
 import javafx.application.Platform;
@@ -19,16 +21,28 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.UnaryOperator;
+
 
 public class MainController
 {
+	private static Map<Class<? extends AbstractDAO>, TableStaff> niceTableNames = new HashMap<>();
+	public HBox editorBoxBox;
+
+	private class TableStaff
+	{
+		private Class<? extends AbstractDAO> clazz;
+		private String niceName;
+		private TableView tableView;
+		private HBox editorBox;
+	}
+
 	@FXML
 	public Label currTableLabel;
 	@FXML
@@ -56,50 +70,54 @@ public class MainController
 	@FXML
 	public Label specificPageLabel;
 	@FXML
-	public TextField hundredField;
+	public TextField portionField;
 
-	private Callback onHundredReceived;
-	private int currHundred;
+	private Callback onPortionReceived;
+	private int currPortion;
 
 	public void initialize()
 	{
 		ClientMain.sceneManager.getStage().setTitle("База данных налоговой инспекции");
 		ClientMain.sceneManager.getStage().setResizable(true);
-		ClientMain.sceneManager.getStage().setX((Toolkit.getDefaultToolkit().getScreenSize().width - ClientMain.DEFAULT_WINDOW_WIDTH) / 2);
-		ClientMain.sceneManager.getStage().setY((Toolkit.getDefaultToolkit().getScreenSize().height - ClientMain.DEFAULT_WINDOW_HEIGHT) / 2);
+		ClientMain.sceneManager.getStage()
+				.setX((Toolkit.getDefaultToolkit().getScreenSize().width - ClientMain.DEFAULT_WINDOW_WIDTH) / 2);
+		ClientMain.sceneManager.getStage()
+				.setY((Toolkit.getDefaultToolkit().getScreenSize().height - ClientMain.DEFAULT_WINDOW_HEIGHT) / 2);
 
-		//https://stackoverflow.com/questions/40472668/numeric-textfield-for-integers-in-javafx-8-with-textformatter-and-or-unaryoperat
 		UnaryOperator<TextFormatter.Change> digitsFilter = change ->
 		{
 			String newText = change.getControlNewText();
-			if (newText.matches("[0-9]*"))
+			if (newText.matches("\\d*"))
 				return change;
 			else
 				return null;
 		};
-		hundredField.setTextFormatter(new TextFormatter<Integer>(digitsFilter));
+		portionField.setTextFormatter(new TextFormatter<Integer>(digitsFilter));
 
-		onHundredReceived = new Callback()
+		onPortionReceived = new Callback()
 		{
 			@Override
 			public void callback(Object o)
 			{
-				HundredDelivery<AbstractDAO> delivery = (HundredDelivery<AbstractDAO>) o;
+				PortionDelivery<AbstractDAO> delivery = (PortionDelivery<AbstractDAO>) o;
 				Platform.runLater(() ->
 				{
 					actuallyTable.getItems().clear();
 					actuallyTable.getColumns().clear();
 					actuallyTable.getColumns().addAll(TableColumnsBuilder.buildForDAO(delivery.getContentClazz()));
 					actuallyTable.setItems(FXCollections.observableList(delivery.getContent()));
-					statusLabel.setText("Отображены записи с " + delivery.getFirst() + " по " + delivery.getLast() +
-							" из " + delivery.getTotal());
-					currHundred = delivery.getFirst() / 100 + 1;
+					statusLabel.setText("Отображены записи с " + delivery.getFirst() + " по " + delivery.getLast()
+							+ " из " + delivery.getTotal());
+					currPortion = delivery.getFirst() / AbstractCRUD.PORTION_SIZE + 1;
+					actuallyTable.scrollTo(0);
 				});
 			}
 		};
-		ClientAgent.subscribeHundredReceived(onHundredReceived);
+		ClientAgent.subscribePortionReceived(onPortionReceived);
 
-		Platform.runLater(() ->
+		Class[] tableClazzes = {Department.class, Employee.class, Company.class, Payment.class, Deptype.class,
+								Post.class, Education.class, Owntype.class, Paytype.class};
+		/*Platform.runLater(() ->
 		{
 			initTableMenuItem(switchToDepartmentMenuItem, Department.class);
 			initTableMenuItem(switchToEmployeeMenuItem, Employee.class);
@@ -110,20 +128,34 @@ public class MainController
 			initTableMenuItem(switchToEducationMenuItem, Education.class);
 			initTableMenuItem(switchToOwntypeMenuItem, Owntype.class);
 			initTableMenuItem(switchToPaytypeMenuItem, Paytype.class);
-		});
+		});*/
 
+		editorBoxBox.getChildren().add(0, new DepartmentEditorBox());
 		switchActiveTable(Department.class);
+	}
+
+
+	private void initTableStaff(Class<? extends AbstractDAO> tableClazz)
+	{
+		String name = tableClazz.getSimpleName();
+		Label placeholder = new Label("НЕТ ЗАПИСЕЙ");
+
+		//Init TableView
+		TableView tv = new TableView();
+		tv.getColumns().addAll(TableColumnsBuilder.buildForDAO(tableClazz));
+
+		//Getting editor box
 	}
 
 	private void initTableMenuItem(MenuItem item, Class<? extends AbstractDAO> tableClazz)
 	{
+		//item.setText(ClientMain.getNiceTableName(tableClazz));//TODO
 		item.setOnAction(e -> switchActiveTable(tableClazz));
-		item.setText(ClientMain.getNiceTableName(tableClazz));
 	}
 
 	public void exit(ActionEvent actionEvent)
 	{
-		ClientAgent.unsubscribeHundredReceived(onHundredReceived);
+		ClientAgent.unsubscribePortionReceived(onPortionReceived);
 		try
 		{
 			ClientMain.sceneManager.popScene();
@@ -156,9 +188,9 @@ public class MainController
 
 	public void switchActiveTable(Class<? extends AbstractDAO> tableClazz)
 	{
-		ClientAgent.getInstance().send(new ReadHundredOrder(tableClazz, ClientAgent.getInstance().getLogin(), 1));
+		ClientAgent.getInstance().send(new ReadPortionOrder(tableClazz, ClientAgent.getInstance().getLogin(), 1));
 		ClientAgent.getInstance().setCurrTable(tableClazz);
-		currTableLabel.setText(ClientMain.getNiceTableName(tableClazz));
+		//currTableLabel.setText(ClientMain.getNiceTableName(tableClazz));//TODO
 	}
 
 	public void fsMode(ActionEvent actionEvent)
@@ -173,17 +205,17 @@ public class MainController
 
 	public void gotoPrevPage(ActionEvent actionEvent)
 	{
-		gotoPage(currHundred - 1);
+		gotoPage(currPortion - 1);
 	}
 
-	public void onHundredSpinnerKeyReleased(KeyEvent keyEvent)
+	public void onPortionSpinnerKeyReleased(KeyEvent keyEvent)
 	{
 		if (keyEvent.getCode() == KeyCode.ENTER)
 		{
-			int hundred = hundredField.getText().isEmpty() ? currHundred : Integer.parseInt(hundredField.getText());
-			if (hundred < 1)
-				hundred = 1;
-			gotoPage(hundred);
+			int portion = portionField.getText().isEmpty() ? currPortion : Integer.parseInt(portionField.getText());
+			if (portion < 1)
+				portion = 1;
+			gotoPage(portion);
 		}
 		else
 			refreshSpecificPageLabel();
@@ -191,7 +223,7 @@ public class MainController
 
 	public void gotoNextPage(ActionEvent actionEvent)
 	{
-		gotoPage(currHundred + 1);
+		gotoPage(currPortion + 1);
 	}
 
 	public void gotoLastPage(ActionEvent actionEvent)
@@ -202,15 +234,15 @@ public class MainController
 	private void gotoPage(int page)
 	{
 		ClientAgent agent = ClientAgent.getInstance();
-		ReadHundredOrder order = new ReadHundredOrder<>(agent.getCurrTable(), agent.getLogin(), page);
+		ReadPortionOrder order = new ReadPortionOrder<>(agent.getCurrTable(), agent.getLogin(), page);
 		ClientAgent.getInstance().send(order);
 	}
 
 	private void refreshSpecificPageLabel()
 	{
-		int hundred = hundredField.getText().isEmpty() ? currHundred : Integer.parseInt(hundredField.getText());
-		if (hundred < 1)
-			hundred = 1;
-		specificPageLabel.setText("(" + ((hundred - 1) * 100 + 1) + " - " + (hundred * 100) + ")");
+		int portion = portionField.getText().isEmpty() ? currPortion : Integer.parseInt(portionField.getText());
+		if (portion < 1)
+			portion = 1;
+		specificPageLabel.setText("(" + ((portion - 1) * AbstractCRUD.PORTION_SIZE + 1) + " - " + (portion * AbstractCRUD.PORTION_SIZE) + ")");
 	}
 }

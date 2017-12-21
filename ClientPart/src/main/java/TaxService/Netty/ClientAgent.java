@@ -2,7 +2,7 @@ package TaxService.Netty;
 
 import TaxService.Callback;
 import TaxService.DAOs.AbstractDAO;
-import TaxService.Deliveries.HundredDelivery;
+import TaxService.Deliveries.PortionDelivery;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -23,8 +23,8 @@ public class ClientAgent implements Closeable
 
 	private static Mutex authSubsMutex = new Mutex();
 	public static ArrayList<Callback> authSubs = new ArrayList<>();
-	private static Mutex hundredReceivedSubsMutex = new Mutex();
-	public static ArrayList<Callback> hundredReceivedSubs = new ArrayList<>();
+	private static Mutex portionReceivedSubsMutex = new Mutex();
+	public static ArrayList<Callback> portionReceivedSubs = new ArrayList<>();
 
 	public static ClientAgent getInstance()
 	{
@@ -75,26 +75,26 @@ public class ClientAgent implements Closeable
 		authSubsMutex.unlock();
 	}
 
-	public static void subscribeHundredReceived(Callback s)
+	public static void subscribePortionReceived(Callback s)
 	{
-		hundredReceivedSubsMutex.lock();
-		hundredReceivedSubs.add(s);
-		hundredReceivedSubsMutex.unlock();
+		portionReceivedSubsMutex.lock();
+		portionReceivedSubs.add(s);
+		portionReceivedSubsMutex.unlock();
 	}
 
-	public static void unsubscribeHundredReceived(Callback s)
+	public static void unsubscribePortionReceived(Callback s)
 	{
-		hundredReceivedSubsMutex.lock();
-		hundredReceivedSubs.remove(s);
-		hundredReceivedSubsMutex.unlock();
+		portionReceivedSubsMutex.lock();
+		portionReceivedSubs.remove(s);
+		portionReceivedSubsMutex.unlock();
 	}
 
-	public static void publishHundredReceived(HundredDelivery<? extends AbstractDAO> delivery)
+	public static void publishPortionReceived(PortionDelivery<? extends AbstractDAO> delivery)
 	{
-		hundredReceivedSubsMutex.lock();
-		for (Callback s : hundredReceivedSubs)
+		portionReceivedSubsMutex.lock();
+		for (Callback s : portionReceivedSubs)
 			s.callback(delivery);
-		hundredReceivedSubsMutex.unlock();
+		portionReceivedSubsMutex.unlock();
 	}
 
 	//NON-STATIC SECTION

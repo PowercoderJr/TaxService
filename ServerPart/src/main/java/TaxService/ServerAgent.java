@@ -99,13 +99,13 @@ public class ServerAgent implements Closeable
 			}
 	}
 
-	public List readHundred(Class<? extends AbstractDAO> clazz, String sendersLogin, int hundred)
+	public List readPortion(Class<? extends AbstractDAO> clazz, String sendersLogin, int portion)
 	{
 		AbstractCRUD instance = getCrudForClass(clazz, sendersLogin);
 		List result = null;
 		try
 		{
-			result = instance.readHundred(hundred);
+			result = instance.readPortion(portion);
 		}
 		catch (SQLException e)
 		{

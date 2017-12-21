@@ -23,7 +23,7 @@ public class ClientMain extends Application
         sceneManager = new SceneManager(primaryStage);
         Parent authSceneFXML = FXMLLoader.load(getClass().getResource("/AuthScene/interface.fxml"));
         primaryStage.setTitle("Авторизация");
-        ManagedScene authScene = new ManagedScene(authSceneFXML, 400, 250, sceneManager);
+        ManagedScene authScene = new ManagedScene(authSceneFXML, sceneManager);
         authScene.getStylesheets().add("/AuthScene/style.css");
         primaryStage.setScene(authScene);
         primaryStage.show();
@@ -42,7 +42,7 @@ public class ClientMain extends Application
             ClientAgent.getInstance().close();
     }
 
-    private static Map<Class<? extends AbstractDAO>, String> niceTableNames;
+    /*private static Map<Class<? extends AbstractDAO>, String> niceTableNames;
     static
     {
         niceTableNames = new HashMap<>();
@@ -60,5 +60,5 @@ public class ClientMain extends Application
     public static String getNiceTableName(Class<? extends AbstractDAO> clazz)
     {
         return niceTableNames.get(clazz);
-    }
+    }*/
 }

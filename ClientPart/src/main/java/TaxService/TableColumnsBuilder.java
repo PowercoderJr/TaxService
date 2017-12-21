@@ -13,7 +13,7 @@ public class TableColumnsBuilder
 {
 	private TableColumnsBuilder() {}
 
-	public static List<TableColumn<? extends AbstractDAO, String>> buildForDAO(Class<AbstractDAO> clazz)
+	public static List<TableColumn<? extends AbstractDAO, String>> buildForDAO(Class<? extends AbstractDAO> clazz)
 	{
 		List<TableColumn<? extends AbstractDAO, String>> result = null;
 
@@ -46,7 +46,7 @@ public class TableColumnsBuilder
 		anotherColumn = new TableColumn<>("Название");
 		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getName())));
 		list.add(anotherColumn);
-		anotherColumn = new TableColumn<>("Год начала функционирования"); //TODO: записать покороче
+		anotherColumn = new TableColumn<>("Год открытия");
 		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getStartyear())));
 		list.add(anotherColumn);
 		anotherColumn = new TableColumn<>("Телефон");
@@ -113,7 +113,7 @@ public class TableColumnsBuilder
 		anotherColumn = new TableColumn<>("Телефон");
 		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getPhone())));
 		list.add(anotherColumn);
-		anotherColumn = new TableColumn<>("Год начала работы"); //TODO записать покороче
+		anotherColumn = new TableColumn<>("Год открытия");
 		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getStartyear())));
 		list.add(anotherColumn);
 		anotherColumn = new TableColumn<>("Штат");
