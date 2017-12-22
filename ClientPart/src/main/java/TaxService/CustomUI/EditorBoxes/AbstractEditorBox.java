@@ -13,11 +13,14 @@ import javafx.scene.layout.VBox;
 
 public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPane
 {
+	private static final double SPACING = 5.0;
+
 	private Class<T> clazz;
 
 	private HBox primaryFieldsBox, secondaryFieldsBox;
 	private VBox fieldsBox;
 	private HBox longBox;
+	protected TextField id1, id2;
 
 	public AbstractEditorBox(Class<T> clazz)
 	{
@@ -25,29 +28,40 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 
 		//From deepest to general
 
-		primaryFieldsBox = new HBox(5.0);
+		primaryFieldsBox = new HBox(SPACING);
 		primaryFieldsBox.setAlignment(Pos.CENTER_LEFT);
 		HBox.setHgrow(primaryFieldsBox, Priority.ALWAYS);
-		secondaryFieldsBox = new HBox(5.0);
+		secondaryFieldsBox = new HBox(SPACING);
 		secondaryFieldsBox.setAlignment(Pos.CENTER_LEFT);
 		HBox.setHgrow(secondaryFieldsBox, Priority.ALWAYS);
 
-		fieldsBox = new VBox(5.0);
+		fieldsBox = new VBox(SPACING);
 		fieldsBox.getChildren().addAll(primaryFieldsBox, secondaryFieldsBox);
 
-		longBox = new HBox(5.0);
-		longBox.setPadding(new Insets(5.0));
+		longBox = new HBox(SPACING);
+		longBox.setPadding(new Insets(SPACING));
 		longBox.getChildren().add(fieldsBox);
 
 		this.setContent(longBox);
-		setFitToHeight(true);
 		setVbarPolicy(ScrollBarPolicy.NEVER);
 		HBox.setHgrow(this, Priority.ALWAYS);
+
+		//
+
+		id1 = new TextField();
+		id1.setPrefWidth(80);
+		id2 = new TextField();
+		id2.setPrefWidth(80);
+		id2.setVisible(false);
+		addField("ID", id1, id2);
+
+
+		setFitToHeight(true);
 	}
 
 	protected void addField(String name, Node primary, Node secondary)
 	{
-		VBox primaryBox = new VBox(5.0);
+		VBox primaryBox = new VBox(SPACING);
 		primaryBox.getChildren().addAll(new Label(name), primary);
 		primaryFieldsBox.getChildren().add(primaryBox);
 		secondaryFieldsBox.getChildren().add(secondary);

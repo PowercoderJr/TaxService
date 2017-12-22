@@ -8,10 +8,9 @@ import javafx.scene.control.TextField;
 
 public class DepartmentEditorBox extends AbstractEditorBox<Department>
 {
-	private TextField id1, id2;
 	private ComboBox<Deptype> deptype1, deptype2;
 	private TextField name1, name2;
-	private TextField startyear1, startyear2;
+	private MaskField startyear1, startyear2;
 	private MaskField phone1, phone2;
 	private TextField city1, city2;
 	private TextField street1, street2;
@@ -20,12 +19,6 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 	public DepartmentEditorBox()
 	{
 		super(Department.class);
-
-		id1 = new TextField();
-		id1.setPrefWidth(80);
-		id2 = new TextField();
-		id2.setPrefWidth(80);
-		addField("ID", id1, id2);
 
 		deptype1 = new ComboBox<>();
 		deptype1.setPrefWidth(150);
@@ -41,10 +34,16 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 		name2.setPrefWidth(200);
 		addField("Название", name1, name2);
 
-		startyear1 = new TextField();
-		startyear1.setPrefWidth(100);
-		startyear2 = new TextField();
-		startyear2.setPrefWidth(100);
+		startyear1 = new MaskField();
+		startyear1.setPrefWidth(150);
+		startyear1.setMask("DDDD");
+		startyear1.setWhatMask("####");
+		startyear1.setPlaceholder("____");
+		startyear2 = new MaskField();
+		startyear2.setPrefWidth(150);
+		startyear2.setMask("DDDD");
+		startyear2.setWhatMask("####");
+		startyear2.setPlaceholder("____");
 		addField("Год открытия", startyear1, startyear2);
 
 		phone1 = new MaskField();

@@ -139,10 +139,10 @@ public class TableColumnsBuilder
 		anotherColumn = new TableColumn<>("Сумма");
 		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getAmount())));
 		list.add(anotherColumn);
-		anotherColumn = new TableColumn<>("Оформивший сотрудник");
+		anotherColumn = new TableColumn<>("Сотрудник-оформитель");
 		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getEmployee())));
 		list.add(anotherColumn);
-		anotherColumn = new TableColumn<>("Отделение оформления");
+		anotherColumn = new TableColumn<>("Отделение-оформитель");
 		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getDepartment())));
 		list.add(anotherColumn);
 		anotherColumn = new TableColumn<>("Компания-плательщик");
