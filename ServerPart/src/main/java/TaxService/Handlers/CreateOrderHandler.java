@@ -5,10 +5,10 @@ import TaxService.DAOs.AbstractDAO;
 import TaxService.ServerAgent;
 import io.netty.channel.ChannelHandlerContext;
 
-public class CreateOrderHandler extends AbstractHandler<CreateOrder<? extends AbstractDAO>>
+public class CreateOrderHandler<T extends AbstractDAO> extends AbstractHandler<CreateOrder<T>>
 {
 	@Override
-	protected void channelRead0(ChannelHandlerContext ctx, CreateOrder<? extends AbstractDAO> msg) throws Exception
+	protected void channelRead0(ChannelHandlerContext ctx, CreateOrder<T> msg) throws Exception
 	{
 		super.channelRead0(ctx, msg);
 		ServerAgent.getInstance().create(msg.getObject(), msg.getSendersLogin());

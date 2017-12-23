@@ -2,7 +2,6 @@ package TaxService.CustomUI.EditorBoxes;
 
 import TaxService.CustomUI.MaskField;
 import TaxService.DAOs.AbstractDAO;
-import TaxService.DAOs.Deptype;
 import TaxService.Netty.ClientAgent;
 import TaxService.Orders.CreateOrder;
 import javafx.beans.value.ChangeListener;
@@ -15,15 +14,20 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.ColorAdjust;
-import javafx.scene.effect.Effect;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.util.Pair;
+import org.apache.commons.lang3.StringUtils;
+
+import java.lang.reflect.Field;
+import java.util.List;
 
 public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPane
 {
 	private static final double SPACING = 5.0;
-	protected enum FieldType {PRIMARY, SECONDARY}
+
+	//protected enum FieldType {PRIMARY, SECONDARY}
 
 	private Class<T> clazz;
 
@@ -108,7 +112,7 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 
 	protected boolean validateTextField(TextField field, boolean isRequired)
 	{
-		boolean isValid = !isRequired && field.getText().isEmpty() || !field.getText().isEmpty();
+		boolean isValid = !isRequired && field.getText().trim().isEmpty() || !field.getText().trim().isEmpty();
 		if (!isValid)
 			markAsInvalid(field);
 		return isValid;
@@ -116,7 +120,9 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 
 	protected boolean validateMaskField(MaskField field, boolean isRequired)
 	{
-		boolean isValid = !isRequired && field.getPlainText().isEmpty() || !field.getPlainText().isEmpty();
+		boolean isValid = !isRequired && field.getPlainText().trim().isEmpty() || field.getPlainText()
+				.length() == StringUtils.countMatches(field.getWhatMask(), MaskField.WHAT_MASK_CHAR);
+		field.getWhatMask();
 		if (!isValid)
 			markAsInvalid(field);
 		return isValid;
@@ -139,48 +145,36 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 	{
 		if (validatePrimary(true))
 		{
-			T dao = withdrawFields();
-			ClientAgent.getInstance().send(new CreateOrder<T>(clazz, ClientAgent.getInstance().getLogin(), dao));
+			T dao = withdrawPrimaryAll();
+			ClientAgent.getInstance().send(new CreateOrder<>(clazz, ClientAgent.getInstance().getLogin(), dao));
 		}
 	}
 
-	public int update()
-	{
-		return 0;
-	}
-
-	public int filter()
-	{
-		return 0;
-	}
-
-	public int remove()
-	{
-		return 0;
-	}
-
-	public void depositFields(T dao)
+	public void update()
 	{
 	}
 
-	public T withdrawFields()
-	{
-		return null;
-	}
-
-	public boolean validatePrimary(boolean isRequired)
-	{
-		return isRequired;
-	}
-
-	public boolean validateSecondary(boolean isRequired)
-	{
-		return isRequired;
-	}
-
-	public void clearAll()
+	public void filter()
 	{
 	}
 
+	public void remove()
+	{
+	}
 
+	public abstract void depositPrimary(T dao);
+
+	public abstract T withdrawPrimaryAll();
+
+	public abstract T withdrawSecondaryAll();
+
+	public abstract Pair<T, List<Field>> withdrawPrimaryFilled();
+
+	public abstract Pair<T, List<Field>> withdrawSecondaryFilled();
+
+	public abstract boolean validatePrimary(boolean allRequired);
+
+	public abstract boolean validateSecondary(boolean allRequired);
+
+	public abstract void clearAll();
 }

@@ -21,7 +21,7 @@ public class PaymentCRUD extends AbstractRandomableCRUD<Payment>
 		Paytype paytype = paytypeCRUD.readRandom(true);
 
 		CompanyCRUD companyCRUD = new CompanyCRUD(connection);
-		Company company = companyCRUD.readRandom(true);
+		Company company = companyCRUD.readRandom(false);
 
 		Date date = RandomHelper.getRandomDateBetween(LocalDate.of(company.getStartyear().intValue(), 1, 1), LocalDate.now());
 

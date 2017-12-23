@@ -16,7 +16,12 @@ import java.util.stream.Collectors;
 
 public class RandomHelper
 {
-	public enum Gender{MALE, FEMALE};
+	public enum Gender
+	{
+		MALE, FEMALE
+	}
+
+	;
 
 	public static final long earlyDate = 10957; //Epoch day of 01.01.2000
 	private static Random rnd = new Random();
@@ -30,27 +35,35 @@ public class RandomHelper
 
 	static
 	{
-		try(InputStream citiesSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/cities.txt");
-			InputStream companiesSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/companies.txt");
-			InputStream namesFSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/names_f.txt");
-			InputStream namesMSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/names_m.txt");
-			InputStream patronymicsSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/patronymics.txt");
-			InputStream streetsSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/streets.txt");
-			InputStream surnamesSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/surnames.txt"))
+		try (InputStream citiesSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/cities.txt");
+			 InputStream companiesSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/companies.txt");
+			 InputStream namesFSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/names_f.txt");
+			 InputStream namesMSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/names_m.txt");
+			 InputStream patronymicsSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/patronymics.txt");
+			 InputStream streetsSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/streets.txt");
+			 InputStream surnamesSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/surnames.txt"))
 		{
-			cities = new BufferedReader(new InputStreamReader(citiesSrc, StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
-			companies = new BufferedReader(new InputStreamReader(companiesSrc, StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
-			namesF = new BufferedReader(new InputStreamReader(namesFSrc, StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
-			namesM = new BufferedReader(new InputStreamReader(namesMSrc, StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
-			patronymics = new BufferedReader(new InputStreamReader(patronymicsSrc, StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
-			streets = new BufferedReader(new InputStreamReader(streetsSrc, StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
-			surnames = new BufferedReader(new InputStreamReader(surnamesSrc, StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
+			cities = new BufferedReader(new InputStreamReader(citiesSrc, StandardCharsets.UTF_8)).lines()
+					.collect(Collectors.toList());
+			companies = new BufferedReader(new InputStreamReader(companiesSrc, StandardCharsets.UTF_8)).lines()
+					.collect(Collectors.toList());
+			namesF = new BufferedReader(new InputStreamReader(namesFSrc, StandardCharsets.UTF_8)).lines()
+					.collect(Collectors.toList());
+			namesM = new BufferedReader(new InputStreamReader(namesMSrc, StandardCharsets.UTF_8)).lines()
+					.collect(Collectors.toList());
+			patronymics = new BufferedReader(new InputStreamReader(patronymicsSrc, StandardCharsets.UTF_8)).lines()
+					.collect(Collectors.toList());
+			streets = new BufferedReader(new InputStreamReader(streetsSrc, StandardCharsets.UTF_8)).lines()
+					.collect(Collectors.toList());
+			surnames = new BufferedReader(new InputStreamReader(surnamesSrc, StandardCharsets.UTF_8)).lines()
+					.collect(Collectors.toList());
 		}
 		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
 	}
+
 	public static Date getRandomDateBetween(LocalDate first, LocalDate last)
 	{
 		long epochFirst = first.toEpochDay();
@@ -81,7 +94,8 @@ public class RandomHelper
 
 	public static String getRandomPhone()
 	{
-		return "+380" + (100 + rnd.nextInt(899)) + (100 + rnd.nextInt(899)) + (100 + rnd.nextInt(899));
+		return "+38(0" + (10 + rnd.nextInt(89)) + ")" + (100 + rnd.nextInt(899)) + "-" +
+				(10 + rnd.nextInt(89)) + "-" + (10 + rnd.nextInt(89));
 	}
 
 	public static String getRandomCity()
@@ -98,7 +112,7 @@ public class RandomHelper
 	{
 		String house = "" + (1 + rnd.nextInt(200));
 		if (rnd.nextDouble() < 0.1)
-			house += (char)('а' + rnd.nextInt(6));
+			house += (char) ('а' + rnd.nextInt(6));
 		return house;
 	}
 

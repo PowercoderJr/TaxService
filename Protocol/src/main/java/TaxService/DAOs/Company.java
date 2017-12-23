@@ -96,6 +96,6 @@ public class Company extends AbstractDAO
 	public String toString()
 	{
 		//return "Company{" + "id=" + id + ", name='" + name + '\'' + ", owntype=" + owntype + ", phone='" + phone + '\'' + ", startyear=" + startyear + ", statesize=" + statesize + '}';
-		return name;
+		return name + " - #" + id;
 	}
 }

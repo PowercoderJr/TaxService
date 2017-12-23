@@ -3,6 +3,7 @@ package TaxService.Netty;
 import TaxService.Callback;
 import TaxService.DAOs.AbstractDAO;
 import TaxService.Deliveries.PortionDelivery;
+import TaxService.Deliveries.AllDelivery;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -25,6 +26,8 @@ public class ClientAgent implements Closeable
 	public static ArrayList<Callback> authSubs = new ArrayList<>();
 	private static Mutex portionReceivedSubsMutex = new Mutex();
 	public static ArrayList<Callback> portionReceivedSubs = new ArrayList<>();
+	private static Mutex allReceivedSubsMutex = new Mutex();
+	public static ArrayList<Callback> allReceivedSubs = new ArrayList<>();
 
 	public static ClientAgent getInstance()
 	{
@@ -95,6 +98,28 @@ public class ClientAgent implements Closeable
 		for (Callback s : portionReceivedSubs)
 			s.callback(delivery);
 		portionReceivedSubsMutex.unlock();
+	}
+
+	public static void subscribeAllReceived(Callback s)
+	{
+		allReceivedSubsMutex.lock();
+		allReceivedSubs.add(s);
+		allReceivedSubsMutex.unlock();
+	}
+
+	public static void unsubscribeAllReceived(Callback s)
+	{
+		allReceivedSubsMutex.lock();
+		allReceivedSubs.remove(s);
+		allReceivedSubsMutex.unlock();
+	}
+
+	public static void publishAllReceived(AllDelivery<? extends AbstractDAO> delivery)
+	{
+		allReceivedSubsMutex.lock();
+		for (Callback s : allReceivedSubs)
+			s.callback(delivery);
+		allReceivedSubsMutex.unlock();
 	}
 
 	//NON-STATIC SECTION

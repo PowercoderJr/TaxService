@@ -86,7 +86,7 @@ public class ServerMain
 			execMe += "deptype_id int8 not null references deptype(id) on delete cascade,";
 			execMe += "name varchar(100) not null,";
 			execMe += "startyear numeric(4,0) not null,";
-			execMe += "phone varchar(13) not null,";
+			execMe += "phone varchar(17) not null,";
 			execMe += "city varchar(30) not null,";
 			execMe += "street varchar(30) not null,";
 			execMe += "house varchar(6) not null)";
@@ -108,7 +108,7 @@ public class ServerMain
 			execMe += "id serial primary key,";
 			execMe += "name varchar(100) not null,";
 			execMe += "owntype_id serial not null references owntype(id) on delete cascade,";
-			execMe += "phone varchar(13) not null,";
+			execMe += "phone varchar(17) not null,";
 			execMe += "startyear numeric(4,0) not null,";
 			execMe += "statesize int4 not null)";
 			stmt.executeUpdate(execMe);

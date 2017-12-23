@@ -33,8 +33,11 @@ public abstract class AbstractRandomableCRUD<T extends AbstractDAO> extends Abst
 		}*/
 		List<Field> fields = new ArrayList<>();
 		fields.addAll(Arrays.asList(clazz.getFields()));
-		fields.removeIf(item -> item.getName().equals("id") || item.getName().equals("serialVersionUID") || item.getName().equals("readEvenIfLazy"));
-		String colNames = fields.stream().map(item -> AbstractDAO.class.isAssignableFrom(item.getType()) ? item.getName() + "_id" : item.getName()).collect(Collectors.joining(", "));
+		fields.removeIf(item -> item.getName().equals("id") || item.getName()
+				.equals("serialVersionUID") || item.getName().equals("readEvenIfLazy"));
+		String colNames = fields.stream()
+				.map(item -> AbstractDAO.class.isAssignableFrom(item.getType()) ? item.getName() + "_id" : item.getName())
+				.collect(Collectors.joining(", "));
 		String qmarks = String.join(", ", Collections.nCopies(fields.size(), "?"));
 
 		try (PreparedStatement stmt = connection.prepareStatement("INSERT INTO " + clazz.getSimpleName() + " (" + colNames + ") VALUES (" + qmarks + ")"))

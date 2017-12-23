@@ -19,14 +19,14 @@ public abstract class AbstractRefEditorBox<T extends AbstractRefDAO> extends Abs
 	}
 
 	@Override
-	public boolean validatePrimary(boolean isRequired)
+	public boolean validatePrimary(boolean allRequired)
 	{
-		return validateTextField(name1, isRequired);
+		return validateTextField(name1, allRequired);
 	}
 
 	@Override
-	public boolean validateSecondary(boolean isRequired)
+	public boolean validateSecondary(boolean allRequired)
 	{
-		return validateTextField(name2, isRequired);
+		return validateTextField(name2, allRequired);
 	}
 }

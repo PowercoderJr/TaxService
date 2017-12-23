@@ -99,13 +99,28 @@ public class ServerAgent implements Closeable
 			}
 	}
 
-	public List readPortion(Class<? extends AbstractDAO> clazz, String sendersLogin, int portion)
+	public List readPortion(Class<? extends AbstractDAO> clazz, String sendersLogin, int portion, boolean isLazy)
 	{
 		AbstractCRUD instance = getCrudForClass(clazz, sendersLogin);
 		List result = null;
 		try
 		{
-			result = instance.readPortion(portion, false);
+			result = instance.readPortion(portion, isLazy);
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	public List readAll(Class<? extends AbstractDAO> clazz, String sendersLogin, boolean isLazy)
+	{
+		AbstractCRUD instance = getCrudForClass(clazz, sendersLogin);
+		List result = null;
+		try
+		{
+			result = instance.readAll(isLazy);
 		}
 		catch (SQLException e)
 		{

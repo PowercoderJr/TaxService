@@ -120,6 +120,6 @@ public class Department extends AbstractDAO
 	public String toString()
 	{
 		//return "Department{" + "id=" + id + ", deptype=" + deptype + ", name='" + name + '\'' + ", startyear=" + startyear + ", phone='" + phone + '\'' + ", city='" + city + '\'' + ", street='" + street + '\'' + ", house='" + house + '\'' + '}';
-		return name;
+		return name + " - #" + id;
 	}
 }

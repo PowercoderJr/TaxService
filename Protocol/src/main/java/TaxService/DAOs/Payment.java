@@ -108,6 +108,6 @@ public class Payment extends AbstractDAO
 	public String toString()
 	{
 		//return "Payment{" + "id=" + id + ", paytype=" + paytype + ", date=" + date + ", amount=" + amount + ", employee=" + employee + ", department=" + department + ", company=" + company + '}';
-		return "№" + id;
+		return "#" + id;
 	}
 }

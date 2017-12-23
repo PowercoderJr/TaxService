@@ -30,20 +30,20 @@ public class MaskField extends TextField
 	/**
 	 * позиция в маске позволит ввести только цифры
 	 */
-	private static final char MASK_DIGIT = 'D';
+	public static final char MASK_DIGIT = 'D';
 
 	/**
 	 * позиция в маске позволит ввести буквы и цифры
 	 */
-	private static final char MASK_DIG_OR_CHAR = 'W';
+	public static final char MASK_DIG_OR_CHAR = 'W';
 
 	/**
 	 * позиция в маске позволит ввести только буквы
 	 */
-	private static final char MASK_CHARACTER = 'A';
+	public static final char MASK_CHARACTER = 'A';
 
-	private static final char WHAT_MASK_CHAR = '#';
-	private static final char WHAT_MASK_NO_CHAR = '-';
+	public static final char WHAT_MASK_CHAR = '#';
+	public static final char WHAT_MASK_NO_CHAR = '-';
 
 	private static final char PLACEHOLDER_CHAR_DEFAULT = '_';
 

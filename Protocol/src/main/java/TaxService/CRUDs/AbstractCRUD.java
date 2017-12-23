@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 public abstract class AbstractCRUD<T extends AbstractDAO>
 {
 	public static final int PORTION_SIZE = 100;
+
 	static
 	{
 		Department.init();
@@ -30,7 +31,9 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 	protected Connection connection;
 	protected Class<T> clazz;
 
-	public AbstractCRUD(){}
+	public AbstractCRUD()
+	{
+	}
 
 	public AbstractCRUD(Connection connection, Class<T> clazz)
 	{
@@ -44,14 +47,16 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 		fields.addAll(Arrays.asList(clazz.getFields()));
 		fields.removeIf(item -> item.getName().equals("id") || item.getName()
 				.equals("serialVersionUID") || item.getName().equals("readEvenIfLazy"));
-		String colNames = fields.stream().map(item -> item.getName()).collect(Collectors.joining(", "));
+		String colNames = fields.stream()
+				.map(item -> AbstractDAO.class.isAssignableFrom(item.getType()) ? item.getName() + "_id" : item.getName())
+				.collect(Collectors.joining(", "));
 		String values = fields.stream().map(item ->
 		{
 			String result = "";
 			try
 			{
 				if (AbstractDAO.class.isAssignableFrom(item.getType()))
-					result = String.valueOf(((AbstractDAO) item.get((object).getId())).getId());
+					result = String.valueOf(((AbstractDAO) item.get((object)/*.getId()*/)).getId());
 				else
 					result = String.valueOf(item.get(object));
 			}
@@ -64,7 +69,8 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 
 		try (Statement stmt = connection.createStatement())
 		{
-			stmt.executeUpdate("INSERT INTO " + clazz.getSimpleName() + " (" + colNames + ") VALUES (" + values + ")");
+			stmt.executeUpdate("INSERT INTO " + clazz.getSimpleName() + " (" + colNames + ") VALUES (" +
+					values + ")");
 		}
 	}
 
@@ -80,16 +86,15 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 	{
 		try (Statement stmt = connection.createStatement())
 		{
-			ResultSet rs;
+			String fields;
 			if (isLazy)
-			{
-				String fields = Arrays.stream(AbstractDAO.getReadEvenIfLazy(clazz))
+				fields = Arrays.stream(AbstractDAO.getReadEvenIfLazy(clazz))
 						.map(item -> item.getName())
 						.collect(Collectors.joining(", "));
-				rs = stmt.executeQuery("SELECT " + fields + " FROM " + clazz.getSimpleName() + " WHERE id = " + id);
-			}
 			else
-				rs = stmt.executeQuery("SELECT * FROM " + clazz.getSimpleName() + " WHERE id = " + id);
+				fields = "*";
+			ResultSet rs = stmt.executeQuery("SELECT " + fields + " FROM " + clazz.getSimpleName() +
+					" WHERE id = " + id);
 			List<T> result = reflectResultSet(rs, isLazy);
 			return result.isEmpty() ? null : result.get(0);
 		}
@@ -99,16 +104,15 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 	{
 		try (Statement stmt = connection.createStatement())
 		{
-			ResultSet rs;
+			String fields;
 			if (isLazy)
-			{
-				String fields = Arrays.stream(AbstractDAO.getReadEvenIfLazy(clazz))
+				fields = Arrays.stream(AbstractDAO.getReadEvenIfLazy(clazz))
 						.map(item -> item.getName())
 						.collect(Collectors.joining(", "));
-				rs = stmt.executeQuery("SELECT " + fields + " FROM " + clazz.getSimpleName() + " OFFSET " + ((portion - 1) * AbstractCRUD.PORTION_SIZE) + "LIMIT " + AbstractCRUD.PORTION_SIZE);
-			}
 			else
-				rs = stmt.executeQuery("SELECT * FROM " + clazz.getSimpleName() + " OFFSET " + ((portion - 1) * AbstractCRUD.PORTION_SIZE) + "LIMIT " + AbstractCRUD.PORTION_SIZE);
+				fields = "*";
+			ResultSet rs = stmt.executeQuery("SELECT " + fields + " FROM " + clazz.getSimpleName() + " OFFSET " +
+					((portion - 1) * AbstractCRUD.PORTION_SIZE) + "LIMIT " + AbstractCRUD.PORTION_SIZE);
 			return reflectResultSet(rs, isLazy);
 		}
 	}
@@ -117,16 +121,14 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 	{
 		try (Statement stmt = connection.createStatement())
 		{
-			ResultSet rs;
+			String fields;
 			if (isLazy)
-			{
-				String fields = Arrays.stream(AbstractDAO.getReadEvenIfLazy(clazz))
+				fields = Arrays.stream(AbstractDAO.getReadEvenIfLazy(clazz))
 						.map(item -> item.getName())
 						.collect(Collectors.joining(", "));
-				rs = stmt.executeQuery("SELECT " + fields + " FROM " + clazz.getSimpleName());
-			}
 			else
-				rs = stmt.executeQuery("SELECT * FROM " + clazz.getSimpleName());
+				fields = "*";
+			ResultSet rs = stmt.executeQuery("SELECT " + fields + " FROM " + clazz.getSimpleName());
 			return reflectResultSet(rs, isLazy);
 		}
 	}
@@ -135,18 +137,15 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 	{
 		try (Statement stmt = connection.createStatement())
 		{
-			ResultSet rs;
+			String fields;
 			if (isLazy)
-			{
-				String fields = Arrays.stream(AbstractDAO.getReadEvenIfLazy(clazz))
+				fields = Arrays.stream(AbstractDAO.getReadEvenIfLazy(clazz))
 						.map(item -> item.getName())
 						.collect(Collectors.joining(", "));
-				rs = stmt.executeQuery("SELECT " + fields + " FROM " + clazz.getSimpleName() + " OFFSET FLOOR(RANDOM()*(SELECT COUNT(*) FROM " + clazz
-						.getSimpleName() + ")) LIMIT 1");
-			}
 			else
-				rs = stmt.executeQuery("SELECT * FROM " + clazz.getSimpleName() + " OFFSET FLOOR(RANDOM()*(SELECT COUNT(*) FROM " + clazz
-						.getSimpleName() + ")) LIMIT 1");
+				fields = "*";
+			ResultSet rs = stmt.executeQuery("SELECT " + fields + " FROM " + clazz.getSimpleName() +
+					" OFFSET FLOOR(RANDOM()*(SELECT COUNT(*) FROM " + clazz.getSimpleName() + ")) LIMIT 1");
 			List<T> result = reflectResultSet(rs, isLazy);
 			return result != null ? result.get(0) : null;
 		}
