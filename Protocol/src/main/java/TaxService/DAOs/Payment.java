@@ -1,7 +1,10 @@
 package TaxService.DAOs;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Payment extends AbstractDAO
 {
@@ -11,6 +14,20 @@ public class Payment extends AbstractDAO
 	public Employee employee;
 	public Department department;
 	public Company company;
+
+	static
+	{
+		try
+		{
+			readEvenIfLazy.put(Payment.class, new Field[] {Payment.class.getField("id")});
+		}
+		catch (NoSuchFieldException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public static final void init(){}
 
 	public Payment()
 	{

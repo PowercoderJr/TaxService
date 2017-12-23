@@ -1,6 +1,9 @@
 package TaxService.DAOs;
 
+import java.lang.reflect.Field;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Employee extends AbstractDAO
 {
@@ -12,6 +15,23 @@ public class Employee extends AbstractDAO
 	public Post post;
 	public int salary;
 	public Education education;
+
+	static
+	{
+		try
+		{
+			readEvenIfLazy.put(Employee.class, new Field[] {Employee.class.getField("id"),
+															Employee.class.getField("surname"),
+															Employee.class.getField("name"),
+															Employee.class.getField("patronymic")});
+		}
+		catch (NoSuchFieldException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public static final void init(){}
 
 	public Employee()
 	{

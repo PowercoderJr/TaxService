@@ -105,7 +105,7 @@ public class ServerAgent implements Closeable
 		List result = null;
 		try
 		{
-			result = instance.readPortion(portion);
+			result = instance.readPortion(portion, false);
 		}
 		catch (SQLException e)
 		{

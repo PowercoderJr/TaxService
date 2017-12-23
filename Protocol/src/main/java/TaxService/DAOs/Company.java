@@ -1,14 +1,32 @@
 package TaxService.DAOs;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Company extends AbstractDAO
 {
-    public String name;
+	public String name;
 	public Owntype owntype;
 	public String phone;
 	public BigDecimal startyear;
 	public int statesize;
+
+	static
+	{
+		try
+		{
+			readEvenIfLazy.put(Company.class, new Field[] {Company.class.getField("id"),
+														   Company.class.getField("name")});
+		}
+		catch (NoSuchFieldException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public static final void init(){}
 
 	public Company()
 	{

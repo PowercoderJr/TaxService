@@ -56,10 +56,4 @@ public abstract class AbstractRefCRUD<T extends AbstractRefDAO> extends Abstract
 			e.printStackTrace();
 		}
 	}
-
-	@Override
-	public T readLazy(long id) throws SQLException
-	{
-		return read(id);
-	}
 }
