@@ -14,6 +14,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -33,6 +34,7 @@ public class MainController
 {
 	private static Map<Class<? extends AbstractDAO>, TableStaff> niceTableNames = new HashMap<>();
 	public HBox editorBoxBox;
+	private AbstractEditorBox currEB_TEST;
 
 	private class TableStaff
 	{
@@ -129,7 +131,8 @@ public class MainController
 			initTableMenuItem(switchToPaytypeMenuItem, Paytype.class);
 		});*/
 
-		editorBoxBox.getChildren().add(0, new DepartmentEditorBox());
+		currEB_TEST = new DepartmentEditorBox();
+		editorBoxBox.getChildren().add(0, currEB_TEST);
 		switchActiveTable(Department.class);
 	}
 
@@ -150,6 +153,24 @@ public class MainController
 	{
 		//item.setText(ClientMain.getNiceTableName(tableClazz));//TODO
 		item.setOnAction(e -> switchActiveTable(tableClazz));
+	}
+
+	public void addBtnClicked(ActionEvent actionEvent)
+	{
+		currEB_TEST.add();
+	}
+
+	public void updateBtnClicked(ActionEvent actionEvent)
+	{
+		currEB_TEST.validatePrimary(false);
+	}
+
+	public void filterBtnClicked(ActionEvent actionEvent)
+	{
+	}
+
+	public void deleteBtnClicked(ActionEvent actionEvent)
+	{
 	}
 
 	public void exit(ActionEvent actionEvent)

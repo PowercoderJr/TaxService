@@ -6,6 +6,7 @@ import TaxService.DAOs.Education;
 import TaxService.DAOs.Employee;
 import TaxService.DAOs.Post;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 
 import java.sql.Date;
@@ -16,7 +17,7 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 	private TextField name1, name2;
 	private TextField patronymic1, patronymic2;
 	private ComboBox<Department> department1, department2;
-	private MaskField birthdate1, birthdate2;
+	private DatePicker birthdate1, birthdate2;
 	private ComboBox<Post> post1, post2;
 	private TextField salary1, salary2;
 	private ComboBox<Education> education1, education2;
@@ -51,7 +52,7 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 		department2.setEditable(true);
 		addField("Отделение", department1, department2);
 
-		birthdate1 = new MaskField();
+		/*birthdate1 = new MaskField();
 		birthdate1.setPrefWidth(120);
 		birthdate1.setMask("DD.DD.DDDD");
 		birthdate1.setWhatMask("##-##-####");
@@ -60,7 +61,11 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 		birthdate2.setPrefWidth(120);
 		birthdate2.setMask("DD.DD.DDDD");
 		birthdate2.setWhatMask("##-##-####");
-		birthdate2.setPlaceholder("__.__.____");
+		birthdate2.setPlaceholder("__.__.____");*/
+		birthdate1 = new DatePicker();
+		birthdate1.setPrefWidth(120);
+		birthdate2 = new DatePicker();
+		birthdate2.setPrefWidth(120);
 		addField("Дата рождения", birthdate1, birthdate2);
 		
 		post1 = new ComboBox<>();
