@@ -6,6 +6,7 @@ import TaxService.Netty.ClientAgent;
 import TaxService.Orders.CreateOrder;
 import TaxService.Orders.ReadPortionOrder;
 import TaxService.Orders.DeleteOrder;
+import TaxService.Orders.UpdateOrder;
 import TaxService.Utils;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -17,6 +18,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.ColorAdjust;
+import javafx.scene.effect.Effect;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -39,6 +41,7 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 	private HBox longBox;
 	protected TextField id1, id2;
 	protected String filter;
+	private static Effect invalidEffect = new ColorAdjust(0, 0.5, 0, 0);
 
 	public AbstractEditorBox(Class<T> clazz)
 	{
@@ -140,7 +143,7 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 		return isValid;
 	}
 
-	private boolean validateId1(boolean isRequired)
+	public boolean validateId1(boolean isRequired)
 	{
 		boolean isValid;
 		try
@@ -159,63 +162,75 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 
 	protected void markAsInvalid(Node field)
 	{
-		field.setEffect(new ColorAdjust(0, 0.5, 0, 0));
+		field.setEffect(invalidEffect);
 	}
 
-	public void create()
+	public boolean create()
 	{
-		if (validatePrimary(true))
+		T dao = withdrawPrimaryAll();
+		ClientAgent.getInstance().send(new CreateOrder<>(clazz, ClientAgent.getInstance().getLogin(), dao));
+		return true;
+	}
+
+	public boolean update()
+	{
+		Pair<T, List<Field>> primaryPair = withdrawPrimaryFilled();
+		String localFilter;
+		if (primaryPair.getValue().isEmpty())
+			localFilter = "";
+		else
 		{
-			T dao = withdrawPrimaryAll();
-			ClientAgent.getInstance().send(new CreateOrder<>(clazz, ClientAgent.getInstance().getLogin(), dao));
+			String colNames = Utils.fieldNamesToString(primaryPair.getValue().stream());
+			String values = Utils.fieldValuesToString(primaryPair.getValue().stream(), primaryPair.getKey());
+			localFilter = " WHERE (" + colNames + ") = (" + values + ")";
 		}
-	}
 
-	public void update()
-	{
+		Pair<T, List<Field>> secondaryPair = withdrawSecondaryFilled();
+		String newValues;
+		String colNames = Utils.fieldNamesToString(secondaryPair.getValue().stream());
+		String values = Utils.fieldValuesToString(secondaryPair.getValue().stream(), secondaryPair.getKey());
+		newValues = "(" + colNames + ") = (" + values + ")";
+		ClientAgent.getInstance().send(new UpdateOrder<>(clazz, ClientAgent.getInstance().getLogin(), localFilter, newValues));
+		return true;
 	}
 
 	//TODO: ignore case?
-	public void filter()
+	public boolean setFilter()
 	{
-		if (validatePrimary(false) & validateId1(false))
+		String oldFilter = filter;
+		Pair<T, List<Field>> pair = withdrawPrimaryFilled();
+		if (pair.getValue().isEmpty())
+			filter = "";
+		else
 		{
-			Pair<T, List<Field>> pair = withdrawPrimaryFilled();
-			if (pair.getValue().isEmpty())
-				filter = "";
-			else
-			{
-				String colNames = Utils.fieldNamesToString(pair.getValue().stream());
-				String values = Utils.fieldValuesToString(pair.getValue().stream(), pair.getKey());
-				filter = " WHERE (" + colNames + ") = (" + values + ")";
-			}
-			ClientAgent.getInstance().send(new ReadPortionOrder<>(clazz, ClientAgent.getInstance().getLogin(), 1, false, filter));
+			String colNames = Utils.fieldNamesToString(pair.getValue().stream());
+			String values = Utils.fieldValuesToString(pair.getValue().stream(), pair.getKey());
+			filter = " WHERE (" + colNames + ") = (" + values + ")";
 		}
+		return !filter.equals(oldFilter);
 	}
 
-	public void delete()
+	public boolean delete()
 	{
-		if (validatePrimary(false) & validateId1(false))
+		Pair<T, List<Field>> pair = withdrawPrimaryFilled();
+		String localFilter;
+		if (pair.getValue().isEmpty())
+			localFilter = "";
+		else
 		{
-			Pair<T, List<Field>> pair = withdrawPrimaryFilled();
-			String localFilter;
-			if (pair.getValue().isEmpty())
-				localFilter = "";
-			else
-			{
-				String colNames = Utils.fieldNamesToString(pair.getValue().stream());
-				String values = Utils.fieldValuesToString(pair.getValue().stream(), pair.getKey());
-				localFilter = " WHERE (" + colNames + ") = (" + values + ")";
-			}
-			ClientAgent.getInstance().send(new DeleteOrder<>(clazz, ClientAgent.getInstance().getLogin(), localFilter));
+			String colNames = Utils.fieldNamesToString(pair.getValue().stream());
+			String values = Utils.fieldValuesToString(pair.getValue().stream(), pair.getKey());
+			localFilter = " WHERE (" + colNames + ") = (" + values + ")";
 		}
+		ClientAgent.getInstance().send(new DeleteOrder<>(clazz, ClientAgent.getInstance().getLogin(), localFilter));
+		return true;
 	}
 
-	public abstract void depositPrimary(T dao);
+	//public abstract void depositPrimary(T dao);
 
 	public abstract T withdrawPrimaryAll();
 
-	public abstract T withdrawSecondaryAll();
+	//public abstract T withdrawSecondaryAll();
 
 	public abstract Pair<T, List<Field>> withdrawPrimaryFilled();
 
@@ -224,6 +239,10 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 	public abstract boolean validatePrimary(boolean allRequired);
 
 	public abstract boolean validateSecondary(boolean allRequired);
+
+	public abstract int countFilledPrimary();
+
+	public abstract int countFilledSecondary();
 
 	public abstract void clearAll();
 

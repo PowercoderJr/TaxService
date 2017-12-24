@@ -54,22 +54,6 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 		}
 	}
 
-	public void delete(long id) throws SQLException
-	{
-		try (Statement stmt = connection.createStatement())
-		{
-			stmt.executeUpdate("DELETE FROM " + clazz.getSimpleName() + " WHERE id = " + id);
-		}
-	}
-
-	public void delete(String filter) throws SQLException
-	{
-		try (Statement stmt = connection.createStatement())
-		{
-			stmt.executeUpdate("DELETE FROM " + clazz.getSimpleName() + filter);
-		}
-	}
-
 	public T read(long id, boolean isLazy) throws SQLException
 	{
 		try (Statement stmt = connection.createStatement())
@@ -131,6 +115,30 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 					" OFFSET FLOOR(RANDOM()*(SELECT COUNT(*) FROM " + clazz.getSimpleName() + ")) LIMIT 1");
 			List<T> result = reflectResultSet(rs, isLazy);
 			return result != null ? result.get(0) : null;
+		}
+	}
+
+	public void update(String filter, String newValues) throws SQLException
+	{
+		try (Statement stmt = connection.createStatement())
+		{
+			stmt.executeUpdate("UPDATE " + clazz.getSimpleName() + " SET " + newValues + filter);
+		}
+	}
+
+	public void delete(long id) throws SQLException
+	{
+		try (Statement stmt = connection.createStatement())
+		{
+			stmt.executeUpdate("DELETE FROM " + clazz.getSimpleName() + " WHERE id = " + id);
+		}
+	}
+
+	public void delete(String filter) throws SQLException
+	{
+		try (Statement stmt = connection.createStatement())
+		{
+			stmt.executeUpdate("DELETE FROM " + clazz.getSimpleName() + filter);
 		}
 	}
 

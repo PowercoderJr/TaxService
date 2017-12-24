@@ -108,18 +108,14 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 				{
 					Platform.runLater(() ->
 					{
-						deptype1.setItems(FXCollections.observableList(delivery.getContent()));
-						deptype2.setItems(FXCollections.observableList(delivery.getContent()));
+						if (deptype1.isShowing())
+							deptype1.setItems(FXCollections.observableList(delivery.getContent()));
+						else if (deptype2.isShowing())
+							deptype2.setItems(FXCollections.observableList(delivery.getContent()));
 					});
 				}
 			}
 		});
-	}
-
-	@Override
-	public void depositPrimary(Department dao)
-	{
-
 	}
 
 	@Override
@@ -135,7 +131,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 		return new Department(name, deptype, startyear, phone, city, street, house);
 	}
 
-	@Override
+	/*@Override
 	public Department withdrawSecondaryAll()
 	{
 		String name = name2.getText().trim();
@@ -146,7 +142,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 		String street = street2.getText().trim();
 		String house = house2.getText().trim();
 		return new Department(name, deptype, startyear, phone, city, street, house);
-	}
+	}*/
 
 	@Override
 	public Pair<Department, List<Field>> withdrawPrimaryFilled()
@@ -358,8 +354,66 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 	}
 
 	@Override
+	public int countFilledPrimary()
+	{
+		int count = 0;
+		if (!id1.getText().trim().isEmpty())
+			++count;
+		if (!name1.getText().trim().isEmpty())
+			++count;
+		if (!deptype1.getSelectionModel().isEmpty())
+			++count;
+		if (!startyear1.getPlainText().isEmpty())
+			++count;
+		if (!phone1.getPlainText().isEmpty())
+			++count;
+		if (!city1.getText().trim().isEmpty())
+			++count;
+		if (!street1.getText().trim().isEmpty())
+			++count;
+		if (!house1.getText().trim().isEmpty())
+			++count;
+		return count;
+	}
+
+	@Override
+	public int countFilledSecondary()
+	{
+		int count = 0;
+		if (!name2.getText().trim().isEmpty())
+			++count;
+		if (!deptype2.getSelectionModel().isEmpty())
+			++count;
+		if (!startyear2.getPlainText().isEmpty())
+			++count;
+		if (!phone2.getPlainText().isEmpty())
+			++count;
+		if (!city2.getText().trim().isEmpty())
+			++count;
+		if (!street2.getText().trim().isEmpty())
+			++count;
+		if (!house2.getText().trim().isEmpty())
+			++count;
+		return count;
+	}
+
+	@Override
 	public void clearAll()
 	{
-
+		id1.clear();
+		name1.clear();
+		deptype1.getSelectionModel().clearSelection();
+		startyear1.clear();
+		phone1.clear();
+		city1.clear();
+		street1.clear();
+		house1.clear();
+		name2.clear();
+		deptype2.getSelectionModel().clearSelection();
+		startyear2.clear();
+		phone2.clear();
+		city2.clear();
+		street2.clear();
+		house2.clear();
 	}
 }

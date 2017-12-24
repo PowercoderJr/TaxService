@@ -105,6 +105,13 @@ public class ServerAgent implements Closeable
 		return instance.readAll(isLazy, filter);
 	}
 
+	public void update(Class<? extends AbstractDAO> clazz, String sendersLogin, String filter, String newValues) throws SQLException
+	{
+		AbstractCRUD crud = getCrudForClass(clazz, sendersLogin);
+		if (crud != null)
+			crud.update(filter, newValues);
+	}
+
 	public void delete(Class<? extends AbstractDAO> clazz, String sendersLogin, long id) throws SQLException
 	{
 		AbstractCRUD crud = getCrudForClass(clazz, sendersLogin);

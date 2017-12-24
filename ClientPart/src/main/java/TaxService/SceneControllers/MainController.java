@@ -16,12 +16,15 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
 import java.awt.*;
@@ -52,38 +55,30 @@ public class MainController
 			this.currPortion = 1;
 		}
 
-		public Class<T> getClazz()
-		{
-			return clazz;
-		}
-
-		public String getNiceName()
-		{
-			return niceName;
-		}
-
-		public TableView<T> getTableView()
-		{
-			return tableView;
-		}
-
-		public AbstractEditorBox<T> getEditorBox()
-		{
-			return editorBox;
-		}
-
-		public int getCurrPortion()
-		{
-			return currPortion;
-		}
 	}
 
+	@FXML
+	public MenuBar menuBar;
 	@FXML
 	public BorderPane borderPane;
 	@FXML
 	public HBox editorBoxBox;
 	@FXML
 	public Label currTableLabel;
+	@FXML
+	public Button createBtn;
+	@FXML
+	public Button updateBtn;
+	@FXML
+	public Button filterBtn;
+	@FXML
+	public Button deleteBtn;
+	@FXML
+	public Button clearBtn;
+	@FXML
+	public Button refreshBtn;
+	@FXML
+	public GridPane updateConfirmPane;
 	@FXML
 	public MenuItem switchToDepartmentMenuItem;
 	@FXML
@@ -157,7 +152,7 @@ public class MainController
 				PortionDelivery<AbstractDAO> delivery = (PortionDelivery<AbstractDAO>) o;
 				Platform.runLater(() ->
 				{
-					TableView tv = tableStaffs.get(currTable).getTableView();
+					TableView tv = tableStaffs.get(currTable).tableView;
 					tv.getItems().clear();
 					tv.getColumns().clear();
 					tv.getColumns().addAll(TableColumnsBuilder.buildForDAO(delivery.getContentClazz()));
@@ -217,23 +212,129 @@ public class MainController
 		}
 	}
 
-	public void addBtnClicked(ActionEvent actionEvent)
+	public void createBtnClicked(ActionEvent actionEvent)
 	{
-		tableStaffs.get(currTable).getEditorBox().create();
+		AbstractEditorBox eb = tableStaffs.get(currTable).editorBox;
+		if (eb.validatePrimary(true))
+			if (eb.create())
+				refresh();
 	}
 
 	public void updateBtnClicked(ActionEvent actionEvent)
 	{
+		switchUpdateMode(true);
+	}
+
+	public void updateOkBtnClicked(ActionEvent actionEvent)
+	{
+		AbstractEditorBox eb = tableStaffs.get(currTable).editorBox;
+		if (eb.validatePrimary(false) & eb.validateId1(false) & eb.validateSecondary(false))
+		{
+			if (eb.countFilledSecondary() > 0)
+			{
+				Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+				alert.setTitle("Подтвердите действие");
+				alert.setHeaderText("Подтвердите действие");
+				alert.setContentText("Вы действительно хотите изменить строки таблицы \"" + tableStaffs.get(currTable).niceName + "\" по заданному шаблону?");
+				ButtonType myYes = new ButtonType("Да", ButtonBar.ButtonData.YES);
+				ButtonType myNo = new ButtonType("Нет", ButtonBar.ButtonData.NO);
+				alert.getButtonTypes().setAll(myYes, myNo);
+				if (alert.showAndWait().get() == myYes)
+				{
+					boolean alright = true;
+					if (eb.countFilledPrimary() == 0)
+					{
+						Alert alert2 = new Alert(Alert.AlertType.WARNING);
+						alert2.setTitle("Подтвердите действие");
+						alert2.setHeaderText("Вы собираетесь изменить ВСЕ записи таблицы");
+						alert2.setContentText("Изменение по пустому шаблону приведёт к полной перезаписи таблицы. Вы точно хотите продолжить?");
+
+						//Фокус в ответ на то, что JavaFX требует много кода для изменения порядка и приоритета кнопок
+						ButtonType myNoButYes = new ButtonType("Нет", ButtonBar.ButtonData.YES);
+						ButtonType myYesButNo = new ButtonType("Да", ButtonBar.ButtonData.NO);
+						alert2.getButtonTypes().setAll(myNoButYes, myYesButNo);
+						alright = alert2.showAndWait().get() == myYesButNo;
+					}
+
+					if (alright && eb.update())
+						refresh();
+				}
+				switchUpdateMode(false);
+			}
+			else
+			{
+				Alert alert = new Alert(Alert.AlertType.WARNING);
+				alert.setTitle("Укажите новые значения");
+				alert.setHeaderText("Не указано ни одно значение для замены");
+				alert.setContentText("Укажите как минимум одно новое значение в появившейся строке для выполнения операции.");
+				alert.showAndWait();
+			}
+		}
+	}
+
+	public void updateCancelBtnClicked(ActionEvent actionEvent)
+	{
+		switchUpdateMode(false);
 	}
 
 	public void filterBtnClicked(ActionEvent actionEvent)
 	{
-		tableStaffs.get(currTable).getEditorBox().filter();
+		AbstractEditorBox eb = tableStaffs.get(currTable).editorBox;
+		if (eb.validatePrimary(false) & eb.validateId1(false))
+			if (eb.setFilter())
+				refresh();
 	}
 
 	public void deleteBtnClicked(ActionEvent actionEvent)
 	{
-		tableStaffs.get(currTable).getEditorBox().delete();
+		AbstractEditorBox eb = tableStaffs.get(currTable).editorBox;
+		if (eb.validatePrimary(false) & eb.validateId1(false))
+		{
+			Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+			alert.setTitle("Подтвердите действие");
+			alert.setHeaderText("Подтвердите действие");
+			alert.setContentText("Вы действительно хотите удалить строки из таблицы \"" + tableStaffs.get(currTable).niceName + "\" по заданному шаблону?");
+			ButtonType myYes = new ButtonType("Да", ButtonBar.ButtonData.YES);
+			ButtonType myNo = new ButtonType("Нет", ButtonBar.ButtonData.NO);
+			alert.getButtonTypes().setAll(myYes, myNo);
+			if (alert.showAndWait().get() == myYes)
+			{
+				boolean alright = true;
+				if (eb.countFilledPrimary() == 0)
+				{
+					Alert alert2 = new Alert(Alert.AlertType.WARNING);
+					alert2.setTitle("Подтвердите действие");
+					alert2.setHeaderText("Вы собираетесь удалить ВСЕ записи таблицы");
+					alert2.setContentText("Удаление по пустому шаблону приведёт к полной очистке таблицы. Вы точно хотите продолжить?");
+
+					//Фокус в ответ на то, что JavaFX требует много кода для изменения порядка и приоритета кнопок
+					ButtonType myNoButYes = new ButtonType("Нет", ButtonBar.ButtonData.YES);
+					ButtonType myYesButNo = new ButtonType("Да", ButtonBar.ButtonData.NO);
+					alert2.getButtonTypes().setAll(myNoButYes, myYesButNo);
+					alright = alert2.showAndWait().get() == myYesButNo;
+				}
+
+				if (alright && eb.delete())
+					refresh();
+			}
+		}
+	}
+
+	public void refreshBtnClicked(ActionEvent actionEvent)
+	{
+		refresh();
+	}
+
+	public void clearBtnClicked(ActionEvent actionEvent)
+	{
+		tableStaffs.get(currTable).editorBox.clearAll();
+	}
+
+	private void refresh()
+	{
+		TableStaff staff = tableStaffs.get(currTable);
+		ClientAgent.getInstance().send(new ReadPortionOrder(currTable, ClientAgent.getInstance().getLogin(),
+				staff.currPortion, false, staff.editorBox.getFilter()));
 	}
 
 	public void exit(ActionEvent actionEvent)
@@ -253,22 +354,20 @@ public class MainController
 	{
 		if (currTable != null)
 		{
-			AbstractEditorBox eb = tableStaffs.get(currTable).getEditorBox();
+			AbstractEditorBox eb = tableStaffs.get(currTable).editorBox;
 			eb.setVisible(false);
 			eb.setManaged(false);
 		}
 
-		TableStaff staff = tableStaffs.get(tableClazz);
-		ClientAgent.getInstance().send(new ReadPortionOrder(tableClazz, ClientAgent.getInstance().getLogin(),
-				staff.currPortion, false, staff.getEditorBox().getFilter()));
-		portionField.setText(String.valueOf(staff.currPortion));
-
-		staff.getEditorBox().setVisible(true);
-		staff.getEditorBox().setManaged(true);
-		borderPane.setCenter(staff.getTableView());
-
 		currTable = tableClazz;
-		currTableLabel.setText(staff.getNiceName());
+		TableStaff staff = tableStaffs.get(currTable);
+		currTableLabel.setText(staff.niceName);
+		portionField.setText(String.valueOf(staff.currPortion));
+		refresh();
+
+		staff.editorBox.setVisible(true);
+		staff.editorBox.setManaged(true);
+		borderPane.setCenter(staff.tableView);
 	}
 
 	public void fsMode(ActionEvent actionEvent)
@@ -312,7 +411,7 @@ public class MainController
 	private void gotoPage(int page)
 	{
 		ReadPortionOrder order = new ReadPortionOrder<>(currTable, ClientAgent.getInstance().getLogin(), page, false,
-				tableStaffs.get(currTable).getEditorBox().getFilter());
+				tableStaffs.get(currTable).editorBox.getFilter());
 		ClientAgent.getInstance().send(order);
 	}
 
@@ -322,5 +421,16 @@ public class MainController
 		if (portion < 1)
 			portion = 1;
 		specificPageLabel.setText("(" + ((portion - 1) * AbstractCRUD.PORTION_SIZE + 1) + " - " + (portion * AbstractCRUD.PORTION_SIZE) + ")");
+	}
+
+	private void switchUpdateMode(boolean value)
+	{
+		menuBar.setDisable(value);
+		createBtn.setDisable(value);
+		filterBtn.setDisable(value);
+		deleteBtn.setDisable(value);
+		updateBtn.setVisible(!value);
+		updateConfirmPane.setVisible(value);
+		tableStaffs.get(currTable).editorBox.setSecondaryVisible(value);
 	}
 }

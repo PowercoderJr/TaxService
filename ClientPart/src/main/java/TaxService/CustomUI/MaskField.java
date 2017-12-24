@@ -307,4 +307,10 @@ public class MaskField extends TextField
 
 		setPlainText(plainText1 + text + plainText2);
 	}
+
+	@Override
+	public void clear()
+	{
+		setPlainText("");
+	}
 }

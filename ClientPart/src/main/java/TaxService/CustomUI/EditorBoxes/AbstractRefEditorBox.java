@@ -25,12 +25,6 @@ public abstract class AbstractRefEditorBox<T extends AbstractRefDAO> extends Abs
 	}
 
 	@Override
-	public void depositPrimary(T dao)
-	{
-
-	}
-
-	@Override
 	public T withdrawPrimaryAll()
 	{
 		String name = name1.getText().trim();
@@ -46,7 +40,7 @@ public abstract class AbstractRefEditorBox<T extends AbstractRefDAO> extends Abs
 		return null;
 	}
 
-	@Override
+	/*@Override
 	public T withdrawSecondaryAll()
 	{
 		String name = name2.getText().trim();
@@ -60,7 +54,7 @@ public abstract class AbstractRefEditorBox<T extends AbstractRefDAO> extends Abs
 			e.printStackTrace();
 		}
 		return null;
-	}
+	}*/
 
 	@Override
 	public Pair<T, List<Field>> withdrawPrimaryFilled()
@@ -136,8 +130,30 @@ public abstract class AbstractRefEditorBox<T extends AbstractRefDAO> extends Abs
 	}
 
 	@Override
+	public int countFilledPrimary()
+	{
+		int count = 0;
+		if (!id1.getText().trim().isEmpty())
+			++count;
+		if (!name1.getText().trim().isEmpty())
+			++count;
+		return count;
+	}
+
+	@Override
+	public int countFilledSecondary()
+	{
+		int count = 0;
+		if (!name2.getText().trim().isEmpty())
+			++count;
+		return count;
+	}
+
+	@Override
 	public void clearAll()
 	{
-
+		id1.clear();
+		name1.clear();
+		name2.clear();
 	}
 }
