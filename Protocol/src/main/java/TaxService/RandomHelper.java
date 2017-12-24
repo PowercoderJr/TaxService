@@ -110,7 +110,7 @@ public class RandomHelper
 
 	public static String getRandomHouse()
 	{
-		String house = "" + (1 + rnd.nextInt(200));
+		String house = String.valueOf(1 + rnd.nextInt(200));
 		if (rnd.nextDouble() < 0.1)
 			house += (char) ('а' + rnd.nextInt(6));
 		return house;

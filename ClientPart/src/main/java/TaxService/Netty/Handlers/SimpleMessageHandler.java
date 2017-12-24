@@ -20,9 +20,9 @@ public class SimpleMessageHandler extends AbstractHandler<String>
 				ClientAgent.publishAuth(tokens[1].equals(PhraseBook.YES));
 				break;
 			case PhraseBook.ERROR:
-				String original = Arrays.stream(tokens).collect(Collectors.joining("" + PhraseBook.SEPARATOR));
+				String original = Arrays.stream(tokens).collect(Collectors.joining(String.valueOf(PhraseBook.SEPARATOR)));
 				ClientAgent.publishExceptionReceived(original.substring(PhraseBook.ERROR.length() +
-						("" + PhraseBook.SEPARATOR).length()));
+						(String.valueOf(PhraseBook.SEPARATOR)).length()));
 				break;
 		}
 	}

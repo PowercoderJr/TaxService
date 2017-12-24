@@ -1,6 +1,7 @@
 package TaxService.CRUDs;
 
 import TaxService.DAOs.AbstractDAO;
+import TaxService.Utils;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
@@ -35,9 +36,7 @@ public abstract class AbstractRandomableCRUD<T extends AbstractDAO> extends Abst
 		fields.addAll(Arrays.asList(clazz.getFields()));
 		fields.removeIf(item -> item.getName().equals("id") || item.getName()
 				.equals("serialVersionUID") || item.getName().equals("readEvenIfLazy"));
-		String colNames = fields.stream()
-				.map(item -> AbstractDAO.class.isAssignableFrom(item.getType()) ? item.getName() + "_id" : item.getName())
-				.collect(Collectors.joining(", "));
+		String colNames = Utils.fieldNamesToString(fields.stream());
 		String qmarks = String.join(", ", Collections.nCopies(fields.size(), "?"));
 
 		try (PreparedStatement stmt = connection.prepareStatement("INSERT INTO " + clazz.getSimpleName() + " (" + colNames + ") VALUES (" + qmarks + ")"))

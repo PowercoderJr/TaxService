@@ -82,7 +82,7 @@
                                 </rowConstraints>
                                  <children>
                                    <Button mnemonicParsing="false" prefHeight="70.0" prefWidth="120.0" text="Добавить" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" onAction="#addBtnClicked" />
-                                   <Button mnemonicParsing="false" prefHeight="70.0" prefWidth="120.0" text="Обновить" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" onAction="#updateBtnClicked" />
+                                   <Button mnemonicParsing="false" prefHeight="70.0" prefWidth="120.0" text="Изменить" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" onAction="#updateBtnClicked" />
                                    <Button mnemonicParsing="false" prefHeight="70.0" prefWidth="120.0" text="Фильтровать" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" onAction="#filterBtnClicked" />
                                    <Button mnemonicParsing="false" prefHeight="70.0" prefWidth="120.0" text="Удалить" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" onAction="#deleteBtnClicked" />
                                  </children>

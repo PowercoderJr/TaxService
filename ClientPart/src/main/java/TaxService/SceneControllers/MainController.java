@@ -15,11 +15,9 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -221,12 +219,11 @@ public class MainController
 
 	public void addBtnClicked(ActionEvent actionEvent)
 	{
-		tableStaffs.get(currTable).getEditorBox().add();
+		tableStaffs.get(currTable).getEditorBox().create();
 	}
 
 	public void updateBtnClicked(ActionEvent actionEvent)
 	{
-		tableStaffs.get(currTable).getEditorBox().validatePrimary(false);
 	}
 
 	public void filterBtnClicked(ActionEvent actionEvent)
@@ -236,6 +233,7 @@ public class MainController
 
 	public void deleteBtnClicked(ActionEvent actionEvent)
 	{
+		tableStaffs.get(currTable).getEditorBox().delete();
 	}
 
 	public void exit(ActionEvent actionEvent)
@@ -261,8 +259,9 @@ public class MainController
 		}
 
 		TableStaff staff = tableStaffs.get(tableClazz);
-		ClientAgent.getInstance().send(new ReadPortionOrder(tableClazz, ClientAgent.getInstance().getLogin(), 1,
-				false, staff.getEditorBox().getFilter()));
+		ClientAgent.getInstance().send(new ReadPortionOrder(tableClazz, ClientAgent.getInstance().getLogin(),
+				staff.currPortion, false, staff.getEditorBox().getFilter()));
+		portionField.setText(String.valueOf(staff.currPortion));
 
 		staff.getEditorBox().setVisible(true);
 		staff.getEditorBox().setManaged(true);

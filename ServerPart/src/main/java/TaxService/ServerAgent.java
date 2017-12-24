@@ -119,6 +119,13 @@ public class ServerAgent implements Closeable
 			crud.delete(dao.getId());
 	}
 
+	public void delete(Class<? extends AbstractDAO> clazz, String sendersLogin, String filter) throws SQLException
+	{
+		AbstractCRUD crud = getCrudForClass(clazz, sendersLogin);
+		if (crud != null)
+			crud.delete(filter);
+	}
+
 	public int count(Class<? extends AbstractDAO> clazz, String sendersLogin, String filter) throws SQLException
 	{
 		AbstractCRUD crud = getCrudForClass(clazz, sendersLogin);

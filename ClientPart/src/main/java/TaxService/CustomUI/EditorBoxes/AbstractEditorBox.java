@@ -2,10 +2,11 @@ package TaxService.CustomUI.EditorBoxes;
 
 import TaxService.CustomUI.MaskField;
 import TaxService.DAOs.AbstractDAO;
-import TaxService.DAOs.Department;
 import TaxService.Netty.ClientAgent;
 import TaxService.Orders.CreateOrder;
 import TaxService.Orders.ReadPortionOrder;
+import TaxService.Orders.DeleteOrder;
+import TaxService.Utils;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -24,7 +25,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPane
 {
@@ -162,7 +162,7 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 		field.setEffect(new ColorAdjust(0, 0.5, 0, 0));
 	}
 
-	public void add()
+	public void create()
 	{
 		if (validatePrimary(true))
 		{
@@ -185,34 +185,30 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 				filter = "";
 			else
 			{
-				String colNames = pair.getValue().stream()
-						.map(item -> AbstractDAO.class.isAssignableFrom(item.getType()) ? item.getName() + "_id" : item.getName())
-						.collect(Collectors.joining(", "));
-				String values = pair.getValue().stream().map(item ->
-				{
-					String result = "";
-					try
-					{
-						if (AbstractDAO.class.isAssignableFrom(item.getType()))
-							result = String.valueOf(((AbstractDAO) item.get(pair.getKey())).getId());
-						else
-							result = String.valueOf(item.get(pair.getKey()));
-					}
-					catch (IllegalAccessException e)
-					{
-						e.printStackTrace();
-					}
-					return "'" + result + "'";
-				}).collect(Collectors.joining(", "));
-				this.filter = " WHERE (" + colNames + ") = (" + values + ")";
+				String colNames = Utils.fieldNamesToString(pair.getValue().stream());
+				String values = Utils.fieldValuesToString(pair.getValue().stream(), pair.getKey());
+				filter = " WHERE (" + colNames + ") = (" + values + ")";
 			}
 			ClientAgent.getInstance().send(new ReadPortionOrder<>(clazz, ClientAgent.getInstance().getLogin(), 1, false, filter));
 		}
 	}
 
-	public void remove()
+	public void delete()
 	{
-
+		if (validatePrimary(false) & validateId1(false))
+		{
+			Pair<T, List<Field>> pair = withdrawPrimaryFilled();
+			String localFilter;
+			if (pair.getValue().isEmpty())
+				localFilter = "";
+			else
+			{
+				String colNames = Utils.fieldNamesToString(pair.getValue().stream());
+				String values = Utils.fieldValuesToString(pair.getValue().stream(), pair.getKey());
+				localFilter = " WHERE (" + colNames + ") = (" + values + ")";
+			}
+			ClientAgent.getInstance().send(new DeleteOrder<>(clazz, ClientAgent.getInstance().getLogin(), localFilter));
+		}
 	}
 
 	public abstract void depositPrimary(T dao);

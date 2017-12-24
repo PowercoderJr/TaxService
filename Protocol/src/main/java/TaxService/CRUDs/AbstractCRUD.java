@@ -1,6 +1,7 @@
 package TaxService.CRUDs;
 
 import TaxService.DAOs.*;
+import TaxService.Utils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -43,25 +44,8 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 		fields.addAll(Arrays.asList(clazz.getFields()));
 		fields.removeIf(item -> item.getName().equals("id") || item.getName()
 				.equals("serialVersionUID") || item.getName().equals("readEvenIfLazy"));
-		String colNames = fields.stream()
-				.map(item -> AbstractDAO.class.isAssignableFrom(item.getType()) ? item.getName() + "_id" : item.getName())
-				.collect(Collectors.joining(", "));
-		String values = fields.stream().map(item ->
-		{
-			String result = "";
-			try
-			{
-				if (AbstractDAO.class.isAssignableFrom(item.getType()))
-					result = String.valueOf(((AbstractDAO) item.get((object))).getId());
-				else
-					result = String.valueOf(item.get(object));
-			}
-			catch (IllegalAccessException e)
-			{
-				e.printStackTrace();
-			}
-			return "'" + result + "'";
-		}).collect(Collectors.joining(", "));
+		String colNames = Utils.fieldNamesToString(fields.stream());
+		String values = Utils.fieldValuesToString(fields.stream(), object);
 
 		try (Statement stmt = connection.createStatement())
 		{
@@ -78,15 +62,21 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 		}
 	}
 
+	public void delete(String filter) throws SQLException
+	{
+		try (Statement stmt = connection.createStatement())
+		{
+			stmt.executeUpdate("DELETE FROM " + clazz.getSimpleName() + filter);
+		}
+	}
+
 	public T read(long id, boolean isLazy) throws SQLException
 	{
 		try (Statement stmt = connection.createStatement())
 		{
 			String fields;
 			if (isLazy)
-				fields = Arrays.stream(AbstractDAO.getReadEvenIfLazy(clazz))
-						.map(item -> item.getName())
-						.collect(Collectors.joining(", "));
+				fields = Utils.fieldNamesToString(Arrays.stream(AbstractDAO.getReadEvenIfLazy(clazz)));
 			else
 				fields = "*";
 			ResultSet rs = stmt.executeQuery("SELECT " + fields + " FROM " + clazz.getSimpleName() +
@@ -103,9 +93,7 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 			if (filter == null) filter = "";
 			String fields;
 			if (isLazy)
-				fields = Arrays.stream(AbstractDAO.getReadEvenIfLazy(clazz))
-						.map(item -> item.getName())
-						.collect(Collectors.joining(", "));
+				fields = Utils.fieldNamesToString(Arrays.stream(AbstractDAO.getReadEvenIfLazy(clazz)));
 			else
 				fields = "*";
 			ResultSet rs = stmt.executeQuery("SELECT " + fields + " FROM " + clazz.getSimpleName() +
@@ -122,9 +110,7 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 			if (filter == null) filter = "";
 			String fields;
 			if (isLazy)
-				fields = Arrays.stream(AbstractDAO.getReadEvenIfLazy(clazz))
-						.map(item -> item.getName())
-						.collect(Collectors.joining(", "));
+				fields = Utils.fieldNamesToString(Arrays.stream(AbstractDAO.getReadEvenIfLazy(clazz)));
 			else
 				fields = "*";
 			ResultSet rs = stmt.executeQuery("SELECT " + fields + " FROM " + clazz.getSimpleName() + filter);
@@ -138,9 +124,7 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 		{
 			String fields;
 			if (isLazy)
-				fields = Arrays.stream(AbstractDAO.getReadEvenIfLazy(clazz))
-						.map(item -> item.getName())
-						.collect(Collectors.joining(", "));
+				fields = Utils.fieldNamesToString(Arrays.stream(AbstractDAO.getReadEvenIfLazy(clazz)));
 			else
 				fields = "*";
 			ResultSet rs = stmt.executeQuery("SELECT " + fields + " FROM " + clazz.getSimpleName() +
@@ -161,13 +145,13 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 		}
 	}
 
-	public ResultSet executeCustomQuery(String query) throws SQLException
+	/*public ResultSet executeCustomQuery(String query) throws SQLException
 	{
 		try (Statement stmt = connection.createStatement())
 		{
 			return stmt.executeQuery(query);
 		}
-	}
+	}*/
 
 	//https://stackoverflow.com/questions/21956042/mapping-a-jdbc-resultset-to-an-object
 	protected List<T> reflectResultSet(ResultSet rs, boolean isLazy) throws SQLException
