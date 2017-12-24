@@ -42,7 +42,7 @@
                 <Menu mnemonicParsing="false" text="TESTING" />
             </menus>
         </MenuBar>
-        <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+        <BorderPane fx:id="borderPane" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
             <bottom>
                 <HBox alignment="CENTER" minHeight="70.0" prefHeight="50.0" prefWidth="200.0" spacing="10.0" BorderPane.alignment="CENTER">
                     <children>
@@ -100,16 +100,6 @@
                </BorderPane.margin>
                 </HBox>
             </top>
-         <center>
-                <TableView fx:id="actuallyTable" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" BorderPane.alignment="CENTER">
-                    <BorderPane.margin>
-                        <Insets left="20.0" right="20.0" />
-                    </BorderPane.margin>
-                    <placeholder>
-                        <Label text="НЕТ ЗАПИСЕЙ" />
-                    </placeholder>
-                </TableView>
-         </center>
         </BorderPane>
     </children>
     <columnConstraints>

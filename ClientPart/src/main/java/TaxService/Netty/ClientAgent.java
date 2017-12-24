@@ -126,7 +126,6 @@ public class ClientAgent implements Closeable
 	private ChannelFuture future;
 	private EventLoopGroup group;
 	private String login;
-	private Class<? extends AbstractDAO> currTable;
 
 	private ClientAgent(InetAddress inetAddress, int port)
 	{
@@ -175,16 +174,6 @@ public class ClientAgent implements Closeable
 	public void setLogin(String login)
 	{
 		this.login = login;
-	}
-
-	public Class<? extends AbstractDAO> getCurrTable()
-	{
-		return currTable;
-	}
-
-	public void setCurrTable(Class<? extends AbstractDAO> currTable)
-	{
-		this.currTable = currTable;
 	}
 
 	protected void finalize()

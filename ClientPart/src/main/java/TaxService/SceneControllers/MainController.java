@@ -14,13 +14,16 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 
 import java.awt.*;
@@ -32,22 +35,57 @@ import java.util.function.UnaryOperator;
 
 public class MainController
 {
-	private static Map<Class<? extends AbstractDAO>, TableStaff> niceTableNames = new HashMap<>();
-	public HBox editorBoxBox;
-	private AbstractEditorBox currEB_TEST;
+	private static Map<Class<? extends AbstractDAO>, TableStaff> tableStaffs = new HashMap<>();
 
-	private class TableStaff
+	private class TableStaff<T extends AbstractDAO>
 	{
-		private Class<? extends AbstractDAO> clazz;
+		private Class<T> clazz;
 		private String niceName;
-		private TableView tableView;
-		private HBox editorBox;
+		private TableView<T> tableView;
+		private AbstractEditorBox<T> editorBox;
+		public int currPortion;
+
+		public TableStaff(Class<T> clazz, String niceName, TableView<T> tableView, AbstractEditorBox<T> editorBox)
+		{
+			this.clazz = clazz;
+			this.niceName = niceName;
+			this.tableView = tableView;
+			this.editorBox = editorBox;
+			this.currPortion = 1;
+		}
+
+		public Class<T> getClazz()
+		{
+			return clazz;
+		}
+
+		public String getNiceName()
+		{
+			return niceName;
+		}
+
+		public TableView<T> getTableView()
+		{
+			return tableView;
+		}
+
+		public AbstractEditorBox<T> getEditorBox()
+		{
+			return editorBox;
+		}
+
+		public int getCurrPortion()
+		{
+			return currPortion;
+		}
 	}
 
 	@FXML
-	public Label currTableLabel;
+	public BorderPane borderPane;
 	@FXML
-	public TableView actuallyTable;
+	public HBox editorBoxBox;
+	@FXML
+	public Label currTableLabel;
 	@FXML
 	public MenuItem switchToDepartmentMenuItem;
 	@FXML
@@ -74,7 +112,7 @@ public class MainController
 	public TextField portionField;
 
 	private Callback onPortionReceived;
-	private int currPortion;
+	private Class<? extends AbstractDAO> currTable;
 
 	public void initialize()
 	{
@@ -103,71 +141,82 @@ public class MainController
 				PortionDelivery<AbstractDAO> delivery = (PortionDelivery<AbstractDAO>) o;
 				Platform.runLater(() ->
 				{
-					actuallyTable.getItems().clear();
-					actuallyTable.getColumns().clear();
-					actuallyTable.getColumns().addAll(TableColumnsBuilder.buildForDAO(delivery.getContentClazz()));
-					actuallyTable.setItems(FXCollections.observableList(delivery.getContent()));
+					TableView tv = tableStaffs.get(currTable).getTableView();
+					tv.getItems().clear();
+					tv.getColumns().clear();
+					tv.getColumns().addAll(TableColumnsBuilder.buildForDAO(delivery.getContentClazz()));
+					tv.setItems(FXCollections.observableList(delivery.getContent()));
 					statusLabel.setText("Отображены записи с " + delivery.getFirst() + " по " + delivery.getLast()
 							+ " из " + delivery.getTotal());
-					currPortion = delivery.getFirst() / AbstractCRUD.PORTION_SIZE + 1;
-					actuallyTable.scrollTo(0);
+					tableStaffs.get(currTable).currPortion = delivery.getFirst() / AbstractCRUD.PORTION_SIZE + 1;
+					//tv.scrollTo(0);
 				});
 			}
 		};
 		ClientAgent.subscribePortionReceived(onPortionReceived);
 
-		Class[] tableClazzes = {Department.class, Employee.class, Company.class, Payment.class, Deptype.class,
-								Post.class, Education.class, Owntype.class, Paytype.class};
-		/*Platform.runLater(() ->
+		Platform.runLater(() ->
 		{
-			initTableMenuItem(switchToDepartmentMenuItem, Department.class);
-			initTableMenuItem(switchToEmployeeMenuItem, Employee.class);
-			initTableMenuItem(switchToCompanyMenuItem, Company.class);
-			initTableMenuItem(switchToPaymentMenuItem, Payment.class);
-			initTableMenuItem(switchToDeptypeMenuItem, Deptype.class);
-			initTableMenuItem(switchToPostMenuItem, Education.class);
-			initTableMenuItem(switchToEducationMenuItem, Education.class);
-			initTableMenuItem(switchToOwntypeMenuItem, Owntype.class);
-			initTableMenuItem(switchToPaytypeMenuItem, Paytype.class);
-		});*/
-
-		currEB_TEST = new DepartmentEditorBox();
-		editorBoxBox.getChildren().add(0, currEB_TEST);
-		switchActiveTable(Department.class);
+			initTableStaff(Department.class, "Отделения налоговой инспекции");
+			/*initTableStaff(Employee.class, "Сотрудники налоговой инспекции");
+			initTableStaff(Company.class, "Предприятия-плательщики");
+			initTableStaff(Payment.class, "Платежи");
+			initTableStaff(Deptype.class, "Типы отделений");
+			initTableStaff(Post.class, "Должности налоговой инспекции");
+			initTableStaff(Education.class, "Степени образования");
+			initTableStaff(Owntype.class, "Виды собственности");
+			initTableStaff(Paytype.class, "Виды платежей");*/
+			switchActiveTable(Department.class);
+		});
 	}
 
-
-	private void initTableStaff(Class<? extends AbstractDAO> tableClazz)
+	private void initTableStaff(Class<? extends AbstractDAO> tableClazz, String niceName)
 	{
-		String name = tableClazz.getSimpleName();
-		Label placeholder = new Label("НЕТ ЗАПИСЕЙ");
+		try
+		{
+			String clazzName = tableClazz.getSimpleName();
 
-		//Init TableView
-		TableView tv = new TableView();
-		tv.getColumns().addAll(TableColumnsBuilder.buildForDAO(tableClazz));
+			//Init TableView
+			TableView tv = new TableView();
+			BorderPane.setMargin(tv, new Insets(0, 20, 0, 20));
+			tv.setPlaceholder(new Label("НЕТ ЗАПИСЕЙ"));
+			tv.getColumns().addAll(TableColumnsBuilder.buildForDAO(tableClazz));
+			borderPane.setCenter(tv);
+			tv.setVisible(false);
+			tv.setManaged(false);
 
-		//Getting editor box
-	}
+			//Init editor box
+			AbstractEditorBox eb = (AbstractEditorBox) Class.forName("TaxService.CustomUI.EditorBoxes." + clazzName + "EditorBox").getConstructor().newInstance();
+			editorBoxBox.getChildren().add(eb);
+			eb.setVisible(false);
+			eb.setManaged(false);
 
-	private void initTableMenuItem(MenuItem item, Class<? extends AbstractDAO> tableClazz)
-	{
-		//item.setText(ClientMain.getNiceTableName(tableClazz));//TODO
-		item.setOnAction(e -> switchActiveTable(tableClazz));
+			//Menu item
+			MenuItem item = (MenuItem) getClass().getField("switchTo" + clazzName + "MenuItem").get(this);
+			item.setText(niceName);
+			item.setOnAction(e -> switchActiveTable(tableClazz));
+
+			tableStaffs.put(tableClazz, new TableStaff(tableClazz, niceName, tv, eb));
+		}
+		catch (ClassNotFoundException | IllegalAccessException | InvocationTargetException | InstantiationException | NoSuchMethodException | NoSuchFieldException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	public void addBtnClicked(ActionEvent actionEvent)
 	{
-		currEB_TEST.add();
+		tableStaffs.get(currTable).getEditorBox().add();
 	}
 
 	public void updateBtnClicked(ActionEvent actionEvent)
 	{
-		currEB_TEST.validatePrimary(false);
+		tableStaffs.get(currTable).getEditorBox().validatePrimary(false);
 	}
 
 	public void filterBtnClicked(ActionEvent actionEvent)
 	{
-		currEB_TEST.filter();
+		tableStaffs.get(currTable).getEditorBox().filter();
 	}
 
 	public void deleteBtnClicked(ActionEvent actionEvent)
@@ -209,9 +258,24 @@ public class MainController
 
 	public void switchActiveTable(Class<? extends AbstractDAO> tableClazz)
 	{
-		ClientAgent.getInstance().send(new ReadPortionOrder(tableClazz, ClientAgent.getInstance().getLogin(), 1, false, null)); //filter
-		ClientAgent.getInstance().setCurrTable(tableClazz);
-		//currTableLabel.setText(ClientMain.getNiceTableName(tableClazz));//TODO
+		if (currTable != null)
+		{
+			tableStaffs.get(currTable).getEditorBox().setVisible(false);
+			tableStaffs.get(currTable).getEditorBox().setManaged(false);
+			tableStaffs.get(currTable).getTableView().setVisible(false);
+			tableStaffs.get(currTable).getTableView().setManaged(false);
+		}
+
+		ClientAgent.getInstance().send(new ReadPortionOrder(tableClazz, ClientAgent.getInstance().getLogin(), 1,
+				false, tableStaffs.get(tableClazz).getEditorBox().getFilter()));
+
+		tableStaffs.get(tableClazz).getEditorBox().setVisible(true);
+		tableStaffs.get(tableClazz).getEditorBox().setManaged(true);
+		tableStaffs.get(tableClazz).getTableView().setVisible(true);
+		tableStaffs.get(tableClazz).getTableView().setManaged(true);
+
+		currTable = tableClazz;
+		currTableLabel.setText(tableStaffs.get(tableClazz).getNiceName());
 	}
 
 	public void fsMode(ActionEvent actionEvent)
@@ -226,14 +290,14 @@ public class MainController
 
 	public void gotoPrevPage(ActionEvent actionEvent)
 	{
-		gotoPage(currPortion - 1);
+		gotoPage(tableStaffs.get(currTable).currPortion - 1);
 	}
 
 	public void onPortionSpinnerKeyReleased(KeyEvent keyEvent)
 	{
 		if (keyEvent.getCode() == KeyCode.ENTER)
 		{
-			int portion = portionField.getText().isEmpty() ? currPortion : Integer.parseInt(portionField.getText());
+			int portion = portionField.getText().isEmpty() ? tableStaffs.get(currTable).currPortion : Integer.parseInt(portionField.getText());
 			if (portion < 1)
 				portion = 1;
 			gotoPage(portion);
@@ -244,7 +308,7 @@ public class MainController
 
 	public void gotoNextPage(ActionEvent actionEvent)
 	{
-		gotoPage(currPortion + 1);
+		gotoPage(tableStaffs.get(currTable).currPortion + 1);
 	}
 
 	public void gotoLastPage(ActionEvent actionEvent)
@@ -254,14 +318,14 @@ public class MainController
 
 	private void gotoPage(int page)
 	{
-		ClientAgent agent = ClientAgent.getInstance();
-		ReadPortionOrder order = new ReadPortionOrder<>(agent.getCurrTable(), agent.getLogin(), page, false, null);//filter
+		ReadPortionOrder order = new ReadPortionOrder<>(currTable, ClientAgent.getInstance().getLogin(), page, false,
+				tableStaffs.get(currTable).getEditorBox().getFilter());
 		ClientAgent.getInstance().send(order);
 	}
 
 	private void refreshSpecificPageLabel()
 	{
-		int portion = portionField.getText().isEmpty() ? currPortion : Integer.parseInt(portionField.getText());
+		int portion = portionField.getText().isEmpty() ? tableStaffs.get(currTable).currPortion : Integer.parseInt(portionField.getText());
 		if (portion < 1)
 			portion = 1;
 		specificPageLabel.setText("(" + ((portion - 1) * AbstractCRUD.PORTION_SIZE + 1) + " - " + (portion * AbstractCRUD.PORTION_SIZE) + ")");

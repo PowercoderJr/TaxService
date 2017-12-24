@@ -7,6 +7,7 @@ import TaxService.DAOs.Deptype;
 import TaxService.Deliveries.AllDelivery;
 import TaxService.Netty.ClientAgent;
 import TaxService.Orders.ReadAllOrder;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -105,8 +106,11 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 
 				if (delivery.getPurpose() == ReadAllOrder.Purposes.REFRESH_CB && delivery.getContentClazz() == Deptype.class)
 				{
-					deptype1.setItems(FXCollections.observableList(delivery.getContent()));
-					deptype2.setItems(FXCollections.observableList(delivery.getContent()));
+					Platform.runLater(() ->
+					{
+						deptype1.setItems(FXCollections.observableList(delivery.getContent()));
+						deptype2.setItems(FXCollections.observableList(delivery.getContent()));
+					});
 				}
 			}
 		});
