@@ -9,6 +9,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 import java.io.Closeable;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -99,13 +100,13 @@ public class ServerAgent implements Closeable
 			}
 	}
 
-	public List readPortion(Class<? extends AbstractDAO> clazz, String sendersLogin, int portion, boolean isLazy)
+	public List readPortion(Class<? extends AbstractDAO> clazz, String sendersLogin, int portion, boolean isLazy, String filter)
 	{
 		AbstractCRUD instance = getCrudForClass(clazz, sendersLogin);
 		List result = null;
 		try
 		{
-			result = instance.readPortion(portion, isLazy);
+			result = instance.readPortion(portion, isLazy, filter);
 		}
 		catch (SQLException e)
 		{
@@ -114,13 +115,13 @@ public class ServerAgent implements Closeable
 		return result;
 	}
 
-	public List readAll(Class<? extends AbstractDAO> clazz, String sendersLogin, boolean isLazy)
+	public List readAll(Class<? extends AbstractDAO> clazz, String sendersLogin, boolean isLazy, String filter)
 	{
 		AbstractCRUD instance = getCrudForClass(clazz, sendersLogin);
 		List result = null;
 		try
 		{
-			result = instance.readAll(isLazy);
+			result = instance.readAll(isLazy, filter);
 		}
 		catch (SQLException e)
 		{
@@ -143,11 +144,11 @@ public class ServerAgent implements Closeable
 			crud.delete(dao.getId());
 	}
 
-	public int count(Class<? extends AbstractDAO> clazz, String sendersLogin) throws SQLException
+	public int count(Class<? extends AbstractDAO> clazz, String sendersLogin, String filter) throws SQLException
 	{
 		AbstractCRUD crud = getCrudForClass(clazz, sendersLogin);
 		if (crud != null)
-			return crud.count();
+			return crud.count(filter);
 		else
 			return -1;
 	}

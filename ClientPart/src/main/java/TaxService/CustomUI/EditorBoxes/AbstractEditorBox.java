@@ -2,8 +2,10 @@ package TaxService.CustomUI.EditorBoxes;
 
 import TaxService.CustomUI.MaskField;
 import TaxService.DAOs.AbstractDAO;
+import TaxService.DAOs.Department;
 import TaxService.Netty.ClientAgent;
 import TaxService.Orders.CreateOrder;
+import TaxService.Orders.ReadPortionOrder;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -22,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPane
 {
@@ -35,6 +38,7 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 	private VBox fieldsBox;
 	private HBox longBox;
 	protected TextField id1, id2;
+	protected String filter;
 
 	public AbstractEditorBox(Class<T> clazz)
 	{
@@ -136,6 +140,23 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 		return isValid;
 	}
 
+	private boolean validateId1(boolean isRequired)
+	{
+		boolean isValid;
+		try
+		{
+			isValid = !isRequired && id1.getText().isEmpty() || !id1.getText().isEmpty() &&
+					Integer.parseInt(id1.getText()) > 0;
+		}
+		catch (Exception e)
+		{
+			isValid = false;
+		}
+		if (!isValid)
+			markAsInvalid(id1);
+		return isValid;
+	}
+
 	protected void markAsInvalid(Node field)
 	{
 		field.setEffect(new ColorAdjust(0, 0.5, 0, 0));
@@ -156,6 +177,36 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 
 	public void filter()
 	{
+		if (validatePrimary(false) & validateId1(false))
+		{
+			Pair<T, List<Field>> pair = withdrawPrimaryFilled();
+			if (pair.getValue().isEmpty())
+				filter = "";
+			else
+			{
+				String colNames = pair.getValue().stream()
+						.map(item -> AbstractDAO.class.isAssignableFrom(item.getType()) ? item.getName() + "_id" : item.getName())
+						.collect(Collectors.joining(", "));
+				String values = pair.getValue().stream().map(item ->
+				{
+					String result = "";
+					try
+					{
+						if (AbstractDAO.class.isAssignableFrom(item.getType()))
+							result = String.valueOf(((AbstractDAO) item.get(pair.getKey())).getId());
+						else
+							result = String.valueOf(item.get(pair.getKey()));
+					}
+					catch (IllegalAccessException e)
+					{
+						e.printStackTrace();
+					}
+					return "'" + result + "'";
+				}).collect(Collectors.joining(", "));
+				this.filter = " WHERE (" + colNames + ") = (" + values + ")";
+			}
+			ClientAgent.getInstance().send(new ReadPortionOrder<>(clazz, ClientAgent.getInstance().getLogin(), 1, false, filter));
+		}
 	}
 
 	public void remove()
@@ -177,4 +228,9 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 	public abstract boolean validateSecondary(boolean allRequired);
 
 	public abstract void clearAll();
+
+	public String getFilter()
+	{
+		return filter;
+	}
 }

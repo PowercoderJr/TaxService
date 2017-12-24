@@ -8,12 +8,14 @@ public class ReadAllOrder<T extends AbstractDAO> extends AbstractOrder<T>
 
 	private boolean isLazy;
 	private Purposes purpose;
+	private String filter;
 
-	public ReadAllOrder(Class itemClazz, String sendersLogin, boolean isLazy, Purposes purpose)
+	public ReadAllOrder(Class itemClazz, String sendersLogin, boolean isLazy, Purposes purpose, String filter)
 	{
 		super(itemClazz, sendersLogin);
 		this.isLazy = isLazy;
 		this.purpose = purpose;
+		this.filter = filter;
 	}
 
 	public boolean isLazy()
@@ -24,6 +26,11 @@ public class ReadAllOrder<T extends AbstractDAO> extends AbstractOrder<T>
 	public Purposes getPurpose()
 	{
 		return purpose;
+	}
+
+	public String getFilter()
+	{
+		return filter;
 	}
 
 	@Override

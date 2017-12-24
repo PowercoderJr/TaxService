@@ -167,6 +167,7 @@ public class MainController
 
 	public void filterBtnClicked(ActionEvent actionEvent)
 	{
+		currEB_TEST.filter();
 	}
 
 	public void deleteBtnClicked(ActionEvent actionEvent)
@@ -208,7 +209,7 @@ public class MainController
 
 	public void switchActiveTable(Class<? extends AbstractDAO> tableClazz)
 	{
-		ClientAgent.getInstance().send(new ReadPortionOrder(tableClazz, ClientAgent.getInstance().getLogin(), 1, false));
+		ClientAgent.getInstance().send(new ReadPortionOrder(tableClazz, ClientAgent.getInstance().getLogin(), 1, false, null)); //filter
 		ClientAgent.getInstance().setCurrTable(tableClazz);
 		//currTableLabel.setText(ClientMain.getNiceTableName(tableClazz));//TODO
 	}
@@ -254,7 +255,7 @@ public class MainController
 	private void gotoPage(int page)
 	{
 		ClientAgent agent = ClientAgent.getInstance();
-		ReadPortionOrder order = new ReadPortionOrder<>(agent.getCurrTable(), agent.getLogin(), page, false);
+		ReadPortionOrder order = new ReadPortionOrder<>(agent.getCurrTable(), agent.getLogin(), page, false, null);//filter
 		ClientAgent.getInstance().send(order);
 	}
 

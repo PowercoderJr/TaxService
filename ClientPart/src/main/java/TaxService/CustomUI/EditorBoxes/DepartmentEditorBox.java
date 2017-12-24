@@ -45,13 +45,13 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 		//deptype1.setEditable(true);
 		deptype1.setOnShowing(event -> ClientAgent.getInstance()
 				.send(new ReadAllOrder<Deptype>(Deptype.class, ClientAgent.getInstance()
-						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB)));
+						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
 		deptype2 = new ComboBox<>();
 		deptype2.setPrefWidth(150);
 		//deptype2.setEditable(true);
 		deptype2.setOnShowing(event -> ClientAgent.getInstance()
 				.send(new ReadAllOrder<Deptype>(Deptype.class, ClientAgent.getInstance()
-						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB)));
+						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
 		addField("Тип отделения", deptype1, deptype2);
 
 		startyear1 = new MaskField();
@@ -150,6 +150,16 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 		try
 		{
 			List<Field> filledFields = new ArrayList<>();
+
+			long id;
+			if (id1.getText().trim().isEmpty())
+				id = 0;
+			else
+			{
+				id = Integer.parseInt(id1.getText().trim());
+				filledFields.add(Department.class.getField("id"));
+			}
+
 			String name;
 			if (name1.getText().trim().isEmpty())
 				name = null;
@@ -213,7 +223,9 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 				filledFields.add(Department.class.getField("house"));
 			}
 
-			return new Pair<>(new Department(name, deptype, startyear, phone, city, street, house), filledFields);
+			Department dao = new Department(name, deptype, startyear, phone, city, street, house);
+			dao.id = id;
+			return new Pair<>(dao, filledFields);
 		}
 		catch (NoSuchFieldException e)
 		{
@@ -305,8 +317,8 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 		boolean isValid;
 		try
 		{
-			isValid = !isRequired && field.getPlainText().isEmpty() || !field.getPlainText()
-					.isEmpty() && Integer.parseInt(field.getPlainText()) <= Year.now().getValue();
+			isValid = !isRequired && field.getPlainText().isEmpty() || !field.getPlainText().isEmpty() &&
+					Integer.parseInt(field.getText()) <= Year.now().getValue();
 		}
 		catch (Exception e)
 		{

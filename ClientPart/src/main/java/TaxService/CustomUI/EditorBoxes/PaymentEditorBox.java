@@ -9,7 +9,7 @@ import javafx.scene.control.TextField;
 import java.math.BigDecimal;
 import java.sql.Date;
 
-public class PaymentEditorBox extends AbstractEditorBox<Payment>
+public class PaymentEditorBox //extends AbstractEditorBox<Payment>
 {
 	private ComboBox<Paytype> paytype1, paytype2;
 	private DatePicker date1, date2;
@@ -18,7 +18,7 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 	private ComboBox<Department> department1, department2;
 	private ComboBox<Company> company1, company2;
 	
-	public PaymentEditorBox()
+	/*public PaymentEditorBox()
 	{
 		super(Payment.class);
 
@@ -30,16 +30,6 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 		paytype2.setEditable(true);
 		addField("Тип платежа", paytype1, paytype2);
 
-		/*date1 = new MaskField();
-		date1.setPrefWidth(120);
-		date1.setMask("DD.DD.DDDD");
-		date1.setWhatMask("##-##-####");
-		date1.setPlaceholder("__.__.____");
-		date2 = new MaskField();
-		date2.setPrefWidth(120);*/
-		/*date2.setMask("DD.DD.DDDD");
-		date2.setWhatMask("##-##-####");
-		date2.setPlaceholder("__.__.____");*/
 		date1 = new DatePicker();
 		date1.setPrefWidth(120);
 		date2 = new DatePicker();
@@ -76,5 +66,5 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 		company2.setPrefWidth(200);
 		company2.setEditable(true);
 		addField("Компания-плательщик", company1, company2);		
-	}
+	}*/
 }

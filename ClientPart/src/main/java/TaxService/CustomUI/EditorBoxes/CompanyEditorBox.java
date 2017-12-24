@@ -8,7 +8,7 @@ import javafx.scene.control.TextField;
 
 import java.math.BigDecimal;
 
-public class CompanyEditorBox extends AbstractEditorBox<Company>
+public class CompanyEditorBox //extends AbstractEditorBox<Company>
 {
 	private TextField name1, name2;
 	private ComboBox<Owntype> owntype1, owntype2;
@@ -16,7 +16,7 @@ public class CompanyEditorBox extends AbstractEditorBox<Company>
 	private MaskField startyear1, startyear2;
 	private TextField statesize1, statesize2;
 	
-	public CompanyEditorBox()
+	/*public CompanyEditorBox()
 	{
 		super(Company.class);
 
@@ -63,5 +63,5 @@ public class CompanyEditorBox extends AbstractEditorBox<Company>
 		statesize2 = new TextField();
 		statesize2.setPrefWidth(100);
 		addField("Штат", statesize1, statesize2);
-	}
+	}*/
 }

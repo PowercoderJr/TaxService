@@ -17,8 +17,8 @@ public class ReadAllOrderHandler<T extends AbstractDAO> extends AbstractHandler<
 	protected void channelRead0(ChannelHandlerContext ctx, ReadAllOrder<T> msg) throws Exception
 	{
 		super.channelRead0(ctx, msg);
-		List list = ServerAgent.getInstance().readAll(msg.getItemClazz(), msg.getSendersLogin(), msg.isLazy());
+		List<T> list = ServerAgent.getInstance().readAll(msg.getItemClazz(), msg.getSendersLogin(), msg.isLazy(), msg.getFilter());
 
-		ctx.writeAndFlush(new AllDelivery<T>(msg.getItemClazz(), list, ReadAllOrder.Purposes.REFRESH_CB));
+		ctx.writeAndFlush(new AllDelivery<>(msg.getItemClazz(), list, msg.getPurpose()));
 	}
 }
