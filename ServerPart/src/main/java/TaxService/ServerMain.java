@@ -75,7 +75,7 @@ public class ServerMain
 			Set<Class<? extends AbstractRefDAO>> refTables = reflections.getSubTypesOf(AbstractRefDAO.class);
 			for (Class<? extends AbstractRefDAO> item : refTables)
 			{
-				stmt.executeUpdate("CREATE TABLE " + item.getSimpleName().toLowerCase() + "(id serial not null,name varchar(100) not null,primary key(id))");
+				stmt.executeUpdate("CREATE TABLE " + item.getSimpleName().toLowerCase() + "(id serial not null,name varchar(100) not null unique,primary key(id))");
 				AbstractRefCRUD crud = (AbstractRefCRUD) ServerAgent.getInstance().getCrudForClass(item, connection);
 				crud.fillFromSource();
 			}

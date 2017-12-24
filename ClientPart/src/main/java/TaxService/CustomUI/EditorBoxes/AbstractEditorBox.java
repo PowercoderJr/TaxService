@@ -32,7 +32,7 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 
 	//protected enum FieldType {PRIMARY, SECONDARY}
 
-	private Class<T> clazz;
+	protected Class<T> clazz;
 
 	private HBox primaryFieldsBox, secondaryFieldsBox;
 	private VBox fieldsBox;
@@ -175,6 +175,7 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 	{
 	}
 
+	//TODO: ignore case?
 	public void filter()
 	{
 		if (validatePrimary(false) & validateId1(false))
@@ -211,6 +212,7 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 
 	public void remove()
 	{
+
 	}
 
 	public abstract void depositPrimary(T dao);

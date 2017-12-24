@@ -16,6 +16,7 @@ import java.io.Closeable;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class ClientAgent implements Closeable
 {
@@ -28,6 +29,8 @@ public class ClientAgent implements Closeable
 	public static ArrayList<Callback> portionReceivedSubs = new ArrayList<>();
 	private static Mutex allReceivedSubsMutex = new Mutex();
 	public static ArrayList<Callback> allReceivedSubs = new ArrayList<>();
+	private static Mutex exceptionReceivedSubsMutex = new Mutex();
+	public static ArrayList<Callback> exceptionReceivedSubs = new ArrayList<>();
 
 	public static ClientAgent getInstance()
 	{
@@ -120,6 +123,29 @@ public class ClientAgent implements Closeable
 		for (Callback s : allReceivedSubs)
 			s.callback(delivery);
 		allReceivedSubsMutex.unlock();
+	}
+
+	public static void subscribeExceptionReceived(Callback s)
+	{
+		exceptionReceivedSubsMutex.lock();
+		exceptionReceivedSubs.add(s);
+		exceptionReceivedSubsMutex.unlock();
+	}
+
+	public static void unsubscribeExceptionReceived(Callback s)
+	{
+		exceptionReceivedSubsMutex.lock();
+		exceptionReceivedSubs.remove(s);
+		exceptionReceivedSubsMutex.unlock();
+	}
+
+	public static void publishExceptionReceived(String msg)
+	{
+		exceptionReceivedSubsMutex.lock();
+		//exceptionReceivedSubs.removeIf(Objects::isNull);
+		for (Callback s : exceptionReceivedSubs)
+			s.callback(msg);
+		exceptionReceivedSubsMutex.unlock();
 	}
 
 	//NON-STATIC SECTION

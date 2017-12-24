@@ -86,48 +86,23 @@ public class ServerAgent implements Closeable
 		handlerGroup.shutdownGracefully();
 	}
 
-	public void create(AbstractDAO dao, String sendersLogin)
+	public void create(AbstractDAO dao, String sendersLogin) throws SQLException
 	{
 		AbstractCRUD crud = getCrudForClass(dao.getClass(), sendersLogin);
 		if (crud != null)
-			try
-			{
-				crud.create(dao);
-			}
-			catch (SQLException e)
-			{
-				e.printStackTrace();
-			}
+			crud.create(dao);
 	}
 
-	public List readPortion(Class<? extends AbstractDAO> clazz, String sendersLogin, int portion, boolean isLazy, String filter)
+	public List readPortion(Class<? extends AbstractDAO> clazz, String sendersLogin, int portion, boolean isLazy, String filter) throws SQLException
 	{
 		AbstractCRUD instance = getCrudForClass(clazz, sendersLogin);
-		List result = null;
-		try
-		{
-			result = instance.readPortion(portion, isLazy, filter);
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
-		return result;
+		return instance.readPortion(portion, isLazy, filter);
 	}
 
-	public List readAll(Class<? extends AbstractDAO> clazz, String sendersLogin, boolean isLazy, String filter)
+	public List readAll(Class<? extends AbstractDAO> clazz, String sendersLogin, boolean isLazy, String filter) throws SQLException
 	{
 		AbstractCRUD instance = getCrudForClass(clazz, sendersLogin);
-		List result = null;
-		try
-		{
-			result = instance.readAll(isLazy, filter);
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
-		return result;
+		return instance.readAll(isLazy, filter);
 	}
 
 	public void delete(Class<? extends AbstractDAO> clazz, String sendersLogin, long id) throws SQLException
@@ -153,14 +128,14 @@ public class ServerAgent implements Closeable
 			return -1;
 	}
 
-	public ResultSet executeCustomQuery(Class<? extends AbstractDAO> clazz, String sendersLogin, String query) throws SQLException
+	/*public ResultSet executeCustomQuery(Class<? extends AbstractDAO> clazz, String sendersLogin, String query) throws SQLException
 	{
 		AbstractCRUD crud = getCrudForClass(clazz, sendersLogin);
 		if (crud != null)
 			return crud.executeCustomQuery(query);
 		else
 			return null;
-	}
+	}*/
 
 	public AbstractCRUD getCrudForClass(Class<? extends AbstractDAO> clazz, Connection connection)
 	{

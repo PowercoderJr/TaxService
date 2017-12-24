@@ -11,7 +11,7 @@ public class PhraseBook
 	public static final String ACCESS = "access";
 	public static final String YES = "+";
 	public static final String NO = "-";
-	public static final String SELECT = "select";
+	public static final String ERROR = "err";
 
 	private PhraseBook(){
 	}

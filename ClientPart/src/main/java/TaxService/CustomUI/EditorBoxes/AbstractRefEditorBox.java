@@ -2,6 +2,12 @@ package TaxService.CustomUI.EditorBoxes;
 
 import TaxService.DAOs.AbstractRefDAO;
 import javafx.scene.control.TextField;
+import javafx.util.Pair;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractRefEditorBox<T extends AbstractRefDAO> extends AbstractEditorBox<T>
 {
@@ -19,6 +25,105 @@ public abstract class AbstractRefEditorBox<T extends AbstractRefDAO> extends Abs
 	}
 
 	@Override
+	public void depositPrimary(T dao)
+	{
+
+	}
+
+	@Override
+	public T withdrawPrimaryAll()
+	{
+		String name = name1.getText().trim();
+
+		try
+		{
+			return clazz.getDeclaredConstructor(String.class).newInstance(name);
+		}
+		catch (IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public T withdrawSecondaryAll()
+	{
+		String name = name2.getText().trim();
+
+		try
+		{
+			return clazz.getDeclaredConstructor(String.class).newInstance(name);
+		}
+		catch (IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public Pair<T, List<Field>> withdrawPrimaryFilled()
+	{
+		try
+		{
+			List<Field> filledFields = new ArrayList<>();
+
+			long id;
+			if (id1.getText().trim().isEmpty())
+				id = 0;
+			else
+			{
+				id = Integer.parseInt(id1.getText().trim());
+				filledFields.add(clazz.getField("id"));
+			}
+
+			String name;
+			if (name1.getText().trim().isEmpty())
+				name = null;
+			else
+			{
+				name = name1.getText().trim();
+				filledFields.add(clazz.getField("name"));
+			}
+
+			T dao = clazz.getDeclaredConstructor(String.class).newInstance(name);
+			dao.id = id;
+			return new Pair<>(dao, filledFields);
+		}
+		catch (NoSuchFieldException | IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public Pair<T, List<Field>> withdrawSecondaryFilled()
+	{
+		try
+		{
+			List<Field> filledFields = new ArrayList<>();
+
+			String name;
+			if (name2.getText().trim().isEmpty())
+				name = null;
+			else
+			{
+				name = name1.getText().trim();
+				filledFields.add(clazz.getField("name"));
+			}
+
+			return new Pair<>(clazz.getDeclaredConstructor(String.class).newInstance(name), filledFields);
+		}
+		catch (NoSuchFieldException | IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
 	public boolean validatePrimary(boolean allRequired)
 	{
 		return validateTextField(name1, allRequired);
@@ -28,5 +133,11 @@ public abstract class AbstractRefEditorBox<T extends AbstractRefDAO> extends Abs
 	public boolean validateSecondary(boolean allRequired)
 	{
 		return validateTextField(name2, allRequired);
+	}
+
+	@Override
+	public void clearAll()
+	{
+
 	}
 }

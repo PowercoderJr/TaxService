@@ -6,7 +6,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 public abstract class AbstractHandler<T> extends SimpleChannelInboundHandler<T>
 {
 	@Override
-	protected void channelRead0(ChannelHandlerContext ctx, T msg) throws Exception
+	protected void channelRead0(ChannelHandlerContext ctx, T msg)
 	{
 		System.out.println(ctx.channel().remoteAddress() + ": " + msg.toString());
 	}

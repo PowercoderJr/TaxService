@@ -112,6 +112,7 @@ public class MainController
 	public TextField portionField;
 
 	private Callback onPortionReceived;
+	private Callback onExceptionReceived;
 	private Class<? extends AbstractDAO> currTable;
 
 	public void initialize()
@@ -132,6 +133,23 @@ public class MainController
 				return null;
 		};
 		portionField.setTextFormatter(new TextFormatter<Integer>(digitsFilter));
+
+		onExceptionReceived = new Callback()
+		{
+			@Override
+			public void callback(Object o)
+			{
+				Platform.runLater(() ->
+				{
+					Alert alert = new Alert(Alert.AlertType.ERROR);
+					alert.setTitle("Ошибка");
+					alert.setHeaderText("При выполнении операции произошла ошибка");
+					alert.setContentText((o).toString());
+					alert.showAndWait();
+				});
+			}
+		};
+		ClientAgent.subscribeExceptionReceived(onExceptionReceived);
 
 		onPortionReceived = new Callback()
 		{
@@ -160,12 +178,12 @@ public class MainController
 			initTableStaff(Department.class, "Отделения налоговой инспекции");
 			/*initTableStaff(Employee.class, "Сотрудники налоговой инспекции");
 			initTableStaff(Company.class, "Предприятия-плательщики");
-			initTableStaff(Payment.class, "Платежи");
+			initTableStaff(Payment.class, "Платежи");*/
 			initTableStaff(Deptype.class, "Типы отделений");
 			initTableStaff(Post.class, "Должности налоговой инспекции");
 			initTableStaff(Education.class, "Степени образования");
 			initTableStaff(Owntype.class, "Виды собственности");
-			initTableStaff(Paytype.class, "Виды платежей");*/
+			initTableStaff(Paytype.class, "Виды платежей");
 			switchActiveTable(Department.class);
 		});
 	}
@@ -181,9 +199,6 @@ public class MainController
 			BorderPane.setMargin(tv, new Insets(0, 20, 0, 20));
 			tv.setPlaceholder(new Label("НЕТ ЗАПИСЕЙ"));
 			tv.getColumns().addAll(TableColumnsBuilder.buildForDAO(tableClazz));
-			borderPane.setCenter(tv);
-			tv.setVisible(false);
-			tv.setManaged(false);
 
 			//Init editor box
 			AbstractEditorBox eb = (AbstractEditorBox) Class.forName("TaxService.CustomUI.EditorBoxes." + clazzName + "EditorBox").getConstructor().newInstance();
@@ -236,46 +251,25 @@ public class MainController
 		}
 	}
 
-	/*public void testCreateDepType(ActionEvent actionEvent)
-	{
-		Deptype deptype = new Deptype("Осторожно, оно работает!");
-		CreateOrder<Deptype> order = new CreateOrder<Deptype>(Deptype.class, ClientAgent.getInstance()
-				.getLogin(), deptype);
-		ClientAgent.getInstance().send(order);
-	}
-
-	public void testCreateDepartment(ActionEvent actionEvent)
-	{
-		Deptype deptype = new Deptype("Осторожно, оно работает!2");
-		CreateOrder<Deptype> order = new CreateOrder<Deptype>(Deptype.class, ClientAgent.getInstance()
-				.getLogin(), deptype);
-		ClientAgent.getInstance().send(order);
-		Department department = new Department("Тест", deptype, new BigDecimal(1999), "+380664564565", "Neverland", "Pushkina", "H1/N1");
-		CreateOrder<Department> order2 = new CreateOrder<Department>(Department.class, ClientAgent.getInstance()
-				.getLogin(), department);
-		ClientAgent.getInstance().send(order2);
-	}*/
-
 	public void switchActiveTable(Class<? extends AbstractDAO> tableClazz)
 	{
 		if (currTable != null)
 		{
-			tableStaffs.get(currTable).getEditorBox().setVisible(false);
-			tableStaffs.get(currTable).getEditorBox().setManaged(false);
-			tableStaffs.get(currTable).getTableView().setVisible(false);
-			tableStaffs.get(currTable).getTableView().setManaged(false);
+			AbstractEditorBox eb = tableStaffs.get(currTable).getEditorBox();
+			eb.setVisible(false);
+			eb.setManaged(false);
 		}
 
+		TableStaff staff = tableStaffs.get(tableClazz);
 		ClientAgent.getInstance().send(new ReadPortionOrder(tableClazz, ClientAgent.getInstance().getLogin(), 1,
-				false, tableStaffs.get(tableClazz).getEditorBox().getFilter()));
+				false, staff.getEditorBox().getFilter()));
 
-		tableStaffs.get(tableClazz).getEditorBox().setVisible(true);
-		tableStaffs.get(tableClazz).getEditorBox().setManaged(true);
-		tableStaffs.get(tableClazz).getTableView().setVisible(true);
-		tableStaffs.get(tableClazz).getTableView().setManaged(true);
+		staff.getEditorBox().setVisible(true);
+		staff.getEditorBox().setManaged(true);
+		borderPane.setCenter(staff.getTableView());
 
 		currTable = tableClazz;
-		currTableLabel.setText(tableStaffs.get(tableClazz).getNiceName());
+		currTableLabel.setText(staff.getNiceName());
 	}
 
 	public void fsMode(ActionEvent actionEvent)

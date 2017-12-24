@@ -234,8 +234,8 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 		catch (NoSuchFieldException e)
 		{
 			e.printStackTrace();
-			return null;
 		}
+		return null;
 	}
 
 	@Override
@@ -312,8 +312,8 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 		catch (NoSuchFieldException e)
 		{
 			e.printStackTrace();
-			return null;
 		}
+		return null;
 	}
 
 	private boolean validateStartyear(MaskField field, boolean isRequired)

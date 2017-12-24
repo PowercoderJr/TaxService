@@ -7,13 +7,12 @@ import io.netty.channel.ChannelHandlerContext;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Dictionary;
 import java.util.Map;
 
 public class SimpleMessageHandler extends AbstractHandler<String>
 {
 	@Override
-	protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception
+	protected void channelRead0(ChannelHandlerContext ctx, String msg)
 	{
 		super.channelRead0(ctx, msg);
 		String[] tokens = msg.split("\\" + PhraseBook.SEPARATOR);
@@ -40,6 +39,14 @@ public class SimpleMessageHandler extends AbstractHandler<String>
 					}
 				}
 				catch (SQLException e)
+				{
+					if (!e.getMessage().contains("password authentication failed"))
+					{
+						e.printStackTrace();
+						ctx.channel().writeAndFlush(PhraseBook.ERROR + PhraseBook.SEPARATOR + e.getMessage());
+					}
+				}
+				catch (Exception e)
 				{
 					e.printStackTrace();
 				}
