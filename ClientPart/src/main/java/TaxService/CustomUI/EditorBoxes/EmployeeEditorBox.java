@@ -110,55 +110,32 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 			{
 				AllDelivery delivery = (AllDelivery) o;
 
-				if (delivery.getPurpose() == ReadAllOrder.Purposes.REFRESH_CB && delivery.getContentClazz() == Department.class)
+				if (delivery.getPurpose() == ReadAllOrder.Purposes.REFRESH_CB )
 				{
-					Platform.runLater(() ->
-					{
-						if (department1.isShowing())
-							department1.setItems(FXCollections.observableList(delivery.getContent()));
-						else if (department2.isShowing())
-							department2.setItems(FXCollections.observableList(delivery.getContent()));
-					});
-				}
-			}
-		});
-
-		ClientAgent.subscribeAllReceived(new Callback()
-		{
-			@Override
-			public void callback(Object o)
-			{
-				AllDelivery delivery = (AllDelivery) o;
-
-				if (delivery.getPurpose() == ReadAllOrder.Purposes.REFRESH_CB && delivery.getContentClazz() == Post.class)
-				{
-					Platform.runLater(() ->
-					{
-						if (post1.isShowing())
-							post1.setItems(FXCollections.observableList(delivery.getContent()));
-						else if (post2.isShowing())
-							post2.setItems(FXCollections.observableList(delivery.getContent()));
-					});
-				}
-			}
-		});
-
-		ClientAgent.subscribeAllReceived(new Callback()
-		{
-			@Override
-			public void callback(Object o)
-			{
-				AllDelivery delivery = (AllDelivery) o;
-
-				if (delivery.getPurpose() == ReadAllOrder.Purposes.REFRESH_CB && delivery.getContentClazz() == Education.class)
-				{
-					Platform.runLater(() ->
-					{
-						if (education1.isShowing())
-							education1.setItems(FXCollections.observableList(delivery.getContent()));
-						else if (education2.isShowing())
-							education2.setItems(FXCollections.observableList(delivery.getContent()));
-					});
+					if (delivery.getContentClazz() == Department.class)
+						Platform.runLater(() ->
+						{
+							if (department1.isShowing())
+								department1.setItems(FXCollections.observableList(delivery.getContent()));
+							else if (department2.isShowing())
+								department2.setItems(FXCollections.observableList(delivery.getContent()));
+						});
+					else if (delivery.getContentClazz() == Post.class)
+						Platform.runLater(() ->
+						{
+							if (post1.isShowing())
+								post1.setItems(FXCollections.observableList(delivery.getContent()));
+							else if (post2.isShowing())
+								post2.setItems(FXCollections.observableList(delivery.getContent()));
+						});
+					else if (delivery.getContentClazz() == Education.class)
+						Platform.runLater(() ->
+						{
+							if (education1.isShowing())
+								education1.setItems(FXCollections.observableList(delivery.getContent()));
+							else if (education2.isShowing())
+								education2.setItems(FXCollections.observableList(delivery.getContent()));
+						});
 				}
 			}
 		});
@@ -404,6 +381,8 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 	public int countFilledPrimary()
 	{
 		int count = 0;
+		if (!id1.getText().trim().isEmpty())
+			++count;
 		if (!surname1.getText().trim().isEmpty())
 				++count;
 		if (!name1.getText().trim().isEmpty())
@@ -477,7 +456,6 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 		department2.getSelectionModel().clearSelection();
 		department2.setEffect(null);
 		birthdate2.getEditor().clear();
-		birthdate2.getEditor().setEffect(null);
 		birthdate2.setValue(null);
 		birthdate2.setEffect(null);
 		post2.getSelectionModel().clearSelection();

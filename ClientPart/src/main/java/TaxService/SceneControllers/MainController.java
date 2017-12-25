@@ -14,7 +14,9 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -31,6 +33,7 @@ import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.*;
 import java.util.function.UnaryOperator;
 
 
@@ -44,19 +47,22 @@ public class MainController
 		private String niceName;
 		private TableView<T> tableView;
 		private AbstractEditorBox<T> editorBox;
-		public int currPortion;
+		private int currPortion;
+		private boolean isFiltered;
 
-		public TableStaff(Class<T> clazz, String niceName, TableView<T> tableView, AbstractEditorBox<T> editorBox)
+		TableStaff(Class<T> clazz, String niceName, TableView<T> tableView, AbstractEditorBox<T> editorBox)
 		{
 			this.clazz = clazz;
 			this.niceName = niceName;
 			this.tableView = tableView;
 			this.editorBox = editorBox;
 			this.currPortion = 1;
+			this.isFiltered = false;
 		}
-
 	}
 
+	@FXML
+	public GridPane root;
 	@FXML
 	public MenuBar menuBar;
 	@FXML
@@ -65,6 +71,10 @@ public class MainController
 	public HBox editorBoxBox;
 	@FXML
 	public Label currTableLabel;
+	@FXML
+	public Label filterIndicatorLabel;
+	@FXML
+	public Label notificationLabel;
 	@FXML
 	public Button createBtn;
 	@FXML
@@ -106,7 +116,19 @@ public class MainController
 
 	private Callback onPortionReceived;
 	private Callback onExceptionReceived;
+	private Callback onNotificationReceived;
 	private Class<? extends AbstractDAO> currTable;
+	private static final int NOTIFICATION_DURATION = 3000;
+	private final ScheduledExecutorService notificationsScheduler = Executors.newSingleThreadScheduledExecutor(r ->
+	{
+		Thread t = new Thread(r);
+		t.setDaemon(true);
+		return t;
+	});
+
+
+	//private final ScheduledExecutorService notificationsScheduler = Executors.newScheduledThreadPool(1);
+	private ScheduledFuture<?> hideNotificationFuture;
 
 	public void initialize()
 	{
@@ -126,23 +148,9 @@ public class MainController
 				return null;
 		};
 		portionField.setTextFormatter(new TextFormatter<Integer>(digitsFilter));
-
-		onExceptionReceived = new Callback()
-		{
-			@Override
-			public void callback(Object o)
-			{
-				Platform.runLater(() ->
-				{
-					Alert alert = new Alert(Alert.AlertType.ERROR);
-					alert.setTitle("Ошибка");
-					alert.setHeaderText("При выполнении операции произошла ошибка");
-					alert.setContentText((o).toString());
-					alert.showAndWait();
-				});
-			}
-		};
-		ClientAgent.subscribeExceptionReceived(onExceptionReceived);
+		setVisibleAndManaged(updateConfirmPane, false);
+		setVisibleAndManaged(notificationLabel, false);
+		setVisibleAndManaged(filterIndicatorLabel, false);
 
 		onPortionReceived = new Callback()
 		{
@@ -166,19 +174,54 @@ public class MainController
 		};
 		ClientAgent.subscribePortionReceived(onPortionReceived);
 
-		Platform.runLater(() ->
+		onExceptionReceived = new Callback()
 		{
-			initTableStaff(Department.class, "Отделения налоговой инспекции");
-			initTableStaff(Employee.class, "Сотрудники налоговой инспекции");
-			initTableStaff(Company.class, "Предприятия-плательщики");
-			//initTableStaff(Payment.class, "Платежи");
-			initTableStaff(Deptype.class, "Типы отделений");
-			initTableStaff(Post.class, "Должности налоговой инспекции");
-			initTableStaff(Education.class, "Степени образования");
-			initTableStaff(Owntype.class, "Виды собственности");
-			initTableStaff(Paytype.class, "Виды платежей");
-			switchActiveTable(Department.class);
-		});
+			@Override
+			public void callback(Object o)
+			{
+				Platform.runLater(() ->
+				{
+					Alert alert = new Alert(Alert.AlertType.ERROR);
+					alert.initOwner(root.getScene().getWindow());
+					alert.setTitle("Ошибка");
+					alert.setHeaderText("При выполнении операции произошла ошибка");
+					alert.setContentText((o).toString());
+					alert.showAndWait();
+				});
+			}
+		};
+		ClientAgent.subscribeExceptionReceived(onExceptionReceived);
+
+		onNotificationReceived = new Callback()
+		{
+			@Override
+			public void callback(Object o)
+			{
+				Platform.runLater(() ->
+				{
+					notificationLabel.setText(o.toString());
+					setVisibleAndManaged(notificationLabel, true);
+				});
+
+				if (hideNotificationFuture != null && !hideNotificationFuture.isDone())
+					hideNotificationFuture.cancel(true);
+				hideNotificationFuture = notificationsScheduler.schedule(() ->
+								Platform.runLater(() -> setVisibleAndManaged(notificationLabel, false)),
+						NOTIFICATION_DURATION, TimeUnit.MILLISECONDS);
+			}
+		};
+		ClientAgent.subscribeNotificationReceived(onNotificationReceived);
+
+		initTableStaff(Department.class, "Отделения налоговой инспекции");
+		initTableStaff(Employee.class, "Сотрудники налоговой инспекции");
+		initTableStaff(Company.class, "Предприятия-плательщики");
+		initTableStaff(Payment.class, "Платежи");
+		initTableStaff(Deptype.class, "Типы отделений");
+		initTableStaff(Post.class, "Должности налоговой инспекции");
+		initTableStaff(Education.class, "Степени образования");
+		initTableStaff(Owntype.class, "Виды собственности");
+		initTableStaff(Paytype.class, "Виды платежей");
+		switchActiveTable(Department.class);
 	}
 
 	private void initTableStaff(Class<? extends AbstractDAO> tableClazz, String niceName)
@@ -196,8 +239,7 @@ public class MainController
 			//Init editor box
 			AbstractEditorBox eb = (AbstractEditorBox) Class.forName("TaxService.CustomUI.EditorBoxes." + clazzName + "EditorBox").getConstructor().newInstance();
 			editorBoxBox.getChildren().add(eb);
-			eb.setVisible(false);
-			eb.setManaged(false);
+			setVisibleAndManaged(eb, false);
 
 			//Menu item
 			MenuItem item = (MenuItem) getClass().getField("switchTo" + clazzName + "MenuItem").get(this);
@@ -217,7 +259,7 @@ public class MainController
 		AbstractEditorBox eb = tableStaffs.get(currTable).editorBox;
 		if (eb.validatePrimary(true))
 			if (eb.create())
-				refresh();
+				refreshCurrTable();
 	}
 
 	public void updateBtnClicked(ActionEvent actionEvent)
@@ -233,6 +275,7 @@ public class MainController
 			if (eb.countFilledSecondary() > 0)
 			{
 				Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+				alert.initOwner(root.getScene().getWindow());
 				alert.setTitle("Подтвердите действие");
 				alert.setHeaderText("Подтвердите действие");
 				alert.setContentText("Вы действительно хотите изменить строки таблицы \"" + tableStaffs.get(currTable).niceName + "\" по заданному шаблону?");
@@ -245,6 +288,7 @@ public class MainController
 					if (eb.countFilledPrimary() == 0)
 					{
 						Alert alert2 = new Alert(Alert.AlertType.WARNING);
+						alert2.initOwner(root.getScene().getWindow());
 						alert2.setTitle("Подтвердите действие");
 						alert2.setHeaderText("Вы собираетесь изменить ВСЕ записи таблицы");
 						alert2.setContentText("Изменение по пустому шаблону приведёт к полной перезаписи таблицы. Вы точно хотите продолжить?");
@@ -257,13 +301,14 @@ public class MainController
 					}
 
 					if (alright && eb.update())
-						refresh();
+						refreshCurrTable();
 				}
 				switchUpdateMode(false);
 			}
 			else
 			{
 				Alert alert = new Alert(Alert.AlertType.WARNING);
+				alert.initOwner(root.getScene().getWindow());
 				alert.setTitle("Укажите новые значения");
 				alert.setHeaderText("Не указано ни одно значение для замены");
 				alert.setContentText("Укажите как минимум одно новое значение в появившейся строке для выполнения операции.");
@@ -279,10 +324,15 @@ public class MainController
 
 	public void filterBtnClicked(ActionEvent actionEvent)
 	{
-		AbstractEditorBox eb = tableStaffs.get(currTable).editorBox;
+		TableStaff staff = tableStaffs.get(currTable);
+		AbstractEditorBox eb = staff.editorBox;
 		if (eb.validatePrimary(false) & eb.validateId1(false))
 			if (eb.setFilter())
-				refresh();
+			{
+				refreshCurrTable();
+				staff.isFiltered = eb.countFilledPrimary() > 0;
+				setVisibleAndManaged(filterIndicatorLabel, staff.isFiltered);
+			}
 	}
 
 	public void deleteBtnClicked(ActionEvent actionEvent)
@@ -291,18 +341,21 @@ public class MainController
 		if (eb.validatePrimary(false) & eb.validateId1(false))
 		{
 			Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+			alert.initOwner(root.getScene().getWindow());
 			alert.setTitle("Подтвердите действие");
 			alert.setHeaderText("Подтвердите действие");
 			alert.setContentText("Вы действительно хотите удалить строки из таблицы \"" + tableStaffs.get(currTable).niceName + "\" по заданному шаблону?");
 			ButtonType myYes = new ButtonType("Да", ButtonBar.ButtonData.YES);
 			ButtonType myNo = new ButtonType("Нет", ButtonBar.ButtonData.NO);
 			alert.getButtonTypes().setAll(myYes, myNo);
+
 			if (alert.showAndWait().get() == myYes)
 			{
 				boolean alright = true;
 				if (eb.countFilledPrimary() == 0)
 				{
 					Alert alert2 = new Alert(Alert.AlertType.WARNING);
+					alert2.initOwner(root.getScene().getWindow());
 					alert2.setTitle("Подтвердите действие");
 					alert2.setHeaderText("Вы собираетесь удалить ВСЕ записи таблицы");
 					alert2.setContentText("Удаление по пустому шаблону приведёт к полной очистке таблицы. Вы точно хотите продолжить?");
@@ -315,14 +368,14 @@ public class MainController
 				}
 
 				if (alright && eb.delete())
-					refresh();
+					refreshCurrTable();
 			}
 		}
 	}
 
 	public void refreshBtnClicked(ActionEvent actionEvent)
 	{
-		refresh();
+		refreshCurrTable();
 	}
 
 	public void clearBtnClicked(ActionEvent actionEvent)
@@ -330,7 +383,7 @@ public class MainController
 		tableStaffs.get(currTable).editorBox.clearAll();
 	}
 
-	private void refresh()
+	private void refreshCurrTable()
 	{
 		TableStaff staff = tableStaffs.get(currTable);
 		ClientAgent.getInstance().send(new ReadPortionOrder(currTable, ClientAgent.getInstance().getLogin(),
@@ -340,6 +393,8 @@ public class MainController
 	public void exit(ActionEvent actionEvent)
 	{
 		ClientAgent.unsubscribePortionReceived(onPortionReceived);
+		ClientAgent.unsubscribeExceptionReceived(onExceptionReceived);
+		ClientAgent.unsubscribeNotificationReceived(onNotificationReceived);
 		try
 		{
 			ClientMain.sceneManager.popScene();
@@ -353,20 +408,16 @@ public class MainController
 	public void switchActiveTable(Class<? extends AbstractDAO> tableClazz)
 	{
 		if (currTable != null)
-		{
-			AbstractEditorBox eb = tableStaffs.get(currTable).editorBox;
-			eb.setVisible(false);
-			eb.setManaged(false);
-		}
+			setVisibleAndManaged(tableStaffs.get(currTable).editorBox, false);
 
 		currTable = tableClazz;
 		TableStaff staff = tableStaffs.get(currTable);
+		refreshCurrTable();
+
+		setVisibleAndManaged(staff.editorBox, true);
+		setVisibleAndManaged(filterIndicatorLabel, staff.isFiltered);
 		currTableLabel.setText(staff.niceName);
 		portionField.setText(String.valueOf(staff.currPortion));
-		refresh();
-
-		staff.editorBox.setVisible(true);
-		staff.editorBox.setManaged(true);
 		borderPane.setCenter(staff.tableView);
 	}
 
@@ -385,7 +436,7 @@ public class MainController
 		gotoPage(tableStaffs.get(currTable).currPortion - 1);
 	}
 
-	public void onPortionSpinnerKeyReleased(KeyEvent keyEvent)
+	public void onPortionFieldKeyReleased(KeyEvent keyEvent)
 	{
 		if (keyEvent.getCode() == KeyCode.ENTER)
 		{
@@ -429,16 +480,24 @@ public class MainController
 		createBtn.setDisable(value);
 		filterBtn.setDisable(value);
 		deleteBtn.setDisable(value);
-		updateBtn.setVisible(!value);
-		updateConfirmPane.setVisible(value);
+		setVisibleAndManaged(updateBtn, !value);
+		setVisibleAndManaged(updateConfirmPane, value);
 		tableStaffs.get(currTable).editorBox.setSecondaryVisible(value);
+	}
+
+	private void setVisibleAndManaged(Node node, boolean value)
+	{
+		node.setVisible(value);
+		node.setManaged(value);
 	}
 
 	public void showAuthor(ActionEvent actionEvent)
 	{
 		Alert alert = new Alert(Alert.AlertType.INFORMATION);
 		alert.setTitle("Об авторе");
-		alert.setHeaderText("Комаричев Р. Е.");
+		alert.setHeaderText("Автор: Комаричев Р. Е.");
 		alert.setContentText("Такие дела");
+		alert.initOwner(root.getScene().getWindow());
+		alert.showAndWait();
 	}
 }

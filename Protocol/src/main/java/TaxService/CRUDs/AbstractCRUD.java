@@ -38,7 +38,7 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 		this.clazz = clazz;
 	}
 
-	public void create(T object) throws SQLException
+	public int create(T object) throws SQLException
 	{
 		List<Field> fields = new ArrayList<>();
 		fields.addAll(Arrays.asList(clazz.getFields()));
@@ -49,7 +49,7 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 
 		try (Statement stmt = connection.createStatement())
 		{
-			stmt.executeUpdate("INSERT INTO " + clazz.getSimpleName() + " (" + colNames + ") VALUES (" +
+			return stmt.executeUpdate("INSERT INTO " + clazz.getSimpleName() + " (" + colNames + ") VALUES (" +
 					values + ")");
 		}
 	}
@@ -81,7 +81,7 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 			else
 				fields = "*";
 			ResultSet rs = stmt.executeQuery("SELECT " + fields + " FROM " + clazz.getSimpleName() +
-					filter + " OFFSET " + ((portion - 1) * AbstractCRUD.PORTION_SIZE) +
+					filter + " ORDER BY 1 ASC OFFSET " + ((portion - 1) * AbstractCRUD.PORTION_SIZE) +
 					" LIMIT " + AbstractCRUD.PORTION_SIZE);
 			return reflectResultSet(rs, isLazy);
 		}
@@ -97,7 +97,7 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 				fields = Utils.fieldNamesToString(Arrays.stream(AbstractDAO.getReadEvenIfLazy(clazz)));
 			else
 				fields = "*";
-			ResultSet rs = stmt.executeQuery("SELECT " + fields + " FROM " + clazz.getSimpleName() + filter);
+			ResultSet rs = stmt.executeQuery("SELECT " + fields + " FROM " + clazz.getSimpleName() + filter + " ORDER BY 1 ASC");
 			return reflectResultSet(rs, isLazy);
 		}
 	}
@@ -118,27 +118,27 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 		}
 	}
 
-	public void update(String filter, String newValues) throws SQLException
+	public int update(String filter, String newValues) throws SQLException
 	{
 		try (Statement stmt = connection.createStatement())
 		{
-			stmt.executeUpdate("UPDATE " + clazz.getSimpleName() + " SET " + newValues + filter);
+			return stmt.executeUpdate("UPDATE " + clazz.getSimpleName() + " SET " + newValues + filter);
 		}
 	}
 
-	public void delete(long id) throws SQLException
+	public int delete(long id) throws SQLException
 	{
 		try (Statement stmt = connection.createStatement())
 		{
-			stmt.executeUpdate("DELETE FROM " + clazz.getSimpleName() + " WHERE id = " + id);
+			return stmt.executeUpdate("DELETE FROM " + clazz.getSimpleName() + " WHERE id = " + id);
 		}
 	}
 
-	public void delete(String filter) throws SQLException
+	public int delete(String filter) throws SQLException
 	{
 		try (Statement stmt = connection.createStatement())
 		{
-			stmt.executeUpdate("DELETE FROM " + clazz.getSimpleName() + filter);
+			return stmt.executeUpdate("DELETE FROM " + clazz.getSimpleName() + filter);
 		}
 	}
 

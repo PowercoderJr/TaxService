@@ -17,7 +17,8 @@ public class UpdateOrderHandler<T extends AbstractDAO> extends AbstractHandler<U
 		super.channelRead0(ctx, msg);
 		try
 		{
-			ServerAgent.getInstance().update(msg.getItemClazz(), msg.getSendersLogin(), msg.getFilter(), msg.getNewValues());
+			int updated = ServerAgent.getInstance().update(msg.getItemClazz(), msg.getSendersLogin(), msg.getFilter(), msg.getNewValues());
+			ctx.channel().writeAndFlush(PhraseBook.NOTIFICATION + PhraseBook.SEPARATOR + "Изменено строк: " + updated);
 		}
 		catch (SQLException e)
 		{

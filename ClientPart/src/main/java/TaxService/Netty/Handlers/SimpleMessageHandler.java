@@ -24,6 +24,9 @@ public class SimpleMessageHandler extends AbstractHandler<String>
 				ClientAgent.publishExceptionReceived(original.substring(PhraseBook.ERROR.length() +
 						(String.valueOf(PhraseBook.SEPARATOR)).length()));
 				break;
+			case PhraseBook.NOTIFICATION:
+				ClientAgent.publishNotificationReceived(tokens[1]);
+				break;
 		}
 	}
 }

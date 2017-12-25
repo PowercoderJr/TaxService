@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.GridPane?>
 
-<GridPane alignment="CENTER" hgap="10.0" prefHeight="720.0" prefWidth="1280.0" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="TaxService.SceneControllers.MainController"> <!-- на самом деле xmlns="http://javafx.com/javafx/8.0.141" -->
+<GridPane fx:id="root" alignment="CENTER" hgap="10.0" prefHeight="720.0" prefWidth="1280.0" vgap="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="TaxService.SceneControllers.MainController"> <!-- на самом деле xmlns="http://javafx.com/javafx/8.0.141" -->
     <children>
         <MenuBar fx:id="menuBar" GridPane.columnIndex="0" GridPane.rowIndex="0">
             <menus>
@@ -52,7 +52,7 @@
                         <Button mnemonicParsing="false" onAction="#gotoLastPage" text="&gt;&gt;|" />
                         <Separator orientation="VERTICAL" />
                         <Label text="Отобразить" />
-                        <TextField fx:id="portionField" nodeOrientation="RIGHT_TO_LEFT" onKeyReleased="#onPortionSpinnerKeyReleased" prefWidth="70" text="1" />
+                        <TextField fx:id="portionField" nodeOrientation="RIGHT_TO_LEFT" onKeyReleased="#onPortionFieldKeyReleased" prefWidth="70" text="1" />
                         <Label text="-ю сотню">
                             <padding>
                                 <Insets left="-10.0" />
@@ -67,7 +67,13 @@
                     <children>
                   <VBox HBox.hgrow="ALWAYS">
                      <children>
-                        <Label fx:id="currTableLabel" />
+                        <HBox alignment="BOTTOM_LEFT" spacing="20.0">
+                           <children>
+                              <Label fx:id="currTableLabel" />
+                              <Label fx:id="filterIndicatorLabel" text="(активен фильтр)" visible="false" />
+                              <Label fx:id="notificationLabel" />
+                           </children>
+                        </HBox>
                         <HBox fx:id="editorBoxBox" alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="ALWAYS">
                            <children>
                               <GridPane hgap="5.0" vgap="5.0" HBox.hgrow="NEVER">
@@ -96,8 +102,8 @@
                                           <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                                        </rowConstraints>
                                        <children>
-                                          <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#updateOkBtnClicked" prefHeight="50.0" prefWidth="75.0" text="ОК" visible="false" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
-                                          <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#updateCancelBtnClicked" prefHeight="50.0" prefWidth="75.0" text="Отмена" visible="false" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
+                                          <Button fx:id="updateOkBtn" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#updateOkBtnClicked" prefHeight="50.0" prefWidth="75.0" text="ОК" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
+                                          <Button fx:id="updateCancelBtn" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#updateCancelBtnClicked" prefHeight="50.0" prefWidth="75.0" text="Отмена" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
                                        </children>
                                     </GridPane>
                                  </children>

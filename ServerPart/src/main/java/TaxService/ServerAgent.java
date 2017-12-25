@@ -86,11 +86,12 @@ public class ServerAgent implements Closeable
 		handlerGroup.shutdownGracefully();
 	}
 
-	public void create(AbstractDAO dao, String sendersLogin) throws SQLException
+	public int create(AbstractDAO dao, String sendersLogin) throws SQLException
 	{
 		AbstractCRUD crud = getCrudForClass(dao.getClass(), sendersLogin);
 		if (crud != null)
-			crud.create(dao);
+			return crud.create(dao);
+		return 0;
 	}
 
 	public List readPortion(Class<? extends AbstractDAO> clazz, String sendersLogin, int portion, boolean isLazy, String filter) throws SQLException
@@ -105,32 +106,36 @@ public class ServerAgent implements Closeable
 		return instance.readAll(isLazy, filter);
 	}
 
-	public void update(Class<? extends AbstractDAO> clazz, String sendersLogin, String filter, String newValues) throws SQLException
+	public int update(Class<? extends AbstractDAO> clazz, String sendersLogin, String filter, String newValues) throws SQLException
 	{
 		AbstractCRUD crud = getCrudForClass(clazz, sendersLogin);
 		if (crud != null)
-			crud.update(filter, newValues);
+			return crud.update(filter, newValues);
+		return 0;
 	}
 
-	public void delete(Class<? extends AbstractDAO> clazz, String sendersLogin, long id) throws SQLException
+	public int delete(Class<? extends AbstractDAO> clazz, String sendersLogin, long id) throws SQLException
 	{
 		AbstractCRUD crud = getCrudForClass(clazz, sendersLogin);
 		if (crud != null)
-			crud.delete(id);
+			return crud.delete(id);
+		return 0;
 	}
 
-	public void delete(AbstractDAO dao, String sendersLogin) throws SQLException
+	public int delete(AbstractDAO dao, String sendersLogin) throws SQLException
 	{
 		AbstractCRUD crud = getCrudForClass(dao.getClass(), sendersLogin);
 		if (crud != null)
-			crud.delete(dao.getId());
+			return crud.delete(dao.getId());
+		return 0;
 	}
 
-	public void delete(Class<? extends AbstractDAO> clazz, String sendersLogin, String filter) throws SQLException
+	public int delete(Class<? extends AbstractDAO> clazz, String sendersLogin, String filter) throws SQLException
 	{
 		AbstractCRUD crud = getCrudForClass(clazz, sendersLogin);
 		if (crud != null)
-			crud.delete(filter);
+			return crud.delete(filter);
+		return 0;
 	}
 
 	public int count(Class<? extends AbstractDAO> clazz, String sendersLogin, String filter) throws SQLException
@@ -138,8 +143,7 @@ public class ServerAgent implements Closeable
 		AbstractCRUD crud = getCrudForClass(clazz, sendersLogin);
 		if (crud != null)
 			return crud.count(filter);
-		else
-			return -1;
+		return 0;
 	}
 
 	/*public ResultSet executeCustomQuery(Class<? extends AbstractDAO> clazz, String sendersLogin, String query) throws SQLException

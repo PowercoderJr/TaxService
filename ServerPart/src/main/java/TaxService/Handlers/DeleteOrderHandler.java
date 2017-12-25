@@ -16,7 +16,8 @@ public class DeleteOrderHandler<T extends AbstractDAO> extends AbstractHandler<D
 		super.channelRead0(ctx, msg);
 		try
 		{
-			ServerAgent.getInstance().delete(msg.getItemClazz(), msg.getSendersLogin(), msg.getFilter());
+			int deleted = ServerAgent.getInstance().delete(msg.getItemClazz(), msg.getSendersLogin(), msg.getFilter());
+			ctx.channel().writeAndFlush(PhraseBook.NOTIFICATION + PhraseBook.SEPARATOR + "Удалено строк: " + deleted);
 		}
 		catch (SQLException e)
 		{

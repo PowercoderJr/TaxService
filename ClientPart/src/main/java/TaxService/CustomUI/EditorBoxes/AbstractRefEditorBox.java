@@ -153,7 +153,10 @@ public abstract class AbstractRefEditorBox<T extends AbstractRefDAO> extends Abs
 	public void clearAll()
 	{
 		id1.clear();
+		id1.setEffect(null);
 		name1.clear();
+		name1.setEffect(null);
 		name2.clear();
+		name2.setEffect(null);
 	}
 }

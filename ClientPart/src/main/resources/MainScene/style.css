@@ -8,3 +8,18 @@
 {
     -fx-font-size: 20pt;
 }
+
+#filterIndicatorLabel
+{
+    -fx-font-size: 18pt;
+}
+
+#notificationLabel
+{
+    -fx-font-size: 16pt;
+}
+
+#updateOkBtn, #updateCancelBtn
+{
+    -fx-font-size: 10pt;
+}

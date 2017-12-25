@@ -12,6 +12,7 @@ public class PhraseBook
 	public static final String YES = "+";
 	public static final String NO = "-";
 	public static final String ERROR = "err";
+	public static final String NOTIFICATION = "ntfc";
 
 	private PhraseBook(){
 	}

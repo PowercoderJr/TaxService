@@ -31,6 +31,8 @@ public class ClientAgent implements Closeable
 	public static ArrayList<Callback> allReceivedSubs = new ArrayList<>();
 	private static Mutex exceptionReceivedSubsMutex = new Mutex();
 	public static ArrayList<Callback> exceptionReceivedSubs = new ArrayList<>();
+	private static Mutex notificationReceivedSubsMutex = new Mutex();
+	public static ArrayList<Callback> notificationReceivedSubs = new ArrayList<>();
 
 	public static ClientAgent getInstance()
 	{
@@ -142,10 +144,31 @@ public class ClientAgent implements Closeable
 	public static void publishExceptionReceived(String msg)
 	{
 		exceptionReceivedSubsMutex.lock();
-		//exceptionReceivedSubs.removeIf(Objects::isNull);
 		for (Callback s : exceptionReceivedSubs)
 			s.callback(msg);
 		exceptionReceivedSubsMutex.unlock();
+	}
+
+	public static void subscribeNotificationReceived(Callback s)
+	{
+		notificationReceivedSubsMutex.lock();
+		notificationReceivedSubs.add(s);
+		notificationReceivedSubsMutex.unlock();
+	}
+
+	public static void unsubscribeNotificationReceived(Callback s)
+	{
+		notificationReceivedSubsMutex.lock();
+		notificationReceivedSubs.remove(s);
+		notificationReceivedSubsMutex.unlock();
+	}
+
+	public static void publishNotificationReceived(String msg)
+	{
+		notificationReceivedSubsMutex.lock();
+		for (Callback s : notificationReceivedSubs)
+			s.callback(msg);
+		notificationReceivedSubsMutex.unlock();
 	}
 
 	//NON-STATIC SECTION

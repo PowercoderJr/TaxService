@@ -31,8 +31,6 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 	private static Effect invalidEffect = new ColorAdjust(0, 0.5, 0, 0);
 	private static Tooltip autofillableTooltip = new Tooltip("При добавлении записи это поле генерируется автоматически");
 
-	//protected enum FieldType {PRIMARY, SECONDARY}
-
 	protected Class<T> clazz;
 
 	private HBox primaryFieldsBox, secondaryFieldsBox;
