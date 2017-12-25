@@ -6,11 +6,15 @@ import javafx.scene.control.TableColumn;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TableColumnsBuilder
 {
+	private static final DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
+
 	private TableColumnsBuilder() {}
 
 	public static List<TableColumn<? extends AbstractDAO, String>> buildForDAO(Class<? extends AbstractDAO> clazz)
@@ -40,11 +44,11 @@ public class TableColumnsBuilder
 		anotherColumn = new TableColumn<>("ID");
 		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getId())));
 		list.add(anotherColumn);
-		anotherColumn = new TableColumn<>("Тип отделения");
-		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getDeptype())));
-		list.add(anotherColumn);
 		anotherColumn = new TableColumn<>("Название");
 		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getName())));
+		list.add(anotherColumn);
+		anotherColumn = new TableColumn<>("Тип отделения");
+		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getDeptype())));
 		list.add(anotherColumn);
 		anotherColumn = new TableColumn<>("Год открытия");
 		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getStartyear())));
@@ -83,6 +87,9 @@ public class TableColumnsBuilder
 		list.add(anotherColumn);
 		anotherColumn = new TableColumn<>("Отделение");
 		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getDepartment())));
+		list.add(anotherColumn);
+		anotherColumn = new TableColumn<>("Дата рождения");
+		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(df.format(data.getValue().getBirthdate()))));
 		list.add(anotherColumn);
 		anotherColumn = new TableColumn<>("Должность");
 		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getPost())));
@@ -134,7 +141,7 @@ public class TableColumnsBuilder
 		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getPaytype())));
 		list.add(anotherColumn);
 		anotherColumn = new TableColumn<>("Дата");
-		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getDate())));
+		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(df.format(data.getValue().getDate()))));
 		list.add(anotherColumn);
 		anotherColumn = new TableColumn<>("Сумма");
 		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getAmount())));

@@ -39,21 +39,19 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 		name1.setPrefWidth(200);
 		name2 = new TextField();
 		name2.setPrefWidth(200);
-		addField("Название", name1, name2);
+		addField("Название", name1, name2, false);
 
 		deptype1 = new ComboBox<>();
 		deptype1.setPrefWidth(150);
-		//deptype1.setEditable(true);
 		deptype1.setOnShowing(event -> ClientAgent.getInstance()
 				.send(new ReadAllOrder<Deptype>(Deptype.class, ClientAgent.getInstance()
 						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
 		deptype2 = new ComboBox<>();
 		deptype2.setPrefWidth(150);
-		//deptype2.setEditable(true);
 		deptype2.setOnShowing(event -> ClientAgent.getInstance()
 				.send(new ReadAllOrder<Deptype>(Deptype.class, ClientAgent.getInstance()
 						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
-		addField("Тип отделения", deptype1, deptype2);
+		addField("Тип отделения", deptype1, deptype2, false);
 
 		startyear1 = new MaskField();
 		startyear1.setPrefWidth(150);
@@ -65,7 +63,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 		startyear2.setMask("DDDD");
 		startyear2.setWhatMask("####");
 		startyear2.setPlaceholder("____");
-		addField("Год открытия", startyear1, startyear2);
+		addField("Год открытия", startyear1, startyear2, false);
 
 		phone1 = new MaskField();
 		phone1.setPrefWidth(150);
@@ -77,25 +75,25 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 		phone2.setMask("+38(0DD)DDD-DD-DD");
 		phone2.setWhatMask("-----##-###-##-##");
 		phone2.setPlaceholder("+38(0__)___-__-__");
-		addField("Телефон", phone1, phone2);
+		addField("Телефон", phone1, phone2, false);
 
 		city1 = new TextField();
 		city1.setPrefWidth(150);
 		city2 = new TextField();
 		city2.setPrefWidth(150);
-		addField("Город", city1, city2);
+		addField("Город", city1, city2, false);
 
 		street1 = new TextField();
 		street1.setPrefWidth(150);
 		street2 = new TextField();
 		street2.setPrefWidth(150);
-		addField("Улица", street1, street2);
+		addField("Улица", street1, street2, false);
 
 		house1 = new TextField();
 		house1.setPrefWidth(70);
 		house2 = new TextField();
 		house2.setPrefWidth(70);
-		addField("Дом", house1, house2);
+		addField("Дом", house1, house2, false);
 
 		ClientAgent.subscribeAllReceived(new Callback()
 		{
@@ -157,7 +155,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 			else
 			{
 				id = Integer.parseInt(id1.getText().trim());
-				filledFields.add(Department.class.getField("id"));
+				filledFields.add(clazz.getField("id"));
 			}
 
 			String name;
@@ -166,7 +164,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 			else
 			{
 				name = name1.getText().trim();
-				filledFields.add(Department.class.getField("name"));
+				filledFields.add(clazz.getField("name"));
 			}
 
 			Deptype deptype;
@@ -175,7 +173,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 			else
 			{
 				deptype = deptype1.getSelectionModel().getSelectedItem();
-				filledFields.add(Department.class.getField("deptype"));
+				filledFields.add(clazz.getField("deptype"));
 			}
 
 			BigDecimal startyear;
@@ -184,7 +182,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 			else
 			{
 				startyear = new BigDecimal(startyear1.getText());
-				filledFields.add(Department.class.getField("startyear"));
+				filledFields.add(clazz.getField("startyear"));
 			}
 
 			String phone;
@@ -193,7 +191,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 			else
 			{
 				phone = phone1.getText();
-				filledFields.add(Department.class.getField("phone"));
+				filledFields.add(clazz.getField("phone"));
 			}
 
 			String city;
@@ -202,7 +200,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 			else
 			{
 				city = city1.getText().trim();
-				filledFields.add(Department.class.getField("city"));
+				filledFields.add(clazz.getField("city"));
 			}
 
 			String street;
@@ -211,7 +209,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 			else
 			{
 				street = street1.getText().trim();
-				filledFields.add(Department.class.getField("street"));
+				filledFields.add(clazz.getField("street"));
 			}
 
 			String house;
@@ -220,7 +218,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 			else
 			{
 				house = house1.getText().trim();
-				filledFields.add(Department.class.getField("house"));
+				filledFields.add(clazz.getField("house"));
 			}
 
 			Department dao = new Department(name, deptype, startyear, phone, city, street, house);
@@ -246,7 +244,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 			else
 			{
 				name = name2.getText().trim();
-				filledFields.add(Department.class.getField("name"));
+				filledFields.add(clazz.getField("name"));
 			}
 
 			Deptype deptype;
@@ -255,7 +253,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 			else
 			{
 				deptype = deptype2.getSelectionModel().getSelectedItem();
-				filledFields.add(Department.class.getField("deptype"));
+				filledFields.add(clazz.getField("deptype"));
 			}
 
 			BigDecimal startyear;
@@ -264,7 +262,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 			else
 			{
 				startyear = new BigDecimal(startyear2.getText());
-				filledFields.add(Department.class.getField("startyear"));
+				filledFields.add(clazz.getField("startyear"));
 			}
 
 			String phone;
@@ -273,7 +271,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 			else
 			{
 				phone = phone2.getText();
-				filledFields.add(Department.class.getField("phone"));
+				filledFields.add(clazz.getField("phone"));
 			}
 
 			String city;
@@ -282,7 +280,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 			else
 			{
 				city = city2.getText().trim();
-				filledFields.add(Department.class.getField("city"));
+				filledFields.add(clazz.getField("city"));
 			}
 
 			String street;
@@ -291,7 +289,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 			else
 			{
 				street = street2.getText().trim();
-				filledFields.add(Department.class.getField("street"));
+				filledFields.add(clazz.getField("street"));
 			}
 
 			String house;
@@ -300,7 +298,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 			else
 			{
 				house = house2.getText().trim();
-				filledFields.add(Department.class.getField("house"));
+				filledFields.add(clazz.getField("house"));
 			}
 
 			return new Pair<>(new Department(name, deptype, startyear, phone, city, street, house), filledFields);
@@ -332,8 +330,8 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 	@Override
 	public boolean validatePrimary(boolean allRequired)
 	{
-		return validateComboBox(deptype1, allRequired) &
-				validateTextField(name1, allRequired) &
+		return validateTextField(name1, allRequired) &
+				validateComboBox(deptype1, allRequired) &
 				validateStartyear(startyear1, allRequired) &
 				validateMaskField(phone1, allRequired) &
 				validateTextField(city1, allRequired) &
@@ -344,8 +342,8 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 	@Override
 	public boolean validateSecondary(boolean allRequired)
 	{
-		return validateComboBox(deptype2, allRequired) &
-				validateTextField(name2, allRequired) &
+		return validateTextField(name2, allRequired) &
+				validateComboBox(deptype2, allRequired) &
 				validateStartyear(startyear2, allRequired) &
 				validateMaskField(phone2, allRequired) &
 				validateTextField(city2, allRequired) &
@@ -401,19 +399,34 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 	public void clearAll()
 	{
 		id1.clear();
+		id1.setEffect(null);
 		name1.clear();
+		name1.setEffect(null);
 		deptype1.getSelectionModel().clearSelection();
+		deptype1.setEffect(null);
 		startyear1.clear();
+		startyear1.setEffect(null);
 		phone1.clear();
+		phone1.setEffect(null);
 		city1.clear();
+		city1.setEffect(null);
 		street1.clear();
+		street1.setEffect(null);
 		house1.clear();
+		house1.setEffect(null);
 		name2.clear();
+		name2.setEffect(null);
 		deptype2.getSelectionModel().clearSelection();
+		deptype2.setEffect(null);
 		startyear2.clear();
+		startyear2.setEffect(null);
 		phone2.clear();
+		phone2.setEffect(null);
 		city2.clear();
+		city2.setEffect(null);
 		street2.clear();
+		street2.setEffect(null);
 		house2.clear();
+		house2.setEffect(null);
 	}
 }

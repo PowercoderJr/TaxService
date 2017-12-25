@@ -34,12 +34,11 @@
                         <MenuItem fx:id="switchToPaytypeMenuItem" mnemonicParsing="false" />
                     </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Help">
+                <Menu mnemonicParsing="false" text="О программе">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
+                        <MenuItem mnemonicParsing="false" onAction="#showAuthor" text="Автор" />
                     </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="TESTING" />
             </menus>
         </MenuBar>
         <BorderPane fx:id="borderPane" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
@@ -68,7 +67,7 @@
                     <children>
                   <VBox HBox.hgrow="ALWAYS">
                      <children>
-                        <Label fx:id="currTableLabel" text="Название таблицы" />
+                        <Label fx:id="currTableLabel" />
                         <HBox fx:id="editorBoxBox" alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="ALWAYS">
                            <children>
                               <GridPane hgap="5.0" vgap="5.0" HBox.hgrow="NEVER">
@@ -82,13 +81,13 @@
                                     <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <children>
-                                   <Button fx:id="createBtn" mnemonicParsing="false" onAction="#createBtnClicked" prefHeight="50.0" prefWidth="150.0" text="Добавить" wrapText="true" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
-                                   <Button fx:id="updateBtn" mnemonicParsing="false" onAction="#updateBtnClicked" prefHeight="50.0" prefWidth="150.0" text="Изменить" wrapText="true" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
-                                   <Button fx:id="filterBtn" mnemonicParsing="false" onAction="#filterBtnClicked" prefHeight="50.0" prefWidth="150.0" text="Фильтровать" wrapText="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
-                                   <Button fx:id="deleteBtn" mnemonicParsing="false" onAction="#deleteBtnClicked" prefHeight="50.0" prefWidth="150.0" text="Удалить" wrapText="true" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
-                                   <Button fx:id="refreshBtn" mnemonicParsing="false" onAction="#refreshBtnClicked" prefHeight="50.0" prefWidth="150.0" text="Обновить таблицу" wrapText="true" GridPane.rowIndex="2" />
-                                   <Button fx:id="clearBtn" mnemonicParsing="false" onAction="#clearBtnClicked" prefHeight="50.0" prefWidth="150.0" text="Очистить поля" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                    <GridPane fx:id="updateConfirmPane" hgap="5.0" visible="false" GridPane.columnIndex="1">
+                                   <Button fx:id="createBtn" mnemonicParsing="false" onAction="#createBtnClicked" prefHeight="50.0" prefWidth="160.0" text="Добавить" wrapText="true" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
+                                   <Button fx:id="updateBtn" mnemonicParsing="false" onAction="#updateBtnClicked" prefHeight="50.0" prefWidth="160.0" text="Изменить" wrapText="true" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
+                                   <Button fx:id="filterBtn" mnemonicParsing="false" onAction="#filterBtnClicked" prefHeight="50.0" prefWidth="160.0" text="Фильтровать" wrapText="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
+                                   <Button fx:id="deleteBtn" mnemonicParsing="false" onAction="#deleteBtnClicked" prefHeight="50.0" prefWidth="160.0" text="Удалить" wrapText="true" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
+                                   <Button fx:id="refreshBtn" mnemonicParsing="false" onAction="#refreshBtnClicked" prefHeight="50.0" prefWidth="160.0" text="Обновить таблицу" wrapText="true" GridPane.rowIndex="2" />
+                                   <Button fx:id="clearBtn" mnemonicParsing="false" onAction="#clearBtnClicked" prefHeight="50.0" prefWidth="160.0" text="Очистить поля" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <GridPane fx:id="updateConfirmPane" hgap="5.0" GridPane.columnIndex="1">
                                        <columnConstraints>
                                           <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="-Infinity" percentWidth="50.0" />
                                           <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="-Infinity" percentWidth="50.0" />
@@ -97,8 +96,8 @@
                                           <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                                        </rowConstraints>
                                        <children>
-                                          <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#updateOkBtnClicked" prefHeight="50.0" prefWidth="70.0" text="ОК" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
-                                          <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#updateCancelBtnClicked" prefHeight="50.0" prefWidth="70.0" text="Отмена" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
+                                          <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#updateOkBtnClicked" prefHeight="50.0" prefWidth="75.0" text="ОК" visible="false" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
+                                          <Button minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#updateCancelBtnClicked" prefHeight="50.0" prefWidth="75.0" text="Отмена" visible="false" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
                                        </children>
                                     </GridPane>
                                  </children>

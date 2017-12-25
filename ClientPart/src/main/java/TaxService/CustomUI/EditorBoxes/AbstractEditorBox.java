@@ -4,7 +4,6 @@ import TaxService.CustomUI.MaskField;
 import TaxService.DAOs.AbstractDAO;
 import TaxService.Netty.ClientAgent;
 import TaxService.Orders.CreateOrder;
-import TaxService.Orders.ReadPortionOrder;
 import TaxService.Orders.DeleteOrder;
 import TaxService.Orders.UpdateOrder;
 import TaxService.Utils;
@@ -13,15 +12,13 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.Effect;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.util.Pair;
 import org.apache.commons.lang3.StringUtils;
 
@@ -31,6 +28,8 @@ import java.util.List;
 public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPane
 {
 	private static final double SPACING = 5.0;
+	private static Effect invalidEffect = new ColorAdjust(0, 0.5, 0, 0);
+	private static Tooltip autofillableTooltip = new Tooltip("При добавлении записи это поле генерируется автоматически");
 
 	//protected enum FieldType {PRIMARY, SECONDARY}
 
@@ -41,7 +40,6 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 	private HBox longBox;
 	protected TextField id1, id2;
 	protected String filter;
-	private static Effect invalidEffect = new ColorAdjust(0, 0.5, 0, 0);
 
 	public AbstractEditorBox(Class<T> clazz)
 	{
@@ -75,16 +73,22 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 		id2 = new TextField();
 		id2.setPrefWidth(80);
 		id2.setVisible(false);
-		addField("ID", id1, id2);
+		addField("ID", id1, id2, true);
 
 
 		setFitToHeight(true);
 	}
 
-	protected void addField(String name, Node primary, Node secondary)
+	protected void addField(String name, Node primary, Node secondary, boolean autofillable)
 	{
 		VBox primaryBox = new VBox(SPACING);
-		primaryBox.getChildren().addAll(new Label(name), primary);
+		Label label = new Label(name);
+		if (autofillable)
+		{
+			label.setTextFill(Color.web("#42A642"));
+			label.setTooltip(autofillableTooltip);
+		}
+		primaryBox.getChildren().addAll(label, primary);
 		primaryFieldsBox.getChildren().add(primaryBox);
 		primary.focusedProperty().addListener(new ChangeListener<Boolean>()
 		{
@@ -125,6 +129,23 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 		return isValid;
 	}
 
+	public boolean validateTextPositiveIntField(TextField field, boolean isRequired)
+	{
+		boolean isValid;
+		try
+		{
+			isValid = !isRequired && field.getText().trim().isEmpty() || !field.getText().trim().isEmpty() &&
+					Integer.parseInt(field.getText()) > 0;
+		}
+		catch (Exception e)
+		{
+			isValid = false;
+		}
+		if (!isValid)
+			markAsInvalid(field);
+		return isValid;
+	}
+
 	protected boolean validateMaskField(MaskField field, boolean isRequired)
 	{
 		boolean isValid = !isRequired && field.getPlainText().trim().isEmpty() || field.getPlainText()
@@ -145,19 +166,7 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 
 	public boolean validateId1(boolean isRequired)
 	{
-		boolean isValid;
-		try
-		{
-			isValid = !isRequired && id1.getText().isEmpty() || !id1.getText().isEmpty() &&
-					Integer.parseInt(id1.getText()) > 0;
-		}
-		catch (Exception e)
-		{
-			isValid = false;
-		}
-		if (!isValid)
-			markAsInvalid(id1);
-		return isValid;
+		return validateTextPositiveIntField(id1, isRequired);
 	}
 
 	protected void markAsInvalid(Node field)

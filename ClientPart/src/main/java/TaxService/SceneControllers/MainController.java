@@ -160,7 +160,7 @@ public class MainController
 					statusLabel.setText("Отображены записи с " + delivery.getFirst() + " по " + delivery.getLast()
 							+ " из " + delivery.getTotal());
 					tableStaffs.get(currTable).currPortion = delivery.getFirst() / AbstractCRUD.PORTION_SIZE + 1;
-					//tv.scrollTo(0);
+					tv.scrollTo(0);
 				});
 			}
 		};
@@ -169,9 +169,9 @@ public class MainController
 		Platform.runLater(() ->
 		{
 			initTableStaff(Department.class, "Отделения налоговой инспекции");
-			/*initTableStaff(Employee.class, "Сотрудники налоговой инспекции");
+			initTableStaff(Employee.class, "Сотрудники налоговой инспекции");
 			initTableStaff(Company.class, "Предприятия-плательщики");
-			initTableStaff(Payment.class, "Платежи");*/
+			//initTableStaff(Payment.class, "Платежи");
 			initTableStaff(Deptype.class, "Типы отделений");
 			initTableStaff(Post.class, "Должности налоговой инспекции");
 			initTableStaff(Education.class, "Степени образования");
@@ -432,5 +432,13 @@ public class MainController
 		updateBtn.setVisible(!value);
 		updateConfirmPane.setVisible(value);
 		tableStaffs.get(currTable).editorBox.setSecondaryVisible(value);
+	}
+
+	public void showAuthor(ActionEvent actionEvent)
+	{
+		Alert alert = new Alert(Alert.AlertType.INFORMATION);
+		alert.setTitle("Об авторе");
+		alert.setHeaderText("Комаричев Р. Е.");
+		alert.setContentText("Такие дела");
 	}
 }
