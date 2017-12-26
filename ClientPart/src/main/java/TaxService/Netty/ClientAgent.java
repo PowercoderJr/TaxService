@@ -15,8 +15,13 @@ import sun.awt.Mutex;
 import java.io.Closeable;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Objects;
+
+import static TaxService.PhraseBook.CONNECTION_TIMEOUT_MILLIS;
+import static TaxService.PhraseBook.PING;
+import static TaxService.PhraseBook.SEPARATOR;
 
 public class ClientAgent implements Closeable
 {
@@ -24,19 +29,25 @@ public class ClientAgent implements Closeable
 	private static ClientAgent instance = null;
 
 	private static Mutex authSubsMutex = new Mutex();
-	public static ArrayList<Callback> authSubs = new ArrayList<>();
+	private static ArrayList<Callback> authSubs = new ArrayList<>();
 	private static Mutex portionReceivedSubsMutex = new Mutex();
-	public static ArrayList<Callback> portionReceivedSubs = new ArrayList<>();
+	private static ArrayList<Callback> portionReceivedSubs = new ArrayList<>();
 	private static Mutex allReceivedSubsMutex = new Mutex();
-	public static ArrayList<Callback> allReceivedSubs = new ArrayList<>();
+	private static ArrayList<Callback> allReceivedSubs = new ArrayList<>();
 	private static Mutex exceptionReceivedSubsMutex = new Mutex();
-	public static ArrayList<Callback> exceptionReceivedSubs = new ArrayList<>();
+	private static ArrayList<Callback> exceptionReceivedSubs = new ArrayList<>();
 	private static Mutex notificationReceivedSubsMutex = new Mutex();
-	public static ArrayList<Callback> notificationReceivedSubs = new ArrayList<>();
+	private static ArrayList<Callback> notificationReceivedSubs = new ArrayList<>();
+	private static Mutex connectionLostSubsMutex = new Mutex();
+	private static ArrayList<Callback> connectionLostSubs = new ArrayList<>();
 
 	public static ClientAgent getInstance()
 	{
 		return instance;
+	}
+	public static boolean doesInstanceExist()
+	{
+		return instance != null;
 	}
 
 	public static void buildInstance(InetAddress inetAddress, int port) throws InvocationTargetException
@@ -75,11 +86,11 @@ public class ClientAgent implements Closeable
 		authSubsMutex.unlock();
 	}
 
-	public static void publishAuth(boolean accessed)
+	public static void publishAuth(String result)
 	{
 		authSubsMutex.lock();
 		for (Callback s : authSubs)
-			s.callback(accessed);
+			s.callback(result);
 		authSubsMutex.unlock();
 	}
 
@@ -127,6 +138,13 @@ public class ClientAgent implements Closeable
 		allReceivedSubsMutex.unlock();
 	}
 
+	public static void clearAllReceivedSubs()
+	{
+		allReceivedSubsMutex.lock();
+		allReceivedSubs.clear();
+		allReceivedSubsMutex.unlock();
+	}
+
 	public static void subscribeExceptionReceived(Callback s)
 	{
 		exceptionReceivedSubsMutex.lock();
@@ -171,7 +189,32 @@ public class ClientAgent implements Closeable
 		notificationReceivedSubsMutex.unlock();
 	}
 
+	public static void subscribeConnectionLost(Callback s)
+	{
+		connectionLostSubsMutex.lock();
+		connectionLostSubs.add(s);
+		connectionLostSubsMutex.unlock();
+	}
+
+	public static void unsubscribeConnectionLost(Callback s)
+	{
+		connectionLostSubsMutex.lock();
+		connectionLostSubs.remove(s);
+		connectionLostSubsMutex.unlock();
+	}
+
+	public static void publishConnectionLost(String msg)
+	{
+		connectionLostSubsMutex.lock();
+		for (Callback s : connectionLostSubs)
+			s.callback(msg);
+		connectionLostSubsMutex.unlock();
+	}
+
 	//NON-STATIC SECTION
+	private volatile boolean pingLoop;
+	private long lastPingReceived;
+
 	private ChannelFuture future;
 	private EventLoopGroup group;
 	private String login;
@@ -208,11 +251,55 @@ public class ClientAgent implements Closeable
 
 	public void close()
 	{
-		//future.channel().closeFuture();
 		if (group != null)
 			group.shutdownGracefully();
 		if (instance != null)
 			instance = null;
+	}
+
+	public long getLastPingReceived()
+	{
+		return lastPingReceived;
+	}
+
+	public void setLastPingReceived(long lastPingReceived)
+	{
+		this.lastPingReceived = lastPingReceived;
+	}
+
+	public void startPinging()
+	{
+		send(PING + SEPARATOR + login);
+		pingLoop = true;
+		new Thread(() ->
+		{
+			try
+			{
+				while (pingLoop)
+				{
+					//System.out.println("Ping check");
+					Thread.sleep(CONNECTION_TIMEOUT_MILLIS / 2);
+					if (pingLoop)
+					{
+						Thread.sleep(CONNECTION_TIMEOUT_MILLIS / 2);
+						if (System.currentTimeMillis() - lastPingReceived > CONNECTION_TIMEOUT_MILLIS)
+						{
+							stopPinging();
+							publishConnectionLost(null);
+						}
+					}
+				}
+			}
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
+		}).start();
+	}
+
+	public void stopPinging()
+	{
+		pingLoop = false;
 	}
 
 	public String getLogin()

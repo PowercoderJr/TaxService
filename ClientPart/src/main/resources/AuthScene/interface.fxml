@@ -10,12 +10,12 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.GridPane?>
 
-<GridPane alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" vgap="20.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="TaxService.SceneControllers.AuthController">
+<GridPane fx:id="root" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" vgap="20.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="TaxService.SceneControllers.AuthController">
   <children>
   <TextField fx:id="loginField" prefWidth="200.0" promptText="Логин" GridPane.rowIndex="1" />
   <PasswordField fx:id="passField" prefWidth="200.0" promptText="Пароль" GridPane.rowIndex="2" />
     <Button mnemonicParsing="false" onAction="#auth" text="Вход в систему" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
-    <Label fx:id="statusLabel" text="Статусная строка" textAlignment="CENTER" textFill="#660000" visible="false" GridPane.rowIndex="4" />
+    <Label fx:id="statusLabel" text="Статусная строка" textAlignment="CENTER" textFill="#660000" visible="false" wrapText="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.vgrow="ALWAYS" />
       <Label fx:id="headerLabel" text="База данных налоговой инспекции&#10;&lt;здесь могло бы быть ваше государство&gt;" textAlignment="CENTER" wrapText="true" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
          <font>
             <Font size="16.0" />

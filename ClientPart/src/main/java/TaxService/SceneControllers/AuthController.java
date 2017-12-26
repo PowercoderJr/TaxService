@@ -4,15 +4,20 @@ import TaxService.*;
 import TaxService.Netty.ClientAgent;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.apache.commons.codec.digest.DigestUtils;
 
+import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
@@ -21,8 +26,13 @@ import static TaxService.PhraseBook.PORT;
 
 public class AuthController
 {
+	@FXML
+	public GridPane root;
+	@FXML
 	public TextField loginField;
+	@FXML
 	public PasswordField passField;
+	@FXML
 	public Label statusLabel;
 
 	private Callback onAuth;
@@ -30,9 +40,6 @@ public class AuthController
 
 	public void initialize()
 	{
-		ClientMain.sceneManager.getStage().setTitle("Авторизация");
-		ClientMain.sceneManager.getStage().setResizable(false);
-
 		onExceptionReceived = new Callback()
 		{
 			@Override
@@ -55,30 +62,43 @@ public class AuthController
 			@Override
 			public void callback(Object o)
 			{
-				final boolean accessed = (boolean) o;
+				final String accessResult = o.toString();
 				Platform.runLater(() ->
 				{
-					if (accessed)
+					switch (accessResult)
 					{
-						try
-						{
-							ClientAgent.unsubscribeAuth(onAuth);
-							ClientAgent.unsubscribeExceptionReceived(onExceptionReceived);
-							Parent mainSceneFXML = FXMLLoader.load(ClientMain.class.getResource("/MainScene/interface.fxml"));
-							ManagedScene mainScene = new ManagedScene(mainSceneFXML, ClientMain.DEFAULT_WINDOW_WIDTH, ClientMain.DEFAULT_WINDOW_HEIGHT, ClientMain.sceneManager);
-							mainScene.getStylesheets().add("/MainScene/style.css");
-							ClientMain.sceneManager.pushScene(mainScene);
-						}
-						catch (IOException e)
-						{
-							e.printStackTrace();
-						}
-					}
-					else
-					{
-						statusLabel.setText("Доступ запрещён");
-						statusLabel.setVisible(true);
-						ClientAgent.getInstance().close();
+						case PhraseBook.ACCESS_RESULT_SUCCESS:
+							try
+							{
+								//https://stackoverflow.com/questions/13246211/javafx-how-to-get-stage-from-controller-during-initialization
+								FXMLLoader loader = new FXMLLoader(ClientMain.class.getResource("/MainScene/interface.fxml"));
+								Parent mainSceneFXML = loader.load();
+								Stage mainStage = new Stage();
+								mainStage.setTitle("База данных налоговой инспекции");
+								mainStage.setX((Toolkit.getDefaultToolkit().getScreenSize().width - ClientMain.DEFAULT_WINDOW_WIDTH) / 2);
+								mainStage.setY((Toolkit.getDefaultToolkit().getScreenSize().height - ClientMain.DEFAULT_WINDOW_HEIGHT) / 2);
+								mainStage.setOnCloseRequest(event -> ((MainController)loader.getController()).shutdown());
+								Scene mainScene = new Scene(mainSceneFXML);
+								mainScene.getStylesheets().add("/MainScene/style.css");
+								mainStage.setScene(mainScene);
+								((Stage)root.getScene().getWindow()).close();
+								mainStage.show();
+								ClientAgent.unsubscribeAuth(onAuth);
+								ClientAgent.unsubscribeExceptionReceived(onExceptionReceived);
+							}
+							catch (IOException e)
+							{
+								e.printStackTrace();
+							}
+							break;
+						case PhraseBook.ACCESS_RESULT_INVALID_LOGIN_PASSWORD:
+						case PhraseBook.ACCESS_RESULT_ALREADY_LOGGED:
+						default:
+							statusLabel.setText(accessResult.equals(PhraseBook.ACCESS_RESULT_ALREADY_LOGGED) ?
+									"Пользователь уже авторизован с другого компьютера" : "Доступ запрещён");
+							statusLabel.setVisible(true);
+							ClientAgent.getInstance().close();
+							break;
 					}
 				});
 			}

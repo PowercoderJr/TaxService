@@ -7,6 +7,8 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import javafx.util.Pair;
+import sun.awt.Mutex;
 
 import java.io.Closeable;
 import java.lang.reflect.Field;
@@ -14,11 +16,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import static TaxService.PhraseBook.PORT;
+import static TaxService.PhraseBook.*;
 
 public class ServerAgent implements Closeable
 {
@@ -32,11 +32,13 @@ public class ServerAgent implements Closeable
 		return instance;
 	}
 
-	//https://docs.oracle.com/cd/E13222_01/wls/docs81/ConsoleHelp/jdbc_connection_pools.html ?
-	private Map<String, Connection> connections;
+	public static Mutex connectionsMutex = new Mutex();
+	private Map<String, Pair<Connection, Long>> connections;
+
 	private NioEventLoopGroup acceptorGroup;
 	private NioEventLoopGroup handlerGroup;
 	private ChannelFuture future;
+	private volatile boolean pingLoop;
 
 	private ServerAgent()
 	{
@@ -57,7 +59,47 @@ public class ServerAgent implements Closeable
 		{
 			e.printStackTrace();
 		}
-		connections = new HashMap<String, Connection>(CONNECTIONS_AVAILABLE);
+		connections = new HashMap<>(CONNECTIONS_AVAILABLE);
+
+		pingLoop = true;
+		new Thread(() ->
+		{
+			try
+			{
+				while (pingLoop)
+				{
+					//System.out.println("Ping check");
+					Thread.sleep(CONNECTION_TIMEOUT_MILLIS);
+					List<String> toDisconnect = new ArrayList<>();
+					connectionsMutex.lock();
+					connections.forEach((login, pair) ->
+					{
+						if (System.currentTimeMillis() - pair.getValue() > CONNECTION_TIMEOUT_MILLIS)
+						{
+							try
+							{
+								pair.getKey().close();
+							}
+							catch (SQLException e)
+							{
+								e.printStackTrace();
+							}
+							toDisconnect.add(login);
+						}
+					});
+					toDisconnect.forEach(login ->
+					{
+						connections.remove(login);
+						System.out.println(login + " disconnected");
+					});
+					connectionsMutex.unlock();
+				}
+			}
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
+		}).start();
 	}
 
 	// TODO: 01.11.2017 Закрыть как полагается
@@ -66,12 +108,18 @@ public class ServerAgent implements Closeable
 	{
 		try
 		{
-			for (Connection connection : connections.values())
-				connection.close();
+			connectionsMutex.lock();
+			for (Pair<Connection, Long> pair : connections.values())
+				pair.getKey().close();
+			connections.clear();
 		}
 		catch (SQLException e)
 		{
 			e.printStackTrace();
+		}
+		finally
+		{
+			connectionsMutex.unlock();
 		}
 		/*try
 		{
@@ -81,6 +129,7 @@ public class ServerAgent implements Closeable
 		{
 			e.printStackTrace();
 		}*/
+		pingLoop = false;
 		future.channel().closeFuture();
 		acceptorGroup.shutdownGracefully();
 		handlerGroup.shutdownGracefully();
@@ -173,10 +222,10 @@ public class ServerAgent implements Closeable
 
 	public AbstractCRUD getCrudForClass(Class<? extends AbstractDAO> clazz, String sendersLogin)
 	{
-		return getCrudForClass(clazz, connections.get(sendersLogin));
+		return getCrudForClass(clazz, connections.get(sendersLogin).getKey());
 	}
 
-	public Map<String, Connection> getConnections()
+	public Map<String, Pair<Connection, Long>> getConnections()
 	{
 		return connections;
 	}

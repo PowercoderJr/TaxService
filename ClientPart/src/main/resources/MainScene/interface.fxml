@@ -16,7 +16,7 @@
                 <Menu mnemonicParsing="false" text="База данных">
                     <items>
                         <MenuItem mnemonicParsing="false" onAction="#fsMode" text="На весь экран" />
-                        <MenuItem mnemonicParsing="false" text="Отключиться" />
+                        <MenuItem mnemonicParsing="false" onAction="#disconnect" text="Отключиться" />
                         <MenuItem mnemonicParsing="false" onAction="#exit" text="Выход" />
                     </items>
                 </Menu>

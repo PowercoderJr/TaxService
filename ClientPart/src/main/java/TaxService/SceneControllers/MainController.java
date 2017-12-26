@@ -13,10 +13,13 @@ import TaxService.TableColumnsBuilder;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -28,13 +31,21 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.awt.*;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.function.UnaryOperator;
+
+import static TaxService.PhraseBook.BYE;
+import static TaxService.PhraseBook.CONNECTION_TIMEOUT_MILLIS;
+import static TaxService.PhraseBook.SEPARATOR;
 
 
 public class MainController
@@ -114,17 +125,14 @@ public class MainController
 	@FXML
 	public TextField portionField;
 
+
 	private Callback onPortionReceived;
 	private Callback onExceptionReceived;
 	private Callback onNotificationReceived;
+	private Callback onConnectionLost;
 	private Class<? extends AbstractDAO> currTable;
 	private static final int NOTIFICATION_DURATION = 3000;
-	private final ScheduledExecutorService notificationsScheduler = Executors.newSingleThreadScheduledExecutor(r ->
-	{
-		Thread t = new Thread(r);
-		t.setDaemon(true);
-		return t;
-	});
+	private final ScheduledExecutorService notificationsScheduler = Executors.newSingleThreadScheduledExecutor();
 
 
 	//private final ScheduledExecutorService notificationsScheduler = Executors.newScheduledThreadPool(1);
@@ -132,13 +140,6 @@ public class MainController
 
 	public void initialize()
 	{
-		ClientMain.sceneManager.getStage().setTitle("База данных налоговой инспекции");
-		ClientMain.sceneManager.getStage().setResizable(true);
-		ClientMain.sceneManager.getStage()
-				.setX((Toolkit.getDefaultToolkit().getScreenSize().width - ClientMain.DEFAULT_WINDOW_WIDTH) / 2);
-		ClientMain.sceneManager.getStage()
-				.setY((Toolkit.getDefaultToolkit().getScreenSize().height - ClientMain.DEFAULT_WINDOW_HEIGHT) / 2);
-
 		UnaryOperator<TextFormatter.Change> digitsFilter = change ->
 		{
 			String newText = change.getControlNewText();
@@ -212,6 +213,25 @@ public class MainController
 		};
 		ClientAgent.subscribeNotificationReceived(onNotificationReceived);
 
+		onConnectionLost = new Callback()
+		{
+			@Override
+			public void callback(Object o)
+			{
+				Platform.runLater(() ->
+				{
+					Alert alert = new Alert(Alert.AlertType.ERROR);
+					alert.initOwner(root.getScene().getWindow());
+					alert.setTitle("Потеряно соединение");
+					alert.setHeaderText("Потеряно соединение");
+					alert.setContentText("Превышен интервал ожидания ответа от сервера.");
+					alert.showAndWait();
+					disconnect(null);
+				});
+			}
+		};
+		ClientAgent.subscribeConnectionLost(onConnectionLost);
+
 		initTableStaff(Department.class, "Отделения налоговой инспекции");
 		initTableStaff(Employee.class, "Сотрудники налоговой инспекции");
 		initTableStaff(Company.class, "Предприятия-плательщики");
@@ -222,6 +242,8 @@ public class MainController
 		initTableStaff(Owntype.class, "Виды собственности");
 		initTableStaff(Paytype.class, "Виды платежей");
 		switchActiveTable(Department.class);
+
+		ClientAgent.getInstance().startPinging();
 	}
 
 	private void initTableStaff(Class<? extends AbstractDAO> tableClazz, String niceName)
@@ -390,21 +412,6 @@ public class MainController
 				staff.currPortion, false, staff.editorBox.getFilter()));
 	}
 
-	public void exit(ActionEvent actionEvent)
-	{
-		ClientAgent.unsubscribePortionReceived(onPortionReceived);
-		ClientAgent.unsubscribeExceptionReceived(onExceptionReceived);
-		ClientAgent.unsubscribeNotificationReceived(onNotificationReceived);
-		try
-		{
-			ClientMain.sceneManager.popScene();
-		}
-		catch (InvocationTargetException e)
-		{
-			System.out.println(e.getMessage());
-		}
-	}
-
 	public void switchActiveTable(Class<? extends AbstractDAO> tableClazz)
 	{
 		if (currTable != null)
@@ -423,7 +430,7 @@ public class MainController
 
 	public void fsMode(ActionEvent actionEvent)
 	{
-		ClientMain.sceneManager.getStage().setFullScreen(true);
+		((Stage)root.getScene().getWindow()).setFullScreen(true);
 	}
 
 	public void gotoFirstPage(ActionEvent actionEvent)
@@ -499,5 +506,45 @@ public class MainController
 		alert.setContentText("Такие дела");
 		alert.initOwner(root.getScene().getWindow());
 		alert.showAndWait();
+	}
+
+	public void shutdown()
+	{
+		System.out.println("Shutting down");
+		ClientAgent.getInstance().stopPinging();
+		notificationsScheduler.shutdown();
+		ClientAgent.getInstance().send(BYE + SEPARATOR + ClientAgent.getInstance().getLogin());
+		ClientAgent.getInstance().close();
+		ClientAgent.unsubscribeExceptionReceived(onExceptionReceived);
+		ClientAgent.unsubscribePortionReceived(onPortionReceived);
+		ClientAgent.unsubscribeNotificationReceived(onNotificationReceived);
+		ClientAgent.unsubscribeConnectionLost(onConnectionLost);
+		ClientAgent.clearAllReceivedSubs();
+	}
+
+	public void disconnect(ActionEvent actionEvent)
+	{
+		try
+		{
+			Parent authSceneFXML = FXMLLoader.load(ClientMain.class.getResource("/AuthScene/interface.fxml"));
+			Stage authStage = new Stage();
+			authStage.setTitle("Авторизация");
+			Scene authScene = new Scene(authSceneFXML);
+			authScene.getStylesheets().add("/AuthScene/style.css");
+			authStage.setScene(authScene);
+			((Stage) root.getScene().getWindow()).close();
+			root.getScene().getWindow().getOnCloseRequest().handle(null);
+			authStage.show();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public void exit(ActionEvent actionEvent)
+	{
+		((Stage)root.getScene().getWindow()).close();
+		root.getScene().getWindow().getOnCloseRequest().handle(null);
 	}
 }
