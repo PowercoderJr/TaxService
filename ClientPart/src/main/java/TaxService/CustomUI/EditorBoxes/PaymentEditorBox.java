@@ -95,48 +95,68 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
 		addField("Компания-плательщик", company1, company2, false);
 
-		ClientAgent.subscribeAllReceived(new Callback()
+		ClientAgent.subscribeAllReceived(o ->
 		{
-			@Override
-			public void callback(Object o)
-			{
-				AllDelivery delivery = (AllDelivery) o;
+			AllDelivery delivery = (AllDelivery) o;
 
-				if (delivery.getPurpose() == ReadAllOrder.Purposes.REFRESH_CB )
-				{
-					if (delivery.getContentClazz() == Paytype.class)
-						Platform.runLater(() ->
+			if (delivery.getPurpose() == ReadAllOrder.Purposes.REFRESH_CB )
+			{
+				if (delivery.getContentClazz() == Paytype.class)
+					Platform.runLater(() ->
+					{
+						if (paytype1.isShowing())
 						{
-							if (paytype1.isShowing())
-								paytype1.setItems(FXCollections.observableList(delivery.getContent()));
-							else if (paytype2.isShowing())
-								paytype2.setItems(FXCollections.observableList(delivery.getContent()));
-						});
-					else if (delivery.getContentClazz() == Employee.class)
-						Platform.runLater(() ->
+							paytype1.getSelectionModel().clearSelection();
+							paytype1.setItems(FXCollections.observableList(delivery.getContent()));
+						}
+						else if (paytype2.isShowing())
 						{
-							if (employee1.isShowing())
-								employee1.setItems(FXCollections.observableList(delivery.getContent()));
-							else if (employee2.isShowing())
-								employee2.setItems(FXCollections.observableList(delivery.getContent()));
-						});
-					else if (delivery.getContentClazz() == Department.class)
-						Platform.runLater(() ->
+							paytype2.getSelectionModel().clearSelection();
+							paytype2.setItems(FXCollections.observableList(delivery.getContent()));
+						}
+					});
+				else if (delivery.getContentClazz() == Employee.class)
+					Platform.runLater(() ->
+					{
+						if (employee1.isShowing())
 						{
-							if (department1.isShowing())
-								department1.setItems(FXCollections.observableList(delivery.getContent()));
-							else if (department2.isShowing())
-								department2.setItems(FXCollections.observableList(delivery.getContent()));
-						});
-					else if (delivery.getContentClazz() == Company.class)
-						Platform.runLater(() ->
+							employee1.getSelectionModel().clearSelection();
+							employee1.setItems(FXCollections.observableList(delivery.getContent()));
+						}
+						else if (employee2.isShowing())
 						{
-							if (company1.isShowing())
-								company1.setItems(FXCollections.observableList(delivery.getContent()));
-							else if (company2.isShowing())
-								company2.setItems(FXCollections.observableList(delivery.getContent()));
-						});
-				}
+							employee2.getSelectionModel().clearSelection();
+							employee2.setItems(FXCollections.observableList(delivery.getContent()));
+						}
+					});
+				else if (delivery.getContentClazz() == Department.class)
+					Platform.runLater(() ->
+					{
+						if (department1.isShowing())
+						{
+							department1.getSelectionModel().clearSelection();
+							department1.setItems(FXCollections.observableList(delivery.getContent()));
+						}
+						else if (department2.isShowing())
+						{
+							department2.getSelectionModel().clearSelection();
+							department2.setItems(FXCollections.observableList(delivery.getContent()));
+						}
+					});
+				else if (delivery.getContentClazz() == Company.class)
+					Platform.runLater(() ->
+					{
+						if (company1.isShowing())
+						{
+							company1.getSelectionModel().clearSelection();
+							company1.setItems(FXCollections.observableList(delivery.getContent()));
+						}
+						else if (company2.isShowing())
+						{
+							company2.getSelectionModel().clearSelection();
+							company2.setItems(FXCollections.observableList(delivery.getContent()));
+						}
+					});
 			}
 		});
 	}
@@ -192,7 +212,7 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 				amount = null;
 			else
 			{
-				amount = new BigDecimal(amount1.getText());
+				amount = new BigDecimal(amount1.getText().replace(',', '.'));
 				filledFields.add(clazz.getField("amount"));
 			}
 
@@ -264,7 +284,7 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 				amount = null;
 			else
 			{
-				amount = new BigDecimal(amount2.getText());
+				amount = new BigDecimal(amount2.getText().replace(',', '.'));
 				filledFields.add(clazz.getField("amount"));
 			}
 
@@ -304,21 +324,21 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 		return null;
 	}
 
-	protected boolean validatePayDate(DatePicker field, boolean isRequired)
+	/*protected boolean validatePayDate(DatePicker field, boolean isRequired)
 	{
 		boolean isValid = !isRequired && field.getValue() == null ||
 				field.getValue() != null && field.getValue().compareTo(ChronoLocalDate.from(LocalDateTime.now())) <= 0;
 		if (!isValid)
 			markAsInvalid(field);
 		return isValid;
-	}
+	}*/
 
 	@Override
 	public boolean validatePrimary(boolean allRequired)
 	{
 		return validateComboBox(paytype1, allRequired) &
-				validatePayDate(date1, allRequired) &
-				validateTextPositiveIntField(amount1, allRequired) &
+				//validatePayDate(date1, allRequired) &
+				validateTextPositiveFloatField(amount1, allRequired) &
 				validateComboBox(employee1, allRequired) &
 				validateComboBox(department1, allRequired) &
 				validateComboBox(company1, allRequired);
@@ -328,8 +348,8 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 	public boolean validateSecondary(boolean allRequired)
 	{
 		return validateComboBox(paytype2, allRequired) &
-				validatePayDate(date2, allRequired) &
-				validateTextPositiveIntField(amount2, allRequired) &
+				//validatePayDate(date2, allRequired) &
+				validateTextPositiveFloatField(amount2, allRequired) &
 				validateComboBox(employee2, allRequired) &
 				validateComboBox(department2, allRequired) &
 				validateComboBox(company2, allRequired);

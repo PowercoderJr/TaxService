@@ -125,7 +125,6 @@ public class MainController
 	@FXML
 	public TextField portionField;
 
-
 	private Callback onPortionReceived;
 	private Callback onExceptionReceived;
 	private Callback onNotificationReceived;
@@ -133,9 +132,6 @@ public class MainController
 	private Class<? extends AbstractDAO> currTable;
 	private static final int NOTIFICATION_DURATION = 3000;
 	private final ScheduledExecutorService notificationsScheduler = Executors.newSingleThreadScheduledExecutor();
-
-
-	//private final ScheduledExecutorService notificationsScheduler = Executors.newScheduledThreadPool(1);
 	private ScheduledFuture<?> hideNotificationFuture;
 
 	public void initialize()
@@ -153,83 +149,61 @@ public class MainController
 		setVisibleAndManaged(notificationLabel, false);
 		setVisibleAndManaged(filterIndicatorLabel, false);
 
-		onPortionReceived = new Callback()
+		onPortionReceived = o ->
 		{
-			@Override
-			public void callback(Object o)
+			PortionDelivery<AbstractDAO> delivery = (PortionDelivery<AbstractDAO>) o;
+			Platform.runLater(() ->
 			{
-				PortionDelivery<AbstractDAO> delivery = (PortionDelivery<AbstractDAO>) o;
-				Platform.runLater(() ->
-				{
-					TableView tv = tableStaffs.get(currTable).tableView;
-					tv.getItems().clear();
-					tv.getColumns().clear();
-					tv.getColumns().addAll(TableColumnsBuilder.buildForDAO(delivery.getContentClazz()));
-					tv.setItems(FXCollections.observableList(delivery.getContent()));
-					statusLabel.setText("Отображены записи с " + delivery.getFirst() + " по " + delivery.getLast()
-							+ " из " + delivery.getTotal());
-					tableStaffs.get(currTable).currPortion = delivery.getFirst() / AbstractCRUD.PORTION_SIZE + 1;
-					tv.scrollTo(0);
-				});
-			}
+				TableView tv = tableStaffs.get(currTable).tableView;
+				tv.getItems().clear();
+				tv.getColumns().clear();
+				tv.getColumns().addAll(TableColumnsBuilder.buildForDAO(delivery.getContentClazz()));
+				tv.setItems(FXCollections.observableList(delivery.getContent()));
+				statusLabel.setText("Отображены записи с " + delivery.getFirst() + " по " + delivery.getLast()
+						+ " из " + delivery.getTotal());
+				tableStaffs.get(currTable).currPortion = delivery.getFirst() / AbstractCRUD.PORTION_SIZE + 1;
+				tv.scrollTo(0);
+			});
 		};
 		ClientAgent.subscribePortionReceived(onPortionReceived);
 
-		onExceptionReceived = new Callback()
+		onExceptionReceived = o -> Platform.runLater(() ->
 		{
-			@Override
-			public void callback(Object o)
-			{
-				Platform.runLater(() ->
-				{
-					Alert alert = new Alert(Alert.AlertType.ERROR);
-					alert.initOwner(root.getScene().getWindow());
-					alert.setTitle("Ошибка");
-					alert.setHeaderText("При выполнении операции произошла ошибка");
-					alert.setContentText((o).toString());
-					alert.showAndWait();
-				});
-			}
-		};
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.initOwner(root.getScene().getWindow());
+			alert.setTitle("Ошибка");
+			alert.setHeaderText("При выполнении операции произошла ошибка");
+			alert.setContentText((o).toString());
+			alert.showAndWait();
+		});
 		ClientAgent.subscribeExceptionReceived(onExceptionReceived);
 
-		onNotificationReceived = new Callback()
+		onNotificationReceived = o ->
 		{
-			@Override
-			public void callback(Object o)
+			Platform.runLater(() ->
 			{
-				Platform.runLater(() ->
-				{
-					notificationLabel.setText(o.toString());
-					setVisibleAndManaged(notificationLabel, true);
-				});
+				notificationLabel.setText(o.toString());
+				setVisibleAndManaged(notificationLabel, true);
+			});
 
-				if (hideNotificationFuture != null && !hideNotificationFuture.isDone())
-					hideNotificationFuture.cancel(true);
-				hideNotificationFuture = notificationsScheduler.schedule(() ->
-								Platform.runLater(() -> setVisibleAndManaged(notificationLabel, false)),
-						NOTIFICATION_DURATION, TimeUnit.MILLISECONDS);
-			}
+			if (hideNotificationFuture != null && !hideNotificationFuture.isDone())
+				hideNotificationFuture.cancel(true);
+			hideNotificationFuture = notificationsScheduler.schedule(() ->
+							Platform.runLater(() -> setVisibleAndManaged(notificationLabel, false)),
+					NOTIFICATION_DURATION, TimeUnit.MILLISECONDS);
 		};
 		ClientAgent.subscribeNotificationReceived(onNotificationReceived);
 
-		onConnectionLost = new Callback()
+		onConnectionLost = o -> Platform.runLater(() ->
 		{
-			@Override
-			public void callback(Object o)
-			{
-				Platform.runLater(() ->
-				{
-					Alert alert = new Alert(Alert.AlertType.ERROR);
-					alert.initOwner(root.getScene().getWindow());
-					alert.setTitle("Потеряно соединение");
-					alert.setHeaderText("Потеряно соединение");
-					alert.setContentText("Превышен интервал ожидания ответа от сервера.");
-					alert.showAndWait();
-					disconnect(null);
-				});
-			}
-		};
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.initOwner(root.getScene().getWindow());
+			alert.setTitle("Потеряно соединение");
+			alert.setHeaderText("Потеряно соединение");
+			alert.setContentText("Превышен интервал ожидания ответа от сервера.");
+			alert.showAndWait();
+			disconnect(null);
+		});
 		ClientAgent.subscribeConnectionLost(onConnectionLost);
 
 		initTableStaff(Department.class, "Отделения налоговой инспекции");
@@ -415,7 +389,11 @@ public class MainController
 	public void switchActiveTable(Class<? extends AbstractDAO> tableClazz)
 	{
 		if (currTable != null)
-			setVisibleAndManaged(tableStaffs.get(currTable).editorBox, false);
+		{
+			TableStaff oldStaff = tableStaffs.get(currTable);
+			setVisibleAndManaged(oldStaff.editorBox, false);
+			oldStaff.tableView.getItems().clear();
+		}
 
 		currTable = tableClazz;
 		TableStaff staff = tableStaffs.get(currTable);
@@ -511,10 +489,13 @@ public class MainController
 	public void shutdown()
 	{
 		System.out.println("Shutting down");
-		ClientAgent.getInstance().stopPinging();
 		notificationsScheduler.shutdown();
-		ClientAgent.getInstance().send(BYE + SEPARATOR + ClientAgent.getInstance().getLogin());
-		ClientAgent.getInstance().close();
+		if (ClientAgent.doesInstanceExist())
+		{
+			ClientAgent.getInstance().stopPinging();
+			ClientAgent.getInstance().send(BYE + SEPARATOR + ClientAgent.getInstance().getLogin());
+			ClientAgent.getInstance().close();
+		}
 		ClientAgent.unsubscribeExceptionReceived(onExceptionReceived);
 		ClientAgent.unsubscribePortionReceived(onPortionReceived);
 		ClientAgent.unsubscribeNotificationReceived(onNotificationReceived);

@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class ServerMain
 {
-	private static final boolean fromScratch = false;
+	private static final boolean fromScratch = true;
 
 	public static void main(String[] args)
 	{
@@ -81,46 +81,59 @@ public class ServerMain
 			}
 			//Создание таблиц
 			String execMe;
-			execMe  = "create table department(";
-			execMe += "id serial primary key,";
-			execMe += "deptype_id int8 not null references deptype(id) on delete cascade,";
-			execMe += "name varchar(100) not null,";
-			execMe += "startyear numeric(4,0) not null,";
-			execMe += "phone varchar(17) not null,";
-			execMe += "city varchar(30) not null,";
-			execMe += "street varchar(30) not null,";
-			execMe += "house varchar(6) not null)";
+			execMe  = "create table department("
+					+ "id serial primary key,"
+					+ "deptype_id int8 not null references deptype(id) on delete cascade,"
+					+ "name varchar(100) not null,"
+					+ "startyear numeric(4,0) not null,"
+					+ "phone varchar(17) not null,"
+					+ "city varchar(30) not null,"
+					+ "street varchar(30) not null,"
+					+ "house varchar(6) not null)";
 			stmt.executeUpdate(execMe);
 
-			execMe  = "create table employee(";
-			execMe += "id serial primary key,";
-			execMe += "surname varchar(30) not null,";
-			execMe += "name varchar(30) not null,";
-			execMe += "patronymic varchar(30) not null,";
-			execMe += "department_id int8 not null references department(id) on delete cascade,";
-			execMe += "birthdate date not null,";
-			execMe += "post_id int8 not null references post(id),";
-			execMe += "salary int4 not null,";
-			execMe += "education_id int8 not null references education(id) on delete cascade)";
+			execMe  = "create table employee("
+					+ "id serial primary key,"
+					+ "surname varchar(30) not null,"
+					+ "name varchar(30) not null,"
+					+ "patronymic varchar(30) not null,"
+					+ "department_id int8 not null references department(id) on delete cascade,"
+					+ "birthdate date not null,"
+					+ "post_id int8 not null references post(id),"
+					+ "salary int4 not null,"
+					+ "education_id int8 not null references education(id) on delete cascade)";
 			stmt.executeUpdate(execMe);
 
-			execMe  = "create table company(";
-			execMe += "id serial primary key,";
-			execMe += "name varchar(100) not null,";
-			execMe += "owntype_id serial not null references owntype(id) on delete cascade,";
-			execMe += "phone varchar(17) not null,";
-			execMe += "startyear numeric(4,0) not null,";
-			execMe += "statesize int4 not null)";
+			execMe  = "create table company("
+					+ "id serial primary key,"
+					+ "name varchar(100) not null,"
+					+ "owntype_id serial not null references owntype(id) on delete cascade,"
+					+ "phone varchar(17) not null,"
+					+ "startyear numeric(4,0) not null,"
+					+ "statesize int4 not null)";
 			stmt.executeUpdate(execMe);
 
-			execMe  = "create table payment(";
-			execMe += "id serial primary key,";
-			execMe += "paytype_id int8 not null references paytype(id) on delete cascade,";
-			execMe += "date date not null,";
-			execMe += "amount numeric(12,2) not null,";
-			execMe += "employee_id int8 not null references employee(id) on delete cascade,";
-			execMe += "department_id int8 not null references department(id) on delete cascade,";
-			execMe += "company_id int8 not null references company(id) on delete cascade)";
+			execMe  = "create table payment("
+					+ "id serial primary key,"
+					+ "paytype_id int8 not null references paytype(id) on delete cascade,"
+					+ "date date not null,"
+					+ "amount numeric(12,2) not null,"
+					+ "employee_id int8 not null references employee(id) on delete cascade,"
+					+ "department_id int8 not null references department(id) on delete cascade,"
+					+ "company_id int8 not null references company(id) on delete cascade)";
+			stmt.executeUpdate(execMe);
+
+			//Назначение триггеров
+			execMe  = "create function setPaymentDateToday() returns trigger as $$\n"
+					+ "begin\n"
+					+ "		new.date = current_date;\n"
+					+ "		return new;\n"
+					+ "end;\n"
+					+ "$$ LANGUAGE 'plpgsql';";
+			stmt.executeUpdate(execMe);
+
+			execMe  = "create trigger setPaymentDateToday before insert on payment "
+					+ "for each row execute procedure setPaymentDateToday()";
 			stmt.executeUpdate(execMe);
 		}
 	}

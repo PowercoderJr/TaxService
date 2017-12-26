@@ -95,23 +95,25 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 		house2.setPrefWidth(70);
 		addField("Дом", house1, house2, false);
 
-		ClientAgent.subscribeAllReceived(new Callback()
+		ClientAgent.subscribeAllReceived(o ->
 		{
-			@Override
-			public void callback(Object o)
-			{
-				AllDelivery delivery = (AllDelivery) o;
+			AllDelivery delivery = (AllDelivery) o;
 
-				if (delivery.getPurpose() == ReadAllOrder.Purposes.REFRESH_CB && delivery.getContentClazz() == Deptype.class)
+			if (delivery.getPurpose() == ReadAllOrder.Purposes.REFRESH_CB && delivery.getContentClazz() == Deptype.class)
+			{
+				Platform.runLater(() ->
 				{
-					Platform.runLater(() ->
+					if (deptype1.isShowing())
 					{
-						if (deptype1.isShowing())
-							deptype1.setItems(FXCollections.observableList(delivery.getContent()));
-						else if (deptype2.isShowing())
-							deptype2.setItems(FXCollections.observableList(delivery.getContent()));
-					});
-				}
+						deptype1.getSelectionModel().clearSelection();
+						deptype1.setItems(FXCollections.observableList(delivery.getContent()));
+					}
+					else if (deptype2.isShowing())
+					{
+						deptype2.setItems(FXCollections.observableList(delivery.getContent()));
+						deptype2.getSelectionModel().clearSelection();
+					}
+				});
 			}
 		});
 	}

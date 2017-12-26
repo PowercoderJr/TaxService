@@ -311,9 +311,4 @@ public class ClientAgent implements Closeable
 	{
 		this.login = login;
 	}
-
-	protected void finalize()
-	{
-		close();
-	}
 }

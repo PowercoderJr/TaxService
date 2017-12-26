@@ -31,20 +31,23 @@ public class SimpleMessageHandler extends AbstractHandler<String>
 				ClientAgent.publishNotificationReceived(tokens[1]);
 				break;
 			case PING:
-				ClientAgent.getInstance().setLastPingReceived(System.currentTimeMillis());
-				new Thread(() ->
+				if (ClientAgent.doesInstanceExist())
 				{
-					try
+					ClientAgent.getInstance().setLastPingReceived(System.currentTimeMillis());
+					new Thread(() ->
 					{
-						Thread.sleep(PING_FREQUENCY_MILLIS / 2);
-					}
-					catch (InterruptedException e)
-					{
-						e.printStackTrace();
-					}
-					if (ClientAgent.doesInstanceExist())
-						ctx.channel().writeAndFlush(PING + SEPARATOR + ClientAgent.getInstance().getLogin());
-				}).start();
+						try
+						{
+							Thread.sleep(PING_FREQUENCY_MILLIS / 2);
+						}
+						catch (InterruptedException e)
+						{
+							e.printStackTrace();
+						}
+						if (ClientAgent.doesInstanceExist())
+							ctx.channel().writeAndFlush(PING + SEPARATOR + ClientAgent.getInstance().getLogin());
+					}).start();
+				}
 				break;
 		}
 	}

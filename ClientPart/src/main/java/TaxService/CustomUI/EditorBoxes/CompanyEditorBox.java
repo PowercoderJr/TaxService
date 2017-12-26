@@ -79,23 +79,25 @@ public class CompanyEditorBox extends AbstractEditorBox<Company>
 		statesize2.setPrefWidth(100);
 		addField("Штат", statesize1, statesize2, false);
 
-		ClientAgent.subscribeAllReceived(new Callback()
+		ClientAgent.subscribeAllReceived(o ->
 		{
-			@Override
-			public void callback(Object o)
-			{
-				AllDelivery delivery = (AllDelivery) o;
+			AllDelivery delivery = (AllDelivery) o;
 
-				if (delivery.getPurpose() == ReadAllOrder.Purposes.REFRESH_CB && delivery.getContentClazz() == Owntype.class)
+			if (delivery.getPurpose() == ReadAllOrder.Purposes.REFRESH_CB && delivery.getContentClazz() == Owntype.class)
+			{
+				Platform.runLater(() ->
 				{
-					Platform.runLater(() ->
+					if (owntype1.isShowing())
 					{
-						if (owntype1.isShowing())
-							owntype1.setItems(FXCollections.observableList(delivery.getContent()));
-						else if (owntype2.isShowing())
-							owntype2.setItems(FXCollections.observableList(delivery.getContent()));
-					});
-				}
+						owntype1.getSelectionModel().clearSelection();
+						owntype1.setItems(FXCollections.observableList(delivery.getContent()));
+					}
+					else if (owntype2.isShowing())
+					{
+						owntype2.getSelectionModel().clearSelection();
+						owntype2.setItems(FXCollections.observableList(delivery.getContent()));
+					}
+				});
 			}
 		});
 	}

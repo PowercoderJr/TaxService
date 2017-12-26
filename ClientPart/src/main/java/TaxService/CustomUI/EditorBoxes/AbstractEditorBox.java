@@ -144,6 +144,23 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 		return isValid;
 	}
 
+	public boolean validateTextPositiveFloatField(TextField field, boolean isRequired)
+	{
+		boolean isValid;
+		try
+		{
+			isValid = !isRequired && field.getText().trim().isEmpty() || !field.getText().trim().isEmpty() &&
+					Float.parseFloat(field.getText().replace(',', '.')) > 0;
+		}
+		catch (Exception e)
+		{
+			isValid = false;
+		}
+		if (!isValid)
+			markAsInvalid(field);
+		return isValid;
+	}
+
 	protected boolean validateMaskField(MaskField field, boolean isRequired)
 	{
 		boolean isValid = !isRequired && field.getPlainText().trim().isEmpty() || field.getPlainText()

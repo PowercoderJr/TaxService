@@ -21,17 +21,8 @@ public abstract class AbstractRandomableCRUD<T extends AbstractDAO> extends Abst
 
 	protected abstract T generateRandomBean() throws SQLException;
 
-	//docs.jboss.org/hibernate/orm/4.3/manual/en-US/html/ch15.html
-	//sessionFactory.getConfiguration().getProperty("hibernate.jdbc.batch_size");
 	public void insertRandomBeans(int n) throws SQLException
 	{
-		/*for (int i = 0, j = 0; i < n; i += j)
-		{
-			for (j = 0; j < 640 && j < n - i; ++j) //j < batch size
-				session.save(generateRandomBean());
-			session.flush();
-			session.clear();
-		}*/
 		List<Field> fields = new ArrayList<>();
 		fields.addAll(Arrays.asList(clazz.getFields()));
 		fields.removeIf(item -> item.getName().equals("id") || item.getName()

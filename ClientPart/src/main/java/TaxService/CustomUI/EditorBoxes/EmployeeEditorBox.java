@@ -103,40 +103,54 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
 		addField("Образование", education1, education2, false);
 
-		ClientAgent.subscribeAllReceived(new Callback()
+		ClientAgent.subscribeAllReceived(o ->
 		{
-			@Override
-			public void callback(Object o)
-			{
-				AllDelivery delivery = (AllDelivery) o;
+			AllDelivery delivery = (AllDelivery) o;
 
-				if (delivery.getPurpose() == ReadAllOrder.Purposes.REFRESH_CB )
-				{
-					if (delivery.getContentClazz() == Department.class)
-						Platform.runLater(() ->
+			if (delivery.getPurpose() == ReadAllOrder.Purposes.REFRESH_CB )
+			{
+				if (delivery.getContentClazz() == Department.class)
+					Platform.runLater(() ->
+					{
+						if (department1.isShowing())
 						{
-							if (department1.isShowing())
-								department1.setItems(FXCollections.observableList(delivery.getContent()));
-							else if (department2.isShowing())
-								department2.setItems(FXCollections.observableList(delivery.getContent()));
-						});
-					else if (delivery.getContentClazz() == Post.class)
-						Platform.runLater(() ->
+							department1.getSelectionModel().clearSelection();
+							department1.setItems(FXCollections.observableList(delivery.getContent()));
+						}
+						else if (department2.isShowing())
 						{
-							if (post1.isShowing())
-								post1.setItems(FXCollections.observableList(delivery.getContent()));
-							else if (post2.isShowing())
-								post2.setItems(FXCollections.observableList(delivery.getContent()));
-						});
-					else if (delivery.getContentClazz() == Education.class)
-						Platform.runLater(() ->
+							department2.getSelectionModel().clearSelection();
+							department2.setItems(FXCollections.observableList(delivery.getContent()));
+						}
+					});
+				else if (delivery.getContentClazz() == Post.class)
+					Platform.runLater(() ->
+					{
+						if (post1.isShowing())
 						{
-							if (education1.isShowing())
-								education1.setItems(FXCollections.observableList(delivery.getContent()));
-							else if (education2.isShowing())
-								education2.setItems(FXCollections.observableList(delivery.getContent()));
-						});
-				}
+							post1.getSelectionModel().clearSelection();
+							post1.setItems(FXCollections.observableList(delivery.getContent()));
+						}
+						else if (post2.isShowing())
+						{
+							post2.getSelectionModel().clearSelection();
+							post2.setItems(FXCollections.observableList(delivery.getContent()));
+						}
+					});
+				else if (delivery.getContentClazz() == Education.class)
+					Platform.runLater(() ->
+					{
+						if (education1.isShowing())
+						{
+							education1.getSelectionModel().clearSelection();
+							education1.setItems(FXCollections.observableList(delivery.getContent()));
+						}
+						else if (education2.isShowing())
+						{
+							education2.getSelectionModel().clearSelection();
+							education2.setItems(FXCollections.observableList(delivery.getContent()));
+						}
+					});
 			}
 		});
 	}

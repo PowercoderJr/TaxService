@@ -62,30 +62,36 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                 break;
             case PING:
                 ServerAgent.connectionsMutex.lock();
-                Pair<Connection, Long> updatedPair = new Pair<>(ServerAgent.getInstance().getConnections().get(tokens[1]).getKey(),
-                        System.currentTimeMillis());
-                ServerAgent.getInstance().getConnections().put(tokens[1], updatedPair);
-                ServerAgent.connectionsMutex.unlock();
-                new Thread(() ->
+                if (ServerAgent.getInstance().getConnections().get(tokens[1]) != null)
                 {
-                    try
+                    Pair<Connection, Long> updatedPair = new Pair<>(ServerAgent.getInstance().getConnections()
+                            .get(tokens[1]).getKey(), System.currentTimeMillis());
+                    ServerAgent.getInstance().getConnections().put(tokens[1], updatedPair);
+                    new Thread(() ->
                     {
-                        Thread.sleep(PING_FREQUENCY_MILLIS / 2);
-                    }
-                    catch (InterruptedException e)
-                    {
-                        e.printStackTrace();
-                    }
-                    ctx.channel().writeAndFlush(PING + SEPARATOR);
-                }).start();
+                        try
+                        {
+                            Thread.sleep(PING_FREQUENCY_MILLIS / 2);
+                        }
+                        catch (InterruptedException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        ctx.channel().writeAndFlush(PING + SEPARATOR);
+                    }).start();
+                }
+                ServerAgent.connectionsMutex.unlock();
                 break;
             case BYE:
                 ServerAgent.connectionsMutex.lock();
                 try
                 {
                     Map<String, Pair<Connection, Long>> connections = ServerAgent.getInstance().getConnections();
-                    connections.get(tokens[1]).getKey().close();
-                    connections.remove(tokens[1]);
+                    if (connections.get(tokens[1]) != null)
+                    {
+                        connections.get(tokens[1]).getKey().close();
+                        connections.remove(tokens[1]);
+                    }
                 }
                 catch (SQLException e)
                 {

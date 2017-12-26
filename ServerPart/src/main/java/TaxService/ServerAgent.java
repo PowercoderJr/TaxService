@@ -207,16 +207,16 @@ public class ServerAgent implements Closeable
 	public AbstractCRUD getCrudForClass(Class<? extends AbstractDAO> clazz, Connection connection)
 	{
 		AbstractCRUD instance = null;
-		try
-		{
-			Class crudClass = Class.forName("TaxService.CRUDs." + clazz.getSimpleName() + "CRUD");
-			//TODO: обработать исключение, если по ключу не найдено подключенние
-			instance = (AbstractCRUD) crudClass.getDeclaredConstructor(Connection.class).newInstance(connection);
-		}
-		catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e)
-		{
-			e.printStackTrace();
-		}
+		if (connection != null)
+			try
+			{
+				Class crudClass = Class.forName("TaxService.CRUDs." + clazz.getSimpleName() + "CRUD");
+				instance = (AbstractCRUD) crudClass.getDeclaredConstructor(Connection.class).newInstance(connection);
+			}
+			catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e)
+			{
+				e.printStackTrace();
+			}
 		return instance;
 	}
 
