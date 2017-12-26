@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class ServerMain
 {
-	private static final boolean fromScratch = true;
+	private static final boolean fromScratch = false;
 
 	public static void main(String[] args)
 	{
@@ -24,7 +24,7 @@ public class ServerMain
 
 				timeZero = System.currentTimeMillis();
 				DepartmentCRUD departmentCRUD = new DepartmentCRUD(superConnection);
-				departmentCRUD.insertRandomBeans(10);
+				departmentCRUD.insertRandomBeans(1000);
 				System.out.println("Departments generation completed in " + (System.currentTimeMillis() - timeZero) + " ms");
 
 				timeZero = System.currentTimeMillis();
@@ -87,7 +87,7 @@ public class ServerMain
 					+ "name varchar(100) not null,"
 					+ "startyear numeric(4,0) not null,"
 					+ "phone varchar(17) not null,"
-					+ "city varchar(30) not null,"
+					+ "city_id int8 not null references city(id) on delete cascade,"
 					+ "street varchar(30) not null,"
 					+ "house varchar(6) not null)";
 			stmt.executeUpdate(execMe);
@@ -121,6 +121,10 @@ public class ServerMain
 					+ "employee_id int8 not null references employee(id) on delete cascade,"
 					+ "department_id int8 not null references department(id) on delete cascade,"
 					+ "company_id int8 not null references company(id) on delete cascade)";
+			stmt.executeUpdate(execMe);
+
+			//Назначение индексов
+			execMe  = "create index emp_fullname_idx on employee (surname, Zaname, patronymic)";
 			stmt.executeUpdate(execMe);
 
 			//Назначение триггеров

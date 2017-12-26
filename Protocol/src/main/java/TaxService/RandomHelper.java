@@ -25,7 +25,6 @@ public class RandomHelper
 
 	public static final long earlyDate = 10957; //Epoch day of 01.01.2000
 	private static Random rnd = new Random();
-	private static List<String> cities;
 	private static List<String> companies;
 	private static List<String> namesF;
 	private static List<String> namesM;
@@ -35,16 +34,13 @@ public class RandomHelper
 
 	static
 	{
-		try (InputStream citiesSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/cities.txt");
-			 InputStream companiesSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/companies.txt");
+		try (InputStream companiesSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/companies.txt");
 			 InputStream namesFSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/names_f.txt");
 			 InputStream namesMSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/names_m.txt");
 			 InputStream patronymicsSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/patronymics.txt");
 			 InputStream streetsSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/streets.txt");
 			 InputStream surnamesSrc = RandomHelper.class.getClassLoader().getResourceAsStream("nomenclature/surnames.txt"))
 		{
-			cities = new BufferedReader(new InputStreamReader(citiesSrc, StandardCharsets.UTF_8)).lines()
-					.collect(Collectors.toList());
 			companies = new BufferedReader(new InputStreamReader(companiesSrc, StandardCharsets.UTF_8)).lines()
 					.collect(Collectors.toList());
 			namesF = new BufferedReader(new InputStreamReader(namesFSrc, StandardCharsets.UTF_8)).lines()
@@ -96,11 +92,6 @@ public class RandomHelper
 	{
 		return "+38(0" + (10 + rnd.nextInt(89)) + ")" + (100 + rnd.nextInt(899)) + "-" +
 				(10 + rnd.nextInt(89)) + "-" + (10 + rnd.nextInt(89));
-	}
-
-	public static String getRandomCity()
-	{
-		return cities.get(rnd.nextInt(cities.size()));
 	}
 
 	public static String getRandomStreet()

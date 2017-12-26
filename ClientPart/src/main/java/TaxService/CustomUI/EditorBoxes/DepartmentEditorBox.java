@@ -2,6 +2,7 @@ package TaxService.CustomUI.EditorBoxes;
 
 import TaxService.Callback;
 import TaxService.CustomUI.MaskField;
+import TaxService.DAOs.City;
 import TaxService.DAOs.Department;
 import TaxService.DAOs.Deptype;
 import TaxService.Deliveries.AllDelivery;
@@ -27,7 +28,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 	private ComboBox<Deptype> deptype1, deptype2;
 	private MaskField startyear1, startyear2;
 	private MaskField phone1, phone2;
-	private TextField city1, city2;
+	private ComboBox<City> city1, city2;
 	private TextField street1, street2;
 	private TextField house1, house2;
 
@@ -77,10 +78,17 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 		phone2.setPlaceholder("+38(0__)___-__-__");
 		addField("Телефон", phone1, phone2, false);
 
-		city1 = new TextField();
+
+		city1 = new ComboBox<>();
 		city1.setPrefWidth(150);
-		city2 = new TextField();
+		city1.setOnShowing(event -> ClientAgent.getInstance()
+				.send(new ReadAllOrder<City>(City.class, ClientAgent.getInstance()
+						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
+		city2 = new ComboBox<>();
 		city2.setPrefWidth(150);
+		city2.setOnShowing(event -> ClientAgent.getInstance()
+				.send(new ReadAllOrder<City>(City.class, ClientAgent.getInstance()
+						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
 		addField("Город", city1, city2, false);
 
 		street1 = new TextField();
@@ -99,8 +107,9 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 		{
 			AllDelivery delivery = (AllDelivery) o;
 
-			if (delivery.getPurpose() == ReadAllOrder.Purposes.REFRESH_CB && delivery.getContentClazz() == Deptype.class)
+			if (delivery.getPurpose() == ReadAllOrder.Purposes.REFRESH_CB)
 			{
+				if (delivery.getContentClazz() == Deptype.class)
 				Platform.runLater(() ->
 				{
 					if (deptype1.isShowing())
@@ -114,6 +123,20 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 						deptype2.getSelectionModel().clearSelection();
 					}
 				});
+				else if (delivery.getContentClazz() == City.class)
+				Platform.runLater(() ->
+				{
+					if (city1.isShowing())
+					{
+						city1.getSelectionModel().clearSelection();
+						city1.setItems(FXCollections.observableList(delivery.getContent()));
+					}
+					else if (city2.isShowing())
+					{
+						city2.setItems(FXCollections.observableList(delivery.getContent()));
+						city2.getSelectionModel().clearSelection();
+					}
+				});
 			}
 		});
 	}
@@ -125,7 +148,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 		Deptype deptype = deptype1.getSelectionModel().getSelectedItem();
 		BigDecimal startyear = new BigDecimal(startyear1.getText());
 		String phone = phone1.getText();
-		String city = city1.getText().trim();
+		City city = city1.getSelectionModel().getSelectedItem();
 		String street = street1.getText().trim();
 		String house = house1.getText().trim();
 		return new Department(name, deptype, startyear, phone, city, street, house);
@@ -196,12 +219,12 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 				filledFields.add(clazz.getField("phone"));
 			}
 
-			String city;
-			if (city1.getText().trim().isEmpty())
+			City city;
+			if (city1.getSelectionModel().isEmpty())
 				city = null;
 			else
 			{
-				city = city1.getText().trim();
+				city = city1.getSelectionModel().getSelectedItem();
 				filledFields.add(clazz.getField("city"));
 			}
 
@@ -276,12 +299,12 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 				filledFields.add(clazz.getField("phone"));
 			}
 
-			String city;
-			if (city2.getText().trim().isEmpty())
+			City city;
+			if (city2.getSelectionModel().isEmpty())
 				city = null;
 			else
 			{
-				city = city2.getText().trim();
+				city = city2.getSelectionModel().getSelectedItem();
 				filledFields.add(clazz.getField("city"));
 			}
 
@@ -336,7 +359,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 				validateComboBox(deptype1, allRequired) &
 				validateStartyear(startyear1, allRequired) &
 				validateMaskField(phone1, allRequired) &
-				validateTextField(city1, allRequired) &
+				validateComboBox(city1, allRequired) &
 				validateTextField(street1, allRequired) &
 				validateTextField(house1, allRequired);
 	}
@@ -348,7 +371,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 				validateComboBox(deptype2, allRequired) &
 				validateStartyear(startyear2, allRequired) &
 				validateMaskField(phone2, allRequired) &
-				validateTextField(city2, allRequired) &
+				validateComboBox(city2, allRequired) &
 				validateTextField(street2, allRequired) &
 				validateTextField(house2, allRequired);
 	}
@@ -367,7 +390,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 			++count;
 		if (!phone1.getPlainText().isEmpty())
 			++count;
-		if (!city1.getText().trim().isEmpty())
+		if (!city1.getSelectionModel().isEmpty())
 			++count;
 		if (!street1.getText().trim().isEmpty())
 			++count;
@@ -388,7 +411,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 			++count;
 		if (!phone2.getPlainText().isEmpty())
 			++count;
-		if (!city2.getText().trim().isEmpty())
+		if (!city2.getSelectionModel().isEmpty())
 			++count;
 		if (!street2.getText().trim().isEmpty())
 			++count;
@@ -410,7 +433,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 		startyear1.setEffect(null);
 		phone1.clear();
 		phone1.setEffect(null);
-		city1.clear();
+		city1.getSelectionModel().clearSelection();
 		city1.setEffect(null);
 		street1.clear();
 		street1.setEffect(null);
@@ -424,7 +447,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 		startyear2.setEffect(null);
 		phone2.clear();
 		phone2.setEffect(null);
-		city2.clear();
+		city2.getSelectionModel().clearSelection();
 		city2.setEffect(null);
 		street2.clear();
 		street2.setEffect(null);

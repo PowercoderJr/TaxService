@@ -104,7 +104,7 @@ public abstract class AbstractRefEditorBox<T extends AbstractRefDAO> extends Abs
 				name = null;
 			else
 			{
-				name = name1.getText().trim();
+				name = name2.getText().trim();
 				filledFields.add(clazz.getField("name"));
 			}
 

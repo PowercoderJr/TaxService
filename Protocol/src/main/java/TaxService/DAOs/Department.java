@@ -2,8 +2,6 @@ package TaxService.DAOs;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Department extends AbstractDAO
 {
@@ -11,7 +9,7 @@ public class Department extends AbstractDAO
 	public String name;
 	public BigDecimal startyear;
 	public String phone;
-	public String city;
+	public City city;
 	public String street;
 	public String house;
 
@@ -35,7 +33,7 @@ public class Department extends AbstractDAO
 		super();
 	}
 
-	public Department(String name, Deptype deptype, BigDecimal startyear, String phone, String city, String street, String house)
+	public Department(String name, Deptype deptype, BigDecimal startyear, String phone, City city, String street, String house)
 	{
 		this.name = name;
 		this.deptype = deptype;
@@ -86,12 +84,12 @@ public class Department extends AbstractDAO
 		this.phone = phone;
 	}
 
-	public String getCity()
+	public City getCity()
 	{
 		return city;
 	}
 
-	public void setCity(String city)
+	public void setCity(City city)
 	{
 		this.city = city;
 	}

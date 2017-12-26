@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import TaxService.DAOs.City;
 import TaxService.DAOs.Deptype;
 import TaxService.RandomHelper;
 import TaxService.DAOs.Department;
@@ -20,7 +21,8 @@ public class DepartmentCRUD extends AbstractRandomableCRUD<Department>
 	@Override
 	protected Department generateRandomBean() throws SQLException
 	{
-		String city = RandomHelper.getRandomCity();
+		CityCRUD cityCRUD = new CityCRUD(connection);
+		City city = cityCRUD.readRandom(true);
 
 		String name = "Отделение №" + (rnd.nextInt(90) + 1) + " города " + city;
 

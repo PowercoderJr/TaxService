@@ -111,6 +111,8 @@ public class MainController
 	@FXML
 	public MenuItem switchToDeptypeMenuItem;
 	@FXML
+	public MenuItem switchToCityMenuItem;
+	@FXML
 	public MenuItem switchToPostMenuItem;
 	@FXML
 	public MenuItem switchToEducationMenuItem;
@@ -211,6 +213,7 @@ public class MainController
 		initTableStaff(Company.class, "Предприятия-плательщики");
 		initTableStaff(Payment.class, "Платежи");
 		initTableStaff(Deptype.class, "Типы отделений");
+		initTableStaff(City.class, "Города");
 		initTableStaff(Post.class, "Должности налоговой инспекции");
 		initTableStaff(Education.class, "Степени образования");
 		initTableStaff(Owntype.class, "Виды собственности");

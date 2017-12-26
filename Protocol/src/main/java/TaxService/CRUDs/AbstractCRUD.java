@@ -23,6 +23,7 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 		Company.init();
 		Payment.init();
 		Deptype.init();
+		City.init();
 		Post.init();
 		Education.init();
 		Owntype.init();

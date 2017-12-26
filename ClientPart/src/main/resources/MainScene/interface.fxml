@@ -28,6 +28,7 @@
                         <MenuItem fx:id="switchToPaymentMenuItem" mnemonicParsing="false" />
                         <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem fx:id="switchToDeptypeMenuItem" mnemonicParsing="false" />
+                        <MenuItem fx:id="switchToCityMenuItem" mnemonicParsing="false" />
                         <MenuItem fx:id="switchToPostMenuItem" mnemonicParsing="false" />
                         <MenuItem fx:id="switchToEducationMenuItem" mnemonicParsing="false" />
                         <MenuItem fx:id="switchToOwntypeMenuItem" mnemonicParsing="false" />
@@ -91,8 +92,8 @@
                                    <Button fx:id="updateBtn" mnemonicParsing="false" onAction="#updateBtnClicked" prefHeight="50.0" prefWidth="160.0" text="Изменить" wrapText="true" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
                                    <Button fx:id="filterBtn" mnemonicParsing="false" onAction="#filterBtnClicked" prefHeight="50.0" prefWidth="160.0" text="Фильтровать" wrapText="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
                                    <Button fx:id="deleteBtn" mnemonicParsing="false" onAction="#deleteBtnClicked" prefHeight="50.0" prefWidth="160.0" text="Удалить" wrapText="true" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
-                                   <Button fx:id="refreshBtn" mnemonicParsing="false" onAction="#refreshBtnClicked" prefHeight="50.0" prefWidth="160.0" text="Обновить таблицу" wrapText="true" GridPane.rowIndex="2" />
-                                   <Button fx:id="clearBtn" mnemonicParsing="false" onAction="#clearBtnClicked" prefHeight="50.0" prefWidth="160.0" text="Очистить поля" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                   <Button fx:id="clearBtn" mnemonicParsing="false" onAction="#clearBtnClicked" prefHeight="50.0" prefWidth="160.0" text="Очистить поля" wrapText="true" GridPane.rowIndex="2" />
+                                     <Button fx:id="refreshBtn" mnemonicParsing="false" onAction="#refreshBtnClicked" prefHeight="50.0" prefWidth="160.0" text="Обновить таблицу" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                     <GridPane fx:id="updateConfirmPane" hgap="5.0" GridPane.columnIndex="1">
                                        <columnConstraints>
                                           <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="-Infinity" percentWidth="50.0" />
