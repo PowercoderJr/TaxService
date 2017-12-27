@@ -17,6 +17,7 @@ public class PhraseBook
 	public static final String ERROR = "err";
 	public static final String NOTIFICATION = "ntfc";
 	public static final String PING = "P";
+	public static final String QUERY = "query";
 
 	private PhraseBook(){
 	}

@@ -34,18 +34,18 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-import java.awt.*;
+//import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.function.UnaryOperator;
 
-import static TaxService.PhraseBook.BYE;
-import static TaxService.PhraseBook.CONNECTION_TIMEOUT_MILLIS;
-import static TaxService.PhraseBook.SEPARATOR;
+import static TaxService.PhraseBook.*;
 
 
 public class MainController
@@ -131,6 +131,8 @@ public class MainController
 	private Callback onExceptionReceived;
 	private Callback onNotificationReceived;
 	private Callback onConnectionLost;
+	private Callback onQueryResultReceived;
+	private boolean querySent;
 	private Class<? extends AbstractDAO> currTable;
 	private static final int NOTIFICATION_DURATION = 3000;
 	private final ScheduledExecutorService notificationsScheduler = Executors.newSingleThreadScheduledExecutor();
@@ -208,6 +210,17 @@ public class MainController
 		});
 		ClientAgent.subscribeConnectionLost(onConnectionLost);
 
+		querySent = false;
+		onQueryResultReceived = o ->
+		{
+			querySent = false;
+			ClientAgent.unsubscribeQueryResultReceived(onQueryResultReceived);
+			Platform.runLater(() ->
+			{
+				System.out.println(((List<List>)o).size());
+			});
+		};
+
 		initTableStaff(Department.class, "Отделения налоговой инспекции");
 		initTableStaff(Employee.class, "Сотрудники налоговой инспекции");
 		initTableStaff(Company.class, "Предприятия-плательщики");
@@ -237,7 +250,7 @@ public class MainController
 
 			//Init editor box
 			AbstractEditorBox eb = (AbstractEditorBox) Class.forName("TaxService.CustomUI.EditorBoxes." + clazzName + "EditorBox").getConstructor().newInstance();
-			editorBoxBox.getChildren().add(eb);
+			editorBoxBox.getChildren().add(0, eb);
 			setVisibleAndManaged(eb, false);
 
 			//Menu item
@@ -503,6 +516,7 @@ public class MainController
 		ClientAgent.unsubscribePortionReceived(onPortionReceived);
 		ClientAgent.unsubscribeNotificationReceived(onNotificationReceived);
 		ClientAgent.unsubscribeConnectionLost(onConnectionLost);
+		ClientAgent.unsubscribeQueryResultReceived(onQueryResultReceived);
 		ClientAgent.clearAllReceivedSubs();
 	}
 
@@ -530,5 +544,78 @@ public class MainController
 	{
 		((Stage)root.getScene().getWindow()).close();
 		root.getScene().getWindow().getOnCloseRequest().handle(null);
+	}
+
+	public void executeQuery_1_1(ActionEvent actionEvent)
+	{
+		if (!querySent)
+		{
+			querySent = true;
+			ClientAgent.subscribeQueryResultReceived(onQueryResultReceived);
+			ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance().getLogin() + SEPARATOR +
+					((MenuItem) actionEvent.getSource()).getUserData() + SEPARATOR + "44");
+		}
+		else
+			System.out.println("Nope"); //TODO
+	}
+
+	public void executeQuery_1_2(ActionEvent actionEvent)
+	{
+		ClientAgent.getInstance().send(QUERY + ((MenuItem) actionEvent.getSource()).getUserData());
+	}
+
+	public void executeQuery_1_3(ActionEvent actionEvent)
+	{
+		ClientAgent.getInstance().send(QUERY + ((MenuItem) actionEvent.getSource()).getUserData());
+	}
+
+	public void executeQuery_2_1(ActionEvent actionEvent)
+	{
+		ClientAgent.getInstance().send(QUERY + ((MenuItem) actionEvent.getSource()).getUserData());
+	}
+
+	public void executeQuery_3(ActionEvent actionEvent)
+	{
+		ClientAgent.getInstance().send(QUERY + ((MenuItem) actionEvent.getSource()).getUserData());
+	}
+
+	public void executeQuery_6(ActionEvent actionEvent)
+	{
+		ClientAgent.getInstance().send(QUERY + ((MenuItem) actionEvent.getSource()).getUserData());
+	}
+
+	public void executeQuery_7_1(ActionEvent actionEvent)
+	{
+		ClientAgent.getInstance().send(QUERY + ((MenuItem) actionEvent.getSource()).getUserData());
+	}
+
+	public void executeQuery_8_1(ActionEvent actionEvent)
+	{
+		ClientAgent.getInstance().send(QUERY + ((MenuItem) actionEvent.getSource()).getUserData());
+	}
+
+	public void executeQuery_8_2(ActionEvent actionEvent)
+	{
+		ClientAgent.getInstance().send(QUERY + ((MenuItem) actionEvent.getSource()).getUserData());
+	}
+
+	public void executeQuery_9(ActionEvent actionEvent)
+	{
+		ClientAgent.getInstance().send(QUERY + ((MenuItem) actionEvent.getSource()).getUserData());
+	}
+
+	public void executeQuery_10(ActionEvent actionEvent)
+	{
+		ClientAgent.getInstance().send(QUERY + ((MenuItem) actionEvent.getSource()).getUserData());
+	}
+
+	public void executeQuery_12(ActionEvent actionEvent)
+	{
+		ClientAgent.getInstance().send(QUERY + ((MenuItem) actionEvent.getSource()).getUserData());
+	}
+
+	public void executeQuery_13_1(ActionEvent actionEvent)
+	{
+		ClientAgent.getInstance().send(QUERY + ((MenuItem) actionEvent.getSource()).getUserData());
 	}
 }

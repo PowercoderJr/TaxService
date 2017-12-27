@@ -1,12 +1,13 @@
 package TaxService.Handlers;
 
+import TaxService.Deliveries.QueryResultDelivery;
 import TaxService.ServerAgent;
 import io.netty.channel.ChannelHandlerContext;
 import javafx.util.Pair;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static TaxService.PhraseBook.*;
@@ -102,6 +103,51 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                     ServerAgent.connectionsMutex.unlock();
                 }
                 System.out.println(tokens[1] + " disconnected");
+                break;
+            case QUERY:
+                Pair<Connection, Long> pair = ServerAgent.getInstance().getConnections().get(tokens[1]);
+                if (pair != null)
+                {
+                    Connection connection = pair.getKey();
+                    try (Statement stmt = connection.createStatement())
+                    {
+                        ResultSet rs;
+                        List<List> list = new ArrayList<>();
+                        int nCol;
+                        switch (tokens[2])
+                        {
+                            case "_1_1":
+                                rs = stmt.executeQuery("select * from " + QUERY + tokens[2] + "(" + tokens[3] + ")");
+                                nCol = 7;
+
+                                list.add(new ArrayList<String>()
+                                {{
+                                    add("ID платежа");
+                                    add("Тип платежа");
+                                    add("Сумма");
+                                    add("Дата");
+                                    add("ID плательщика");
+                                    add("Плательщик");
+                                    add("Телефон плательщика");
+                                }});
+
+                                while (rs.next())
+                                {
+                                    List<String> sublist = new ArrayList<>(nCol);
+                                    for (int i = 1; i <= nCol; ++i)
+                                        sublist.add(rs.getObject(i).toString());
+                                    list.add(sublist);
+                                }
+                                break;
+                        }
+                        ctx.channel().writeAndFlush(new QueryResultDelivery(List.class, list));
+                    }
+                    catch (SQLException e)
+                    {
+                        e.printStackTrace();
+                        ctx.channel().writeAndFlush(ERROR + SEPARATOR + e.getMessage());
+                    }
+                }
                 break;
         }
     }

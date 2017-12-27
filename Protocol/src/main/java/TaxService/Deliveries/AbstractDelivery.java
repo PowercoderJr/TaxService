@@ -3,7 +3,7 @@ package TaxService.Deliveries;
 import java.io.Serializable;
 import java.util.List;
 
-public class AbstractDelivery<T> implements Serializable
+public abstract class AbstractDelivery<T> implements Serializable
 {
 	protected static final long serialVersionUID = -4594850142078035413L;
 	protected Class<T> contentClazz;

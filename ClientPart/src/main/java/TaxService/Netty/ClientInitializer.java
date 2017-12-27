@@ -1,6 +1,7 @@
 package TaxService.Netty;
 
 import TaxService.Netty.Handlers.AllReceiver;
+import TaxService.Netty.Handlers.QueryResultReceiver;
 import TaxService.Netty.Handlers.SimpleMessageHandler;
 import TaxService.Netty.Handlers.PortionReceiver;
 import io.netty.channel.ChannelHandlerContext;
@@ -24,6 +25,7 @@ public class ClientInitializer extends ChannelInitializer<SocketChannel>
 		pipeline.addLast(new SimpleMessageHandler());
 		pipeline.addLast(new PortionReceiver());
 		pipeline.addLast(new AllReceiver());
+		pipeline.addLast(new QueryResultReceiver());
 	}
 
 	@Override

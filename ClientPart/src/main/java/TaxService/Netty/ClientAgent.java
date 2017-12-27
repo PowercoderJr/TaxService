@@ -17,6 +17,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static TaxService.PhraseBook.CONNECTION_TIMEOUT_MILLIS;
@@ -40,6 +41,8 @@ public class ClientAgent implements Closeable
 	private static ArrayList<Callback> notificationReceivedSubs = new ArrayList<>();
 	private static Mutex connectionLostSubsMutex = new Mutex();
 	private static ArrayList<Callback> connectionLostSubs = new ArrayList<>();
+	private static Mutex queryResultReceivedSubsMutex = new Mutex();
+	private static ArrayList<Callback> queryResultReceivedSubs = new ArrayList<>();
 
 	public static ClientAgent getInstance()
 	{
@@ -209,6 +212,28 @@ public class ClientAgent implements Closeable
 		for (Callback s : connectionLostSubs)
 			s.callback(msg);
 		connectionLostSubsMutex.unlock();
+	}
+
+	public static void subscribeQueryResultReceived(Callback s)
+	{
+		queryResultReceivedSubsMutex.lock();
+		queryResultReceivedSubs.add(s);
+		queryResultReceivedSubsMutex.unlock();
+	}
+
+	public static void unsubscribeQueryResultReceived(Callback s)
+	{
+		//queryResultReceivedSubsMutex.lock();
+		queryResultReceivedSubs.remove(s);
+		//queryResultReceivedSubsMutex.unlock();
+	}
+
+	public static void publishQueryResultReceived(List<List> msg)
+	{
+		queryResultReceivedSubsMutex.lock();
+		for (Callback s : queryResultReceivedSubs)
+			s.callback(msg);
+		queryResultReceivedSubsMutex.unlock();
 	}
 
 	//NON-STATIC SECTION
