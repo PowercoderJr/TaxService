@@ -1,5 +1,6 @@
 package TaxService.Handlers;
 
+import TaxService.DAOs.Department;
 import TaxService.Deliveries.QueryResultDelivery;
 import TaxService.ServerAgent;
 import io.netty.channel.ChannelHandlerContext;
@@ -112,7 +113,7 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                     try (Statement stmt = connection.createStatement())
                     {
                         ResultSet rs;
-                        List<List> list = new ArrayList<>();
+                        List<ArrayList> list = new ArrayList<>();
                         int nCol;
                         switch (tokens[2])
                         {
@@ -120,27 +121,27 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                 rs = stmt.executeQuery("select * from " + QUERY + tokens[2] + "(" + tokens[3] + ")");
                                 nCol = 7;
 
-                                list.add(new ArrayList<String>()
-                                {{
-                                    add("ID платежа");
-                                    add("Тип платежа");
-                                    add("Сумма");
-                                    add("Дата");
-                                    add("ID плательщика");
-                                    add("Плательщик");
-                                    add("Телефон плательщика");
-                                }});
+                                ArrayList<String> colNames = new ArrayList<>(nCol);
+                                colNames.add("ID платежа");
+                                colNames.add("Тип платежа");
+                                colNames.add("Сумма");
+                                colNames.add("Дата");
+                                colNames.add("ID плательщика");
+                                colNames.add("Плательщик");
+                                colNames.add("Телефон плательщика");
+                                list.add(colNames);
 
                                 while (rs.next())
                                 {
-                                    List<String> sublist = new ArrayList<>(nCol);
+                                    ArrayList<String> sublist = new ArrayList<>(nCol);
                                     for (int i = 1; i <= nCol; ++i)
                                         sublist.add(rs.getObject(i).toString());
                                     list.add(sublist);
                                 }
+
                                 break;
                         }
-                        ctx.channel().writeAndFlush(new QueryResultDelivery(List.class, list));
+                        ctx.channel().writeAndFlush(new QueryResultDelivery(ArrayList.class, list));
                     }
                     catch (SQLException e)
                     {

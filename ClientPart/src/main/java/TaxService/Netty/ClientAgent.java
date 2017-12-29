@@ -223,12 +223,12 @@ public class ClientAgent implements Closeable
 
 	public static void unsubscribeQueryResultReceived(Callback s)
 	{
-		//queryResultReceivedSubsMutex.lock();
+		queryResultReceivedSubsMutex.lock();
 		queryResultReceivedSubs.remove(s);
-		//queryResultReceivedSubsMutex.unlock();
+		queryResultReceivedSubsMutex.unlock();
 	}
 
-	public static void publishQueryResultReceived(List<List> msg)
+	public static void publishQueryResultReceived(List<ArrayList> msg)
 	{
 		queryResultReceivedSubsMutex.lock();
 		for (Callback s : queryResultReceivedSubs)

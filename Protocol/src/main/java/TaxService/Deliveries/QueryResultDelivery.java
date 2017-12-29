@@ -1,11 +1,13 @@
 package TaxService.Deliveries;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
-public class QueryResultDelivery extends AbstractDelivery<List>
+public class QueryResultDelivery extends AbstractDelivery<ArrayList>
 {
 
-	public QueryResultDelivery(Class<List> contentClazz, List<List> content)
+	public QueryResultDelivery(Class<ArrayList> contentClazz, List<ArrayList> content)
 	{
 		super(contentClazz, content);
 	}

@@ -38,10 +38,7 @@ import javafx.stage.WindowEvent;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.UnaryOperator;
 
@@ -213,11 +210,12 @@ public class MainController
 		querySent = false;
 		onQueryResultReceived = o ->
 		{
-			querySent = false;
-			ClientAgent.unsubscribeQueryResultReceived(onQueryResultReceived);
 			Platform.runLater(() ->
 			{
-				System.out.println(((List<List>)o).size());
+				querySent = false;
+				ClientAgent.unsubscribeQueryResultReceived(onQueryResultReceived);
+				for (Object al : (List)o)
+					System.out.println(al);
 			});
 		};
 
@@ -546,76 +544,42 @@ public class MainController
 		root.getScene().getWindow().getOnCloseRequest().handle(null);
 	}
 
-	public void executeQuery_1_1(ActionEvent actionEvent)
+	public void executeQuery(ActionEvent actionEvent)
 	{
 		if (!querySent)
 		{
 			querySent = true;
 			ClientAgent.subscribeQueryResultReceived(onQueryResultReceived);
-			ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance().getLogin() + SEPARATOR +
-					((MenuItem) actionEvent.getSource()).getUserData() + SEPARATOR + "44");
+
+			String queryCode = ((MenuItem) actionEvent.getSource()).getUserData().toString();
+			switch (queryCode)
+			{
+				case "_1_1":
+					/*boolean valid = false;
+					TextInputDialog dialog = new TextInputDialog();
+					dialog.setTitle("Укажите значение");
+					dialog.setHeaderText("Укажите значения для запроса");
+					dialog.setContentText(":");
+
+					while (!valid)
+					{
+						try
+						{
+							Optional<String> result = dialog.showAndWait();
+						}
+						catch (Exception e)
+						{
+							e.printStackTrace();
+						}
+					}*/
+
+					ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance().getLogin() +
+							SEPARATOR + queryCode +SEPARATOR + "49");
+					break;
+
+			}
 		}
 		else
 			System.out.println("Nope"); //TODO
-	}
-
-	public void executeQuery_1_2(ActionEvent actionEvent)
-	{
-		ClientAgent.getInstance().send(QUERY + ((MenuItem) actionEvent.getSource()).getUserData());
-	}
-
-	public void executeQuery_1_3(ActionEvent actionEvent)
-	{
-		ClientAgent.getInstance().send(QUERY + ((MenuItem) actionEvent.getSource()).getUserData());
-	}
-
-	public void executeQuery_2_1(ActionEvent actionEvent)
-	{
-		ClientAgent.getInstance().send(QUERY + ((MenuItem) actionEvent.getSource()).getUserData());
-	}
-
-	public void executeQuery_3(ActionEvent actionEvent)
-	{
-		ClientAgent.getInstance().send(QUERY + ((MenuItem) actionEvent.getSource()).getUserData());
-	}
-
-	public void executeQuery_6(ActionEvent actionEvent)
-	{
-		ClientAgent.getInstance().send(QUERY + ((MenuItem) actionEvent.getSource()).getUserData());
-	}
-
-	public void executeQuery_7_1(ActionEvent actionEvent)
-	{
-		ClientAgent.getInstance().send(QUERY + ((MenuItem) actionEvent.getSource()).getUserData());
-	}
-
-	public void executeQuery_8_1(ActionEvent actionEvent)
-	{
-		ClientAgent.getInstance().send(QUERY + ((MenuItem) actionEvent.getSource()).getUserData());
-	}
-
-	public void executeQuery_8_2(ActionEvent actionEvent)
-	{
-		ClientAgent.getInstance().send(QUERY + ((MenuItem) actionEvent.getSource()).getUserData());
-	}
-
-	public void executeQuery_9(ActionEvent actionEvent)
-	{
-		ClientAgent.getInstance().send(QUERY + ((MenuItem) actionEvent.getSource()).getUserData());
-	}
-
-	public void executeQuery_10(ActionEvent actionEvent)
-	{
-		ClientAgent.getInstance().send(QUERY + ((MenuItem) actionEvent.getSource()).getUserData());
-	}
-
-	public void executeQuery_12(ActionEvent actionEvent)
-	{
-		ClientAgent.getInstance().send(QUERY + ((MenuItem) actionEvent.getSource()).getUserData());
-	}
-
-	public void executeQuery_13_1(ActionEvent actionEvent)
-	{
-		ClientAgent.getInstance().send(QUERY + ((MenuItem) actionEvent.getSource()).getUserData());
 	}
 }
