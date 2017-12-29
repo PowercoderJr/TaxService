@@ -5,6 +5,7 @@ import TaxService.Callback;
 import TaxService.ClientMain;
 import TaxService.CustomUI.EditorBoxes.*;
 import TaxService.DAOs.*;
+import TaxService.Deliveries.AllDelivery;
 import TaxService.Deliveries.PortionDelivery;
 import TaxService.Netty.ClientAgent;
 import TaxService.Orders.ReadPortionOrder;
@@ -12,6 +13,7 @@ import TaxService.DAOs.AbstractDAO;
 import TaxService.TableColumnsBuilder;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -51,19 +53,21 @@ public class MainController
 
 	private class TableStaff<T extends AbstractDAO>
 	{
-		private Class<T> clazz;
-		private String niceName;
-		private TableView<T> tableView;
-		private AbstractEditorBox<T> editorBox;
+		private final Class<T> clazz;
+		private final String niceName;
+		private final TableView<T> tableView;
+		private final AbstractEditorBox<T> editorBox;
+		private final ObservableList<T> data;
 		private int currPortion;
 		private boolean isFiltered;
 
-		TableStaff(Class<T> clazz, String niceName, TableView<T> tableView, AbstractEditorBox<T> editorBox)
+		TableStaff(Class<T> clazz, String niceName, TableView<T> tableView, AbstractEditorBox<T> editorBox, ObservableList<T> data)
 		{
 			this.clazz = clazz;
 			this.niceName = niceName;
 			this.tableView = tableView;
 			this.editorBox = editorBox;
+			this.data = data;
 			this.currPortion = 1;
 			this.isFiltered = false;
 		}
@@ -125,6 +129,7 @@ public class MainController
 	public TextField portionField;
 
 	private Callback onPortionReceived;
+	private Callback onAllReceived;
 	private Callback onExceptionReceived;
 	private Callback onNotificationReceived;
 	private Callback onConnectionLost;
@@ -167,6 +172,13 @@ public class MainController
 			});
 		};
 		ClientAgent.subscribePortionReceived(onPortionReceived);
+
+		onAllReceived = o ->
+		{
+			AllDelivery<AbstractDAO> delivery = (AllDelivery<AbstractDAO>) o;
+			Platform.runLater(() -> tableStaffs.get(delivery.getContentClazz()).data.setAll(delivery.getContent()));
+		};
+		ClientAgent.subscribeAllReceived(onAllReceived);
 
 		onExceptionReceived = o -> Platform.runLater(() ->
 		{
@@ -229,8 +241,14 @@ public class MainController
 		initTableStaff(Education.class, "Степени образования");
 		initTableStaff(Owntype.class, "Виды собственности");
 		initTableStaff(Paytype.class, "Виды платежей");
-		switchActiveTable(Department.class);
 
+		HashMap<Class<? extends AbstractDAO>, ObservableList> dataSources = new HashMap<>();
+		for (TableStaff staff : tableStaffs.values())
+			dataSources.put(staff.clazz, staff.data);
+		for (TableStaff staff : tableStaffs.values())
+			staff.editorBox.bindDataSources(dataSources);
+
+		switchActiveTable(Department.class);
 		ClientAgent.getInstance().startPinging();
 	}
 
@@ -256,7 +274,9 @@ public class MainController
 			item.setText(niceName);
 			item.setOnAction(e -> switchActiveTable(tableClazz));
 
-			tableStaffs.put(tableClazz, new TableStaff(tableClazz, niceName, tv, eb));
+			List list = new ArrayList();
+			ObservableList observableList = FXCollections.observableList(list);
+			tableStaffs.put(tableClazz, new TableStaff(tableClazz, niceName, tv, eb, observableList));
 		}
 		catch (ClassNotFoundException | IllegalAccessException | InvocationTargetException | InstantiationException | NoSuchMethodException | NoSuchFieldException e)
 		{
@@ -512,6 +532,7 @@ public class MainController
 		}
 		ClientAgent.unsubscribeExceptionReceived(onExceptionReceived);
 		ClientAgent.unsubscribePortionReceived(onPortionReceived);
+		ClientAgent.unsubscribeAllReceived(onAllReceived);
 		ClientAgent.unsubscribeNotificationReceived(onNotificationReceived);
 		ClientAgent.unsubscribeConnectionLost(onConnectionLost);
 		ClientAgent.unsubscribeQueryResultReceived(onQueryResultReceived);

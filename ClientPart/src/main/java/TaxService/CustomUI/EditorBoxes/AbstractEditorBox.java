@@ -9,6 +9,7 @@ import TaxService.Orders.UpdateOrder;
 import TaxService.Utils;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -24,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPane
 {
@@ -274,4 +276,6 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 	{
 		return filter;
 	}
+
+	public abstract void bindDataSources(Map<Class<AbstractDAO>, ObservableList> sources);
 }

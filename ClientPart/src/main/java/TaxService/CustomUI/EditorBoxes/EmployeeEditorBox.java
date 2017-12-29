@@ -1,15 +1,13 @@
 package TaxService.CustomUI.EditorBoxes;
 
 import TaxService.Callback;
-import TaxService.DAOs.Department;
-import TaxService.DAOs.Education;
-import TaxService.DAOs.Employee;
-import TaxService.DAOs.Post;
+import TaxService.DAOs.*;
 import TaxService.Deliveries.AllDelivery;
 import TaxService.Netty.ClientAgent;
 import TaxService.Orders.ReadAllOrder;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
@@ -21,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 {
@@ -57,14 +56,22 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 
 		department1 = new ComboBox<>();
 		department1.setPrefWidth(150);
-		department1.setOnShowing(event -> ClientAgent.getInstance()
-				.send(new ReadAllOrder<Department>(Department.class, ClientAgent.getInstance()
-						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
+		department1.setOnShowing(event ->
+		{
+			department1.getSelectionModel().clearSelection();
+			department1.getEditor().clear();
+			ClientAgent.getInstance().send(new ReadAllOrder<Department>(Department.class, ClientAgent.getInstance().getLogin(),
+					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+		});
 		department2 = new ComboBox<>();
 		department2.setPrefWidth(150);
-		department2.setOnShowing(event -> ClientAgent.getInstance()
-				.send(new ReadAllOrder<Department>(Department.class, ClientAgent.getInstance()
-						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
+		department2.setOnShowing(event ->
+		{
+			department2.getSelectionModel().clearSelection();
+			department2.getEditor().clear();
+			ClientAgent.getInstance().send(new ReadAllOrder<Department>(Department.class, ClientAgent.getInstance().getLogin(),
+					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+		});
 		addField("Отделение", department1, department2, false);
 
 		birthdate1 = new DatePicker();
@@ -75,14 +82,22 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 		
 		post1 = new ComboBox<>();
 		post1.setPrefWidth(200);
-		post1.setOnShowing(event -> ClientAgent.getInstance()
-				.send(new ReadAllOrder<Post>(Post.class, ClientAgent.getInstance()
-						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
+		post1.setOnShowing(event ->
+		{
+			post1.getSelectionModel().clearSelection();
+			post1.getEditor().clear();
+			ClientAgent.getInstance().send(new ReadAllOrder<Post>(Post.class, ClientAgent.getInstance().getLogin(),
+					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+		});
 		post2 = new ComboBox<>();
 		post2.setPrefWidth(200);
-		post2.setOnShowing(event -> ClientAgent.getInstance()
-				.send(new ReadAllOrder<Post>(Post.class, ClientAgent.getInstance()
-						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
+		post2.setOnShowing(event ->
+		{
+			post2.getSelectionModel().clearSelection();
+			post2.getEditor().clear();
+			ClientAgent.getInstance().send(new ReadAllOrder<Post>(Post.class, ClientAgent.getInstance().getLogin(),
+					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+		});
 		addField("Должность", post1, post2, false);
 
 		salary1 = new TextField();
@@ -93,66 +108,23 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 
 		education1 = new ComboBox<>();
 		education1.setPrefWidth(150);
-		education1.setOnShowing(event -> ClientAgent.getInstance()
-				.send(new ReadAllOrder<Education>(Education.class, ClientAgent.getInstance()
-						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
+		education1.setOnShowing(event ->
+		{
+			education1.getSelectionModel().clearSelection();
+			education1.getEditor().clear();
+			ClientAgent.getInstance().send(new ReadAllOrder<Education>(Education.class, ClientAgent.getInstance().getLogin(),
+					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+		});
 		education2 = new ComboBox<>();
 		education2.setPrefWidth(150);
-		education2.setOnShowing(event -> ClientAgent.getInstance()
-				.send(new ReadAllOrder<Education>(Education.class, ClientAgent.getInstance()
-						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
-		addField("Образование", education1, education2, false);
-
-		ClientAgent.subscribeAllReceived(o ->
+		education2.setOnShowing(event ->
 		{
-			AllDelivery delivery = (AllDelivery) o;
-
-			if (delivery.getPurpose() == ReadAllOrder.Purposes.REFRESH_CB )
-			{
-				if (delivery.getContentClazz() == Department.class)
-					Platform.runLater(() ->
-					{
-						if (department1.isShowing())
-						{
-							department1.getSelectionModel().clearSelection();
-							department1.setItems(FXCollections.observableList(delivery.getContent()));
-						}
-						else if (department2.isShowing())
-						{
-							department2.getSelectionModel().clearSelection();
-							department2.setItems(FXCollections.observableList(delivery.getContent()));
-						}
-					});
-				else if (delivery.getContentClazz() == Post.class)
-					Platform.runLater(() ->
-					{
-						if (post1.isShowing())
-						{
-							post1.getSelectionModel().clearSelection();
-							post1.setItems(FXCollections.observableList(delivery.getContent()));
-						}
-						else if (post2.isShowing())
-						{
-							post2.getSelectionModel().clearSelection();
-							post2.setItems(FXCollections.observableList(delivery.getContent()));
-						}
-					});
-				else if (delivery.getContentClazz() == Education.class)
-					Platform.runLater(() ->
-					{
-						if (education1.isShowing())
-						{
-							education1.getSelectionModel().clearSelection();
-							education1.setItems(FXCollections.observableList(delivery.getContent()));
-						}
-						else if (education2.isShowing())
-						{
-							education2.getSelectionModel().clearSelection();
-							education2.setItems(FXCollections.observableList(delivery.getContent()));
-						}
-					});
-			}
+			education2.getSelectionModel().clearSelection();
+			education2.getEditor().clear();
+			ClientAgent.getInstance().send(new ReadAllOrder<Education>(Education.class, ClientAgent.getInstance().getLogin(),
+					true, ReadAllOrder.Purposes.REFRESH_CB, null));
 		});
+		addField("Образование", education1, education2, false);
 	}
 
 	@Override
@@ -451,15 +423,21 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 		patronymic1.clear();
 		patronymic1.setEffect(null);
 		department1.getSelectionModel().clearSelection();
+		department1.getEditor().clear();
+		department2.setValue(null);
 		department1.setEffect(null);
 		birthdate1.getEditor().clear();
 		birthdate1.setValue(null);
 		birthdate1.setEffect(null);
 		post1.getSelectionModel().clearSelection();
+		post1.getEditor().clear();
+		post1.setValue(null);
 		post1.setEffect(null);
 		salary1.clear();
 		salary1.setEffect(null);
 		education1.getSelectionModel().clearSelection();
+		education1.getEditor().clear();
+		education1.setValue(null);
 		education1.setEffect(null);
 		surname2.clear();
 		surname2.setEffect(null);
@@ -468,15 +446,37 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 		patronymic2.clear();
 		patronymic2.setEffect(null);
 		department2.getSelectionModel().clearSelection();
+		department2.getEditor().clear();
+		department2.setValue(null);
 		department2.setEffect(null);
 		birthdate2.getEditor().clear();
 		birthdate2.setValue(null);
 		birthdate2.setEffect(null);
 		post2.getSelectionModel().clearSelection();
+		post2.getEditor().clear();
+		post2.setValue(null);
 		post2.setEffect(null);
 		salary2.clear();
 		salary2.setEffect(null);
 		education2.getSelectionModel().clearSelection();
+		education2.getEditor().clear();
+		education2.setValue(null);
 		education2.setEffect(null);
+	}
+
+	@Override
+	public void bindDataSources(Map<Class<AbstractDAO>, ObservableList> sources)
+	{
+		ObservableList<Department> departments = sources.get(Department.class);
+		department1.setItems(departments);
+		department2.setItems(departments);
+
+		ObservableList<Post> posts = sources.get(Post.class);
+		post1.setItems(posts);
+		post2.setItems(posts);
+
+		ObservableList<Education> educations = sources.get(Education.class);
+		education1.setItems(educations);
+		education2.setItems(educations);
 	}
 }

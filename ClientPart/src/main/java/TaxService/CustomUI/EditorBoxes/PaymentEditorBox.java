@@ -8,6 +8,7 @@ import TaxService.Netty.ClientAgent;
 import TaxService.Orders.ReadAllOrder;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class PaymentEditorBox extends AbstractEditorBox<Payment>
 {
@@ -36,14 +38,22 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 
 		paytype1 = new ComboBox<>();
 		paytype1.setPrefWidth(170);
-		paytype1.setOnShowing(event -> ClientAgent.getInstance()
-				.send(new ReadAllOrder<Paytype>(Paytype.class, ClientAgent.getInstance()
-						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
+		paytype1.setOnShowing(event ->
+		{
+			paytype1.getSelectionModel().clearSelection();
+			paytype1.getEditor().clear();
+			ClientAgent.getInstance().send(new ReadAllOrder<Paytype>(Paytype.class, ClientAgent.getInstance().getLogin(),
+					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+		});
 		paytype2 = new ComboBox<>();
 		paytype2.setPrefWidth(170);
-		paytype2.setOnShowing(event -> ClientAgent.getInstance()
-				.send(new ReadAllOrder<Paytype>(Paytype.class, ClientAgent.getInstance()
-						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
+		paytype2.setOnShowing(event ->
+		{
+			paytype2.getSelectionModel().clearSelection();
+			paytype2.getEditor().clear();
+			ClientAgent.getInstance().send(new ReadAllOrder<Paytype>(Paytype.class, ClientAgent.getInstance().getLogin(),
+					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+		});
 		addField("Тип платежа", paytype1, paytype2, false);
 
 		date1 = new DatePicker();
@@ -61,104 +71,63 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 
 		employee1 = new ComboBox<>();
 		employee1.setPrefWidth(200);
-		employee1.setOnShowing(event -> ClientAgent.getInstance()
-				.send(new ReadAllOrder<Employee>(Employee.class, ClientAgent.getInstance()
-						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
+		employee1.setOnShowing(event ->
+		{
+			employee1.getSelectionModel().clearSelection();
+			employee1.getEditor().clear();
+			ClientAgent.getInstance().send(new ReadAllOrder<Employee>(Employee.class, ClientAgent.getInstance().getLogin(),
+					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+		});
 		employee2 = new ComboBox<>();
 		employee2.setPrefWidth(200);
-		employee2.setOnShowing(event -> ClientAgent.getInstance()
-				.send(new ReadAllOrder<Employee>(Employee.class, ClientAgent.getInstance()
-						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
+		employee2.setOnShowing(event ->
+		{
+			employee2.getSelectionModel().clearSelection();
+			employee2.getEditor().clear();
+			ClientAgent.getInstance().send(new ReadAllOrder<Employee>(Employee.class, ClientAgent.getInstance().getLogin(),
+					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+		});
 		addField("Сотрудник-оформитель", employee1, employee2, false);
 
 		department1 = new ComboBox<>();
 		department1.setPrefWidth(200);
-		department1.setOnShowing(event -> ClientAgent.getInstance()
-				.send(new ReadAllOrder<Department>(Department.class, ClientAgent.getInstance()
-						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
+		department1.setOnShowing(event ->
+		{
+			department1.getSelectionModel().clearSelection();
+			department1.getEditor().clear();
+			ClientAgent.getInstance().send(new ReadAllOrder<Department>(Department.class, ClientAgent.getInstance().getLogin(),
+					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+		});
 		department2 = new ComboBox<>();
 		department2.setPrefWidth(200);
-		department2.setOnShowing(event -> ClientAgent.getInstance()
-				.send(new ReadAllOrder<Department>(Department.class, ClientAgent.getInstance()
-						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
+		department2.setOnShowing(event ->
+		{
+			department2.getSelectionModel().clearSelection();
+			department2.getEditor().clear();
+			ClientAgent.getInstance().send(new ReadAllOrder<Department>(Department.class, ClientAgent.getInstance().getLogin(),
+					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+		});
 		addField("Отделение-оформитель", department1, department2, false);
 
 		company1 = new ComboBox<>();
 		company1.setPrefWidth(200);
-		company1.setOnShowing(event -> ClientAgent.getInstance()
-				.send(new ReadAllOrder<Company>(Company.class, ClientAgent.getInstance()
-						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
+		company1.setOnShowing(event ->
+		{
+			company1.getSelectionModel().clearSelection();
+			company1.getEditor().clear();
+			ClientAgent.getInstance().send(new ReadAllOrder<Company>(Company.class, ClientAgent.getInstance().getLogin(),
+					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+		});
 		company2 = new ComboBox<>();
 		company2.setPrefWidth(200);
-		company2.setOnShowing(event -> ClientAgent.getInstance()
-				.send(new ReadAllOrder<Company>(Company.class, ClientAgent.getInstance()
-						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
-		addField("Компания-плательщик", company1, company2, false);
-
-		ClientAgent.subscribeAllReceived(o ->
+		company2.setOnShowing(event ->
 		{
-			AllDelivery delivery = (AllDelivery) o;
-
-			if (delivery.getPurpose() == ReadAllOrder.Purposes.REFRESH_CB )
-			{
-				if (delivery.getContentClazz() == Paytype.class)
-					Platform.runLater(() ->
-					{
-						if (paytype1.isShowing())
-						{
-							paytype1.getSelectionModel().clearSelection();
-							paytype1.setItems(FXCollections.observableList(delivery.getContent()));
-						}
-						else if (paytype2.isShowing())
-						{
-							paytype2.getSelectionModel().clearSelection();
-							paytype2.setItems(FXCollections.observableList(delivery.getContent()));
-						}
-					});
-				else if (delivery.getContentClazz() == Employee.class)
-					Platform.runLater(() ->
-					{
-						if (employee1.isShowing())
-						{
-							employee1.getSelectionModel().clearSelection();
-							employee1.setItems(FXCollections.observableList(delivery.getContent()));
-						}
-						else if (employee2.isShowing())
-						{
-							employee2.getSelectionModel().clearSelection();
-							employee2.setItems(FXCollections.observableList(delivery.getContent()));
-						}
-					});
-				else if (delivery.getContentClazz() == Department.class)
-					Platform.runLater(() ->
-					{
-						if (department1.isShowing())
-						{
-							department1.getSelectionModel().clearSelection();
-							department1.setItems(FXCollections.observableList(delivery.getContent()));
-						}
-						else if (department2.isShowing())
-						{
-							department2.getSelectionModel().clearSelection();
-							department2.setItems(FXCollections.observableList(delivery.getContent()));
-						}
-					});
-				else if (delivery.getContentClazz() == Company.class)
-					Platform.runLater(() ->
-					{
-						if (company1.isShowing())
-						{
-							company1.getSelectionModel().clearSelection();
-							company1.setItems(FXCollections.observableList(delivery.getContent()));
-						}
-						else if (company2.isShowing())
-						{
-							company2.getSelectionModel().clearSelection();
-							company2.setItems(FXCollections.observableList(delivery.getContent()));
-						}
-					});
-			}
+			company2.getSelectionModel().clearSelection();
+			company2.getEditor().clear();
+			ClientAgent.getInstance().send(new ReadAllOrder<Company>(Company.class, ClientAgent.getInstance().getLogin(),
+					true, ReadAllOrder.Purposes.REFRESH_CB, null));
 		});
+		addField("Компания-плательщик", company1, company2, false);
 	}
 
 	@Override
@@ -324,15 +293,6 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 		return null;
 	}
 
-	/*protected boolean validatePayDate(DatePicker field, boolean isRequired)
-	{
-		boolean isValid = !isRequired && field.getValue() == null ||
-				field.getValue() != null && field.getValue().compareTo(ChronoLocalDate.from(LocalDateTime.now())) <= 0;
-		if (!isValid)
-			markAsInvalid(field);
-		return isValid;
-	}*/
-
 	@Override
 	public boolean validatePrimary(boolean allRequired)
 	{
@@ -401,6 +361,8 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 		id1.clear();
 		id1.setEffect(null);
 		paytype1.getSelectionModel().clearSelection();
+		paytype1.getEditor().clear();
+		paytype1.setValue(null);
 		paytype1.setEffect(null);
 		date1.getEditor().clear();
 		date1.setValue(null);
@@ -408,12 +370,20 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 		amount1.clear();
 		amount1.setEffect(null);
 		employee1.getSelectionModel().clearSelection();
+		employee1.getEditor().clear();
+		employee1.setValue(null);
 		employee1.setEffect(null);
 		department1.getSelectionModel().clearSelection();
+		department1.getEditor().clear();
+		department1.setValue(null);
 		department1.setEffect(null);
 		company1.getSelectionModel().clearSelection();
+		company1.getEditor().clear();
+		company1.setValue(null);
 		company1.setEffect(null);
 		paytype2.getSelectionModel().clearSelection();
+		paytype2.getEditor().clear();
+		paytype2.setValue(null);
 		paytype2.setEffect(null);
 		date2.getEditor().clear();
 		date2.setEffect(null);
@@ -422,10 +392,33 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 		amount2.clear();
 		amount2.setEffect(null);
 		employee2.getSelectionModel().clearSelection();
+		employee2.getEditor().clear();
+		employee2.setValue(null);
 		employee2.setEffect(null);
 		department2.getSelectionModel().clearSelection();
+		department2.getEditor().clear();
+		department2.setValue(null);
 		department2.setEffect(null);
 		company2.getSelectionModel().clearSelection();
+		company2.getEditor().clear();
+		company2.setValue(null);
 		company2.setEffect(null);
+	}
+
+	@Override
+	public void bindDataSources(Map<Class<AbstractDAO>, ObservableList> sources)
+	{
+		ObservableList<Paytype> paytypes = sources.get(Paytype.class);
+		paytype1.setItems(paytypes);
+		paytype2.setItems(paytypes);
+		ObservableList<Employee> employees = sources.get(Employee.class);
+		employee1.setItems(employees);
+		employee2.setItems(employees);
+		ObservableList<Department> departments = sources.get(Department.class);
+		department1.setItems(departments);
+		department2.setItems(departments);
+		ObservableList<Company> template = sources.get(Company.class);
+		company1.setItems(template);
+		company2.setItems(template);
 	}
 }

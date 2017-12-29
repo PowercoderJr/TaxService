@@ -2,6 +2,7 @@ package TaxService.CustomUI.EditorBoxes;
 
 import TaxService.Callback;
 import TaxService.CustomUI.MaskField;
+import TaxService.DAOs.AbstractDAO;
 import TaxService.DAOs.Company;
 import TaxService.DAOs.Owntype;
 import TaxService.Deliveries.AllDelivery;
@@ -9,6 +10,7 @@ import TaxService.Netty.ClientAgent;
 import TaxService.Orders.ReadAllOrder;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.util.Pair;
@@ -18,6 +20,7 @@ import java.math.BigDecimal;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class CompanyEditorBox extends AbstractEditorBox<Company>
 {
@@ -39,14 +42,22 @@ public class CompanyEditorBox extends AbstractEditorBox<Company>
 		
 		owntype1 = new ComboBox<>();
 		owntype1.setPrefWidth(170);
-		owntype1.setOnShowing(event -> ClientAgent.getInstance()
-				.send(new ReadAllOrder<Owntype>(Owntype.class, ClientAgent.getInstance()
-						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
+		owntype1.setOnShowing(event ->
+		{
+			owntype1.getSelectionModel().clearSelection();
+			owntype1.getEditor().clear();
+			ClientAgent.getInstance().send(new ReadAllOrder<Owntype>(Owntype.class, ClientAgent.getInstance().getLogin(),
+					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+		});
 		owntype2 = new ComboBox<>();
 		owntype2.setPrefWidth(170);
-		owntype2.setOnShowing(event -> ClientAgent.getInstance()
-				.send(new ReadAllOrder<Owntype>(Owntype.class, ClientAgent.getInstance()
-						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
+		owntype2.setOnShowing(event ->
+		{
+			owntype2.getSelectionModel().clearSelection();
+			owntype2.getEditor().clear();
+			ClientAgent.getInstance().send(new ReadAllOrder<Owntype>(Owntype.class, ClientAgent.getInstance().getLogin(),
+					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+		});
 		addField("Форма собственности", owntype1, owntype2, false);
 
 		phone1 = new MaskField();
@@ -78,28 +89,6 @@ public class CompanyEditorBox extends AbstractEditorBox<Company>
 		statesize2 = new TextField();
 		statesize2.setPrefWidth(100);
 		addField("Штат", statesize1, statesize2, false);
-
-		ClientAgent.subscribeAllReceived(o ->
-		{
-			AllDelivery delivery = (AllDelivery) o;
-
-			if (delivery.getPurpose() == ReadAllOrder.Purposes.REFRESH_CB && delivery.getContentClazz() == Owntype.class)
-			{
-				Platform.runLater(() ->
-				{
-					if (owntype1.isShowing())
-					{
-						owntype1.getSelectionModel().clearSelection();
-						owntype1.setItems(FXCollections.observableList(delivery.getContent()));
-					}
-					else if (owntype2.isShowing())
-					{
-						owntype2.getSelectionModel().clearSelection();
-						owntype2.setItems(FXCollections.observableList(delivery.getContent()));
-					}
-				});
-			}
-		});
 	}
 
 	@Override
@@ -329,6 +318,8 @@ public class CompanyEditorBox extends AbstractEditorBox<Company>
 		name1.clear();
 		name1.setEffect(null);
 		owntype1.getSelectionModel().clearSelection();
+		owntype1.getEditor().clear();
+		owntype1.setValue(null);
 		owntype1.setEffect(null);
 		phone1.clear();
 		phone1.setEffect(null);
@@ -339,6 +330,8 @@ public class CompanyEditorBox extends AbstractEditorBox<Company>
 		name2.clear();
 		name2.setEffect(null);
 		owntype2.getSelectionModel().clearSelection();
+		owntype2.getEditor().clear();
+		owntype2.setValue(null);
 		owntype2.setEffect(null);
 		phone2.clear();
 		phone2.setEffect(null);
@@ -346,5 +339,13 @@ public class CompanyEditorBox extends AbstractEditorBox<Company>
 		startyear2.setEffect(null);
 		statesize2.clear();
 		statesize2.setEffect(null);
+	}
+
+	@Override
+	public void bindDataSources(Map<Class<AbstractDAO>, ObservableList> sources)
+	{
+		ObservableList<Owntype> owntypes = sources.get(Owntype.class);
+		owntype1.setItems(owntypes);
+		owntype2.setItems(owntypes);
 	}
 }

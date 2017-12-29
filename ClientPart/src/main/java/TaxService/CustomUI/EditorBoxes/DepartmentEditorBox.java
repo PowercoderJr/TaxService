@@ -2,6 +2,7 @@ package TaxService.CustomUI.EditorBoxes;
 
 import TaxService.Callback;
 import TaxService.CustomUI.MaskField;
+import TaxService.DAOs.AbstractDAO;
 import TaxService.DAOs.City;
 import TaxService.DAOs.Department;
 import TaxService.DAOs.Deptype;
@@ -9,11 +10,15 @@ import TaxService.Deliveries.AllDelivery;
 import TaxService.Netty.ClientAgent;
 import TaxService.Orders.ReadAllOrder;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.util.Pair;
 
 import java.lang.reflect.Field;
@@ -21,6 +26,7 @@ import java.math.BigDecimal;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class DepartmentEditorBox extends AbstractEditorBox<Department>
 {
@@ -44,14 +50,22 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 
 		deptype1 = new ComboBox<>();
 		deptype1.setPrefWidth(150);
-		deptype1.setOnShowing(event -> ClientAgent.getInstance()
-				.send(new ReadAllOrder<Deptype>(Deptype.class, ClientAgent.getInstance()
-						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
+		deptype1.setOnShowing(event ->
+		{
+			deptype1.getSelectionModel().clearSelection();
+			deptype1.getEditor().clear();
+			ClientAgent.getInstance().send(new ReadAllOrder<Deptype>(Deptype.class, ClientAgent.getInstance().getLogin(),
+					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+		});
 		deptype2 = new ComboBox<>();
 		deptype2.setPrefWidth(150);
-		deptype2.setOnShowing(event -> ClientAgent.getInstance()
-				.send(new ReadAllOrder<Deptype>(Deptype.class, ClientAgent.getInstance()
-						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
+		deptype2.setOnShowing(event ->
+		{
+			deptype2.getSelectionModel().clearSelection();
+			deptype2.getEditor().clear();
+			ClientAgent.getInstance().send(new ReadAllOrder<Deptype>(Deptype.class, ClientAgent.getInstance().getLogin(),
+					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+		});
 		addField("Тип отделения", deptype1, deptype2, false);
 
 		startyear1 = new MaskField();
@@ -81,14 +95,22 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 
 		city1 = new ComboBox<>();
 		city1.setPrefWidth(150);
-		city1.setOnShowing(event -> ClientAgent.getInstance()
-				.send(new ReadAllOrder<City>(City.class, ClientAgent.getInstance()
-						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
+		city1.setOnShowing(event ->
+		{
+			city1.getSelectionModel().clearSelection();
+			city1.getEditor().clear();
+			ClientAgent.getInstance().send(new ReadAllOrder<City>(City.class, ClientAgent.getInstance().getLogin(),
+					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+		});
 		city2 = new ComboBox<>();
 		city2.setPrefWidth(150);
-		city2.setOnShowing(event -> ClientAgent.getInstance()
-				.send(new ReadAllOrder<City>(City.class, ClientAgent.getInstance()
-						.getLogin(), true, ReadAllOrder.Purposes.REFRESH_CB, null)));
+		city2.setOnShowing(event ->
+		{
+			city2.getSelectionModel().clearSelection();
+			city2.getEditor().clear();
+			ClientAgent.getInstance().send(new ReadAllOrder<City>(City.class, ClientAgent.getInstance().getLogin(),
+					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+		});
 		addField("Город", city1, city2, false);
 
 		street1 = new TextField();
@@ -102,43 +124,6 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 		house2 = new TextField();
 		house2.setPrefWidth(70);
 		addField("Дом", house1, house2, false);
-
-		ClientAgent.subscribeAllReceived(o ->
-		{
-			AllDelivery delivery = (AllDelivery) o;
-
-			if (delivery.getPurpose() == ReadAllOrder.Purposes.REFRESH_CB)
-			{
-				if (delivery.getContentClazz() == Deptype.class)
-				Platform.runLater(() ->
-				{
-					if (deptype1.isShowing())
-					{
-						deptype1.getSelectionModel().clearSelection();
-						deptype1.setItems(FXCollections.observableList(delivery.getContent()));
-					}
-					else if (deptype2.isShowing())
-					{
-						deptype2.setItems(FXCollections.observableList(delivery.getContent()));
-						deptype2.getSelectionModel().clearSelection();
-					}
-				});
-				else if (delivery.getContentClazz() == City.class)
-				Platform.runLater(() ->
-				{
-					if (city1.isShowing())
-					{
-						city1.getSelectionModel().clearSelection();
-						city1.setItems(FXCollections.observableList(delivery.getContent()));
-					}
-					else if (city2.isShowing())
-					{
-						city2.setItems(FXCollections.observableList(delivery.getContent()));
-						city2.getSelectionModel().clearSelection();
-					}
-				});
-			}
-		});
 	}
 
 	@Override
@@ -428,12 +413,16 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 		name1.clear();
 		name1.setEffect(null);
 		deptype1.getSelectionModel().clearSelection();
+		deptype1.getEditor().clear();
+		deptype1.setValue(null);
 		deptype1.setEffect(null);
 		startyear1.clear();
 		startyear1.setEffect(null);
 		phone1.clear();
 		phone1.setEffect(null);
 		city1.getSelectionModel().clearSelection();
+		city1.getEditor().clear();
+		city1.setValue(null);
 		city1.setEffect(null);
 		street1.clear();
 		street1.setEffect(null);
@@ -442,16 +431,32 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 		name2.clear();
 		name2.setEffect(null);
 		deptype2.getSelectionModel().clearSelection();
+		deptype2.getEditor().clear();
+		deptype2.setValue(null);
 		deptype2.setEffect(null);
 		startyear2.clear();
 		startyear2.setEffect(null);
 		phone2.clear();
 		phone2.setEffect(null);
 		city2.getSelectionModel().clearSelection();
+		city2.getEditor().clear();
+		city2.setValue(null);
 		city2.setEffect(null);
 		street2.clear();
 		street2.setEffect(null);
 		house2.clear();
 		house2.setEffect(null);
+	}
+
+	@Override
+	public void bindDataSources(Map<Class<AbstractDAO>, ObservableList> sources)
+	{
+		ObservableList<Deptype> deptypes = sources.get(Deptype.class);
+		deptype1.setItems(deptypes);
+		deptype2.setItems(deptypes);
+
+		ObservableList<City> cities = sources.get(City.class);
+		city1.setItems(cities);
+		city2.setItems(cities);
 	}
 }

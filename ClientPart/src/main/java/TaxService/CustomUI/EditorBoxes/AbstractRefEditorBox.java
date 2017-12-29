@@ -1,6 +1,8 @@
 package TaxService.CustomUI.EditorBoxes;
 
+import TaxService.DAOs.AbstractDAO;
 import TaxService.DAOs.AbstractRefDAO;
+import javafx.collections.ObservableList;
 import javafx.scene.control.TextField;
 import javafx.util.Pair;
 
@@ -8,6 +10,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractRefEditorBox<T extends AbstractRefDAO> extends AbstractEditorBox<T>
 {
@@ -159,4 +162,7 @@ public abstract class AbstractRefEditorBox<T extends AbstractRefDAO> extends Abs
 		name2.clear();
 		name2.setEffect(null);
 	}
+
+	@Override
+	public void bindDataSources(Map<Class<AbstractDAO>, ObservableList> sources){}
 }
