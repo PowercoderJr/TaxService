@@ -143,19 +143,19 @@ public class ServerAgent implements Closeable
 		return 0;
 	}
 
-	public List readPortion(Class<? extends AbstractDAO> clazz, String sendersLogin, int portion, boolean isLazy, String filter) throws SQLException
+	public <T extends AbstractDAO> List readPortion(Class<T> clazz, String sendersLogin, int portion, boolean isLazy, String filter) throws SQLException
 	{
 		AbstractCRUD instance = getCrudForClass(clazz, sendersLogin);
 		return instance.readPortion(portion, isLazy, filter);
 	}
 
-	public List readAll(Class<? extends AbstractDAO> clazz, String sendersLogin, boolean isLazy, String filter) throws SQLException
+	public <T extends AbstractDAO> List readAll(Class<T> clazz, String sendersLogin, boolean isLazy, String filter) throws SQLException
 	{
 		AbstractCRUD instance = getCrudForClass(clazz, sendersLogin);
 		return instance.readAll(isLazy, filter);
 	}
 
-	public int update(Class<? extends AbstractDAO> clazz, String sendersLogin, String filter, String newValues) throws SQLException
+	public <T extends AbstractDAO> int update(Class<T> clazz, String sendersLogin, String filter, String newValues) throws SQLException
 	{
 		AbstractCRUD crud = getCrudForClass(clazz, sendersLogin);
 		if (crud != null)
@@ -163,7 +163,7 @@ public class ServerAgent implements Closeable
 		return 0;
 	}
 
-	public int delete(Class<? extends AbstractDAO> clazz, String sendersLogin, long id) throws SQLException
+	public <T extends AbstractDAO> int delete(Class<T> clazz, String sendersLogin, long id) throws SQLException
 	{
 		AbstractCRUD crud = getCrudForClass(clazz, sendersLogin);
 		if (crud != null)
@@ -179,7 +179,7 @@ public class ServerAgent implements Closeable
 		return 0;
 	}
 
-	public int delete(Class<? extends AbstractDAO> clazz, String sendersLogin, String filter) throws SQLException
+	public <T extends AbstractDAO> int delete(Class<T> clazz, String sendersLogin, String filter) throws SQLException
 	{
 		AbstractCRUD crud = getCrudForClass(clazz, sendersLogin);
 		if (crud != null)
@@ -187,7 +187,7 @@ public class ServerAgent implements Closeable
 		return 0;
 	}
 
-	public int count(Class<? extends AbstractDAO> clazz, String sendersLogin, String filter) throws SQLException
+	public <T extends AbstractDAO> int count(Class<T> clazz, String sendersLogin, String filter) throws SQLException
 	{
 		AbstractCRUD crud = getCrudForClass(clazz, sendersLogin);
 		if (crud != null)
@@ -195,16 +195,7 @@ public class ServerAgent implements Closeable
 		return 0;
 	}
 
-	/*public ResultSet executeCustomQuery(Class<? extends AbstractDAO> clazz, String sendersLogin, String query) throws SQLException
-	{
-		AbstractCRUD crud = getCrudForClass(clazz, sendersLogin);
-		if (crud != null)
-			return crud.executeCustomQuery(query);
-		else
-			return null;
-	}*/
-
-	public AbstractCRUD getCrudForClass(Class<? extends AbstractDAO> clazz, Connection connection)
+	public <T extends AbstractDAO> AbstractCRUD getCrudForClass(Class<T> clazz, Connection connection)
 	{
 		AbstractCRUD instance = null;
 		if (connection != null)
@@ -220,7 +211,7 @@ public class ServerAgent implements Closeable
 		return instance;
 	}
 
-	public AbstractCRUD getCrudForClass(Class<? extends AbstractDAO> clazz, String sendersLogin)
+	public <T extends AbstractDAO> AbstractCRUD getCrudForClass(Class<T> clazz, String sendersLogin)
 	{
 		return getCrudForClass(clazz, connections.get(sendersLogin).getKey());
 	}

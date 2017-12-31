@@ -7,7 +7,9 @@ import TaxService.CustomUI.EditorBoxes.*;
 import TaxService.DAOs.*;
 import TaxService.Deliveries.AllDelivery;
 import TaxService.Deliveries.PortionDelivery;
+import TaxService.Deliveries.QueryResultDelivery;
 import TaxService.Netty.ClientAgent;
+import TaxService.Orders.ReadAllOrder;
 import TaxService.Orders.ReadPortionOrder;
 import TaxService.DAOs.AbstractDAO;
 import TaxService.TableColumnsBuilder;
@@ -15,7 +17,6 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -33,13 +34,13 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
-//import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.UnaryOperator;
@@ -134,7 +135,6 @@ public class MainController
 	private Callback onNotificationReceived;
 	private Callback onConnectionLost;
 	private Callback onQueryResultReceived;
-	private boolean querySent;
 	private Class<? extends AbstractDAO> currTable;
 	private static final int NOTIFICATION_DURATION = 3000;
 	private final ScheduledExecutorService notificationsScheduler = Executors.newSingleThreadScheduledExecutor();
@@ -219,17 +219,42 @@ public class MainController
 		});
 		ClientAgent.subscribeConnectionLost(onConnectionLost);
 
-		querySent = false;
 		onQueryResultReceived = o ->
 		{
+			QueryResultDelivery delivery = (QueryResultDelivery) o;
 			Platform.runLater(() ->
 			{
-				querySent = false;
-				ClientAgent.unsubscribeQueryResultReceived(onQueryResultReceived);
-				for (Object al : (List)o)
-					System.out.println(al);
+				HBox hbox = new HBox(new Label(ClientAgent.df.format(delivery.getDate()) + " - " + delivery.getHeader()));
+				hbox.setPrefHeight(30);
+				TableView tv = new TableView();
+				tv.setPlaceholder(new Label("НЕТ ЗАПИСЕЙ"));
+				List<ArrayList> rows = delivery.getContent();
+				tv.getColumns().setAll(TableColumnsBuilder.buildForListOfStrings(rows.get(0)));
+				rows.remove(0);
+				tv.getItems().setAll(rows);
+
+				try
+				{
+					FXMLLoader loader = new FXMLLoader(ClientMain.class.getResource("/QueryResultScene/interface.fxml"));
+					BorderPane root = loader.load();
+					root.setTop(hbox);
+					root.setCenter(tv);
+					Stage stage = new Stage();
+					stage.setTitle("Результат запроса");
+					Scene scene = new Scene(root);
+					scene.getStylesheets().add("/QueryResultScene/style.css");
+					stage.setScene(scene);
+					stage.initOwner(this.root.getScene().getWindow());
+					stage.initModality(Modality.APPLICATION_MODAL);
+					stage.showAndWait();
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
 			});
 		};
+		ClientAgent.subscribeQueryResultReceived(onQueryResultReceived);
 
 		initTableStaff(Department.class, "Отделения налоговой инспекции");
 		initTableStaff(Employee.class, "Сотрудники налоговой инспекции");
@@ -252,7 +277,7 @@ public class MainController
 		ClientAgent.getInstance().startPinging();
 	}
 
-	private void initTableStaff(Class<? extends AbstractDAO> tableClazz, String niceName)
+	private <T extends AbstractDAO> void initTableStaff(Class<T> tableClazz, String niceName)
 	{
 		try
 		{
@@ -420,7 +445,7 @@ public class MainController
 				staff.currPortion, false, staff.editorBox.getFilter()));
 	}
 
-	public void switchActiveTable(Class<? extends AbstractDAO> tableClazz)
+	public <T extends AbstractDAO> void switchActiveTable(Class<T> tableClazz)
 	{
 		if (currTable != null)
 		{
@@ -536,7 +561,6 @@ public class MainController
 		ClientAgent.unsubscribeNotificationReceived(onNotificationReceived);
 		ClientAgent.unsubscribeConnectionLost(onConnectionLost);
 		ClientAgent.unsubscribeQueryResultReceived(onQueryResultReceived);
-		ClientAgent.clearAllReceivedSubs();
 	}
 
 	public void disconnect(ActionEvent actionEvent)
@@ -567,40 +591,42 @@ public class MainController
 
 	public void executeQuery(ActionEvent actionEvent)
 	{
-		if (!querySent)
+		ButtonType okBtn = new ButtonType("ОК", ButtonBar.ButtonData.OK_DONE);
+		ButtonType cancelBtn = new ButtonType("Отмена", ButtonBar.ButtonData.CANCEL_CLOSE);
+		String queryCode = ((MenuItem) actionEvent.getSource()).getUserData().toString();
+		switch (queryCode)
 		{
-			querySent = true;
-			ClientAgent.subscribeQueryResultReceived(onQueryResultReceived);
+			case "_1_1":
+				ClientAgent.getInstance().send(new ReadAllOrder<Employee>(Employee.class, ClientAgent.getInstance()
+						.getLogin(), true, null));
+				Dialog<Employee> dialog = new Dialog<>();
+				dialog.setTitle("Укажите значение");
+				dialog.setHeaderText("Укажите значения для запроса");
 
-			String queryCode = ((MenuItem) actionEvent.getSource()).getUserData().toString();
-			switch (queryCode)
-			{
-				case "_1_1":
-					/*boolean valid = false;
-					TextInputDialog dialog = new TextInputDialog();
-					dialog.setTitle("Укажите значение");
-					dialog.setHeaderText("Укажите значения для запроса");
-					dialog.setContentText(":");
+				GridPane grid = new GridPane();
+				grid.setHgap(10);
+				grid.setVgap(10);
 
-					while (!valid)
-					{
-						try
-						{
-							Optional<String> result = dialog.showAndWait();
-						}
-						catch (Exception e)
-						{
-							e.printStackTrace();
-						}
-					}*/
+				Label label = new Label("Сотрудник:");
+				label.setPrefWidth(150);
+				grid.add(label, 0, 0);
+				ComboBox<Employee> comboBox = new ComboBox<>();
+				comboBox.setPrefWidth(300);
+				comboBox.setItems(tableStaffs.get(Employee.class).data);
+				grid.add(comboBox, 1, 0);
 
-					ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance().getLogin() +
-							SEPARATOR + queryCode +SEPARATOR + "49");
-					break;
+				dialog.getDialogPane().setContent(grid);
+				Platform.runLater(() -> comboBox.requestFocus());
+				dialog.getDialogPane().getButtonTypes().setAll(okBtn, cancelBtn);
+				dialog.setResultConverter(btn -> btn == okBtn ? comboBox.getSelectionModel().getSelectedItem() : null);
 
-			}
+				dialog.initOwner(root.getScene().getWindow());
+				Optional<Employee> result = dialog.showAndWait();
+				if (result.isPresent())
+					ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance()
+							.getLogin() + SEPARATOR + queryCode + SEPARATOR + result.get().id);
+				break;
+
 		}
-		else
-			System.out.println("Nope"); //TODO
 	}
 }

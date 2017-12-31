@@ -12,6 +12,6 @@ public class QueryResultReceiver extends AbstractHandler<QueryResultDelivery>
 	protected void channelRead0(ChannelHandlerContext ctx, QueryResultDelivery msg) throws Exception
 	{
 		super.channelRead0(ctx, msg);
-		ClientAgent.publishQueryResultReceived(msg.getContent());
+		ClientAgent.publishQueryResultReceived(msg);
 	}
 }

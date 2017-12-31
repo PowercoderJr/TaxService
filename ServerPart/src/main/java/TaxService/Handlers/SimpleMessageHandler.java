@@ -1,5 +1,6 @@
 package TaxService.Handlers;
 
+import TaxService.CRUDs.EmployeeCRUD;
 import TaxService.DAOs.Department;
 import TaxService.Deliveries.QueryResultDelivery;
 import TaxService.ServerAgent;
@@ -7,6 +8,7 @@ import io.netty.channel.ChannelHandlerContext;
 import javafx.util.Pair;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -113,11 +115,14 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                     try (Statement stmt = connection.createStatement())
                     {
                         ResultSet rs;
+                        String header = null;
                         List<ArrayList> list = new ArrayList<>();
                         int nCol;
                         switch (tokens[2])
                         {
                             case "_1_1":
+                                EmployeeCRUD employeeCRUD = new EmployeeCRUD(connection);
+                                header = "Платежи, которые оформил(а) " + employeeCRUD.read(Long.parseLong(tokens[3]), true);
                                 rs = stmt.executeQuery("select * from " + QUERY + tokens[2] + "(" + tokens[3] + ")");
                                 nCol = 7;
 
@@ -138,10 +143,9 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                         sublist.add(rs.getObject(i).toString());
                                     list.add(sublist);
                                 }
-
                                 break;
                         }
-                        ctx.channel().writeAndFlush(new QueryResultDelivery(ArrayList.class, list));
+                        ctx.channel().writeAndFlush(new QueryResultDelivery(list, header, Date.valueOf(LocalDate.now())));
                     }
                     catch (SQLException e)
                     {

@@ -61,7 +61,7 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 			department1.getSelectionModel().clearSelection();
 			department1.getEditor().clear();
 			ClientAgent.getInstance().send(new ReadAllOrder<Department>(Department.class, ClientAgent.getInstance().getLogin(),
-					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+					true, null));
 		});
 		department2 = new ComboBox<>();
 		department2.setPrefWidth(150);
@@ -70,7 +70,7 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 			department2.getSelectionModel().clearSelection();
 			department2.getEditor().clear();
 			ClientAgent.getInstance().send(new ReadAllOrder<Department>(Department.class, ClientAgent.getInstance().getLogin(),
-					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+					true, null));
 		});
 		addField("Отделение", department1, department2, false);
 
@@ -87,7 +87,7 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 			post1.getSelectionModel().clearSelection();
 			post1.getEditor().clear();
 			ClientAgent.getInstance().send(new ReadAllOrder<Post>(Post.class, ClientAgent.getInstance().getLogin(),
-					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+					true, null));
 		});
 		post2 = new ComboBox<>();
 		post2.setPrefWidth(200);
@@ -96,7 +96,7 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 			post2.getSelectionModel().clearSelection();
 			post2.getEditor().clear();
 			ClientAgent.getInstance().send(new ReadAllOrder<Post>(Post.class, ClientAgent.getInstance().getLogin(),
-					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+					true, null));
 		});
 		addField("Должность", post1, post2, false);
 
@@ -113,7 +113,7 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 			education1.getSelectionModel().clearSelection();
 			education1.getEditor().clear();
 			ClientAgent.getInstance().send(new ReadAllOrder<Education>(Education.class, ClientAgent.getInstance().getLogin(),
-					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+					true, null));
 		});
 		education2 = new ComboBox<>();
 		education2.setPrefWidth(150);
@@ -122,7 +122,7 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 			education2.getSelectionModel().clearSelection();
 			education2.getEditor().clear();
 			ClientAgent.getInstance().send(new ReadAllOrder<Education>(Education.class, ClientAgent.getInstance().getLogin(),
-					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+					true, null));
 		});
 		addField("Образование", education1, education2, false);
 	}

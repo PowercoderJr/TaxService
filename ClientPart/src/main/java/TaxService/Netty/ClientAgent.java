@@ -4,6 +4,7 @@ import TaxService.Callback;
 import TaxService.DAOs.AbstractDAO;
 import TaxService.Deliveries.PortionDelivery;
 import TaxService.Deliveries.AllDelivery;
+import TaxService.Deliveries.QueryResultDelivery;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -16,6 +17,8 @@ import java.io.Closeable;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -28,6 +31,7 @@ public class ClientAgent implements Closeable
 {
 	//STATIC SECTION
 	private static ClientAgent instance = null;
+	public static final DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 
 	private static Mutex authSubsMutex = new Mutex();
 	private static ArrayList<Callback> authSubs = new ArrayList<>();
@@ -141,13 +145,6 @@ public class ClientAgent implements Closeable
 		allReceivedSubsMutex.unlock();
 	}
 
-	public static void clearAllReceivedSubs()
-	{
-		allReceivedSubsMutex.lock();
-		allReceivedSubs.clear();
-		allReceivedSubsMutex.unlock();
-	}
-
 	public static void subscribeExceptionReceived(Callback s)
 	{
 		exceptionReceivedSubsMutex.lock();
@@ -228,7 +225,7 @@ public class ClientAgent implements Closeable
 		queryResultReceivedSubsMutex.unlock();
 	}
 
-	public static void publishQueryResultReceived(List<ArrayList> msg)
+	public static void publishQueryResultReceived(QueryResultDelivery msg)
 	{
 		queryResultReceivedSubsMutex.lock();
 		for (Callback s : queryResultReceivedSubs)

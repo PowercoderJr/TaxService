@@ -20,7 +20,7 @@ public class ReadAllOrderHandler<T extends AbstractDAO> extends AbstractHandler<
 		{
 			List<T> list = ServerAgent.getInstance().readAll(msg.getItemClazz(), msg.getSendersLogin(), msg.isLazy(), msg.getFilter());
 
-			ctx.writeAndFlush(new AllDelivery<>(msg.getItemClazz(), list, msg.getPurpose()));
+			ctx.writeAndFlush(new AllDelivery<>(msg.getItemClazz(), list));
 		}
 		catch (SQLException e)
 		{

@@ -1,6 +1,7 @@
 package TaxService;
 
 import TaxService.DAOs.*;
+import TaxService.Netty.ClientAgent;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.TableColumn;
 
@@ -13,21 +14,19 @@ import java.util.List;
 
 public class TableColumnsBuilder
 {
-	private static final DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
-
 	private TableColumnsBuilder() {}
 
-	public static List<TableColumn<? extends AbstractDAO, String>> buildForDAO(Class<? extends AbstractDAO> clazz)
+	public static <T extends AbstractDAO> List<TableColumn<T, String>> buildForDAO(Class<T> clazz)
 	{
-		List<TableColumn<? extends AbstractDAO, String>> result = null;
+		List<TableColumn<T, String>> result = null;
 
 		if (AbstractRefDAO.class.isAssignableFrom(clazz))
-			result = (List<TableColumn<? extends AbstractDAO, String>>) (Object) buildForRefDAO(); //lulz
+			result = (List<TableColumn<T, String>>) (Object) buildForRefDAO(); //lulz
 		else
 			try
 			{
 				Method builder = TableColumnsBuilder.class.getMethod("buildFor" + clazz.getSimpleName());
-				result = (List<TableColumn<? extends AbstractDAO, String>>) builder.invoke(null);
+				result = (List<TableColumn<T, String>>) builder.invoke(null);
 			}
 			catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e)
 			{
@@ -89,7 +88,7 @@ public class TableColumnsBuilder
 		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getDepartment())));
 		list.add(anotherColumn);
 		anotherColumn = new TableColumn<>("Дата рождения");
-		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(df.format(data.getValue().getBirthdate()))));
+		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(ClientAgent.df.format(data.getValue().getBirthdate()))));
 		list.add(anotherColumn);
 		anotherColumn = new TableColumn<>("Должность");
 		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getPost())));
@@ -141,7 +140,7 @@ public class TableColumnsBuilder
 		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getPaytype())));
 		list.add(anotherColumn);
 		anotherColumn = new TableColumn<>("Дата");
-		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(df.format(data.getValue().getDate()))));
+		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(ClientAgent.df.format(data.getValue().getDate()))));
 		list.add(anotherColumn);
 		anotherColumn = new TableColumn<>("Сумма");
 		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getAmount())));
@@ -158,10 +157,10 @@ public class TableColumnsBuilder
 		return list;
 	}
 
-	public static List<TableColumn<? extends AbstractRefDAO, String>> buildForRefDAO()
+	public static <T extends AbstractRefDAO> List<TableColumn<T, String>> buildForRefDAO()
 	{
-		TableColumn<AbstractRefDAO, String> anotherColumn;
-		List<TableColumn<? extends AbstractRefDAO, String>> list = new ArrayList<>();
+		TableColumn<T, String> anotherColumn;
+		List<TableColumn<T, String>> list = new ArrayList<>();
 
 		anotherColumn = new TableColumn<>("ID");
 		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getId())));
@@ -169,6 +168,24 @@ public class TableColumnsBuilder
 		anotherColumn = new TableColumn<>("Наименование");
 		anotherColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getName())));
 		list.add(anotherColumn);
+		return list;
+	}
+
+	public static List<TableColumn<List, String>> buildForListOfStrings(List<String> headers)
+	{
+		TableColumn<List, String> anotherColumn;
+		List<TableColumn<List, String>> list = new ArrayList<>();
+
+		for (String header : headers)
+		{
+			anotherColumn = new TableColumn<>(header);
+			anotherColumn.setCellValueFactory(data ->
+			{
+				int index = data.getTableView().getColumns().indexOf(data.getTableColumn());
+				return new SimpleStringProperty(String.valueOf(data.getValue().get(index)));
+			});
+			list.add(anotherColumn);
+		}
 		return list;
 	}
 

@@ -55,7 +55,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 			deptype1.getSelectionModel().clearSelection();
 			deptype1.getEditor().clear();
 			ClientAgent.getInstance().send(new ReadAllOrder<Deptype>(Deptype.class, ClientAgent.getInstance().getLogin(),
-					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+					true, null));
 		});
 		deptype2 = new ComboBox<>();
 		deptype2.setPrefWidth(150);
@@ -64,7 +64,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 			deptype2.getSelectionModel().clearSelection();
 			deptype2.getEditor().clear();
 			ClientAgent.getInstance().send(new ReadAllOrder<Deptype>(Deptype.class, ClientAgent.getInstance().getLogin(),
-					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+					true, null));
 		});
 		addField("Тип отделения", deptype1, deptype2, false);
 
@@ -100,7 +100,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 			city1.getSelectionModel().clearSelection();
 			city1.getEditor().clear();
 			ClientAgent.getInstance().send(new ReadAllOrder<City>(City.class, ClientAgent.getInstance().getLogin(),
-					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+					true, null));
 		});
 		city2 = new ComboBox<>();
 		city2.setPrefWidth(150);
@@ -109,7 +109,7 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 			city2.getSelectionModel().clearSelection();
 			city2.getEditor().clear();
 			ClientAgent.getInstance().send(new ReadAllOrder<City>(City.class, ClientAgent.getInstance().getLogin(),
-					true, ReadAllOrder.Purposes.REFRESH_CB, null));
+					true, null));
 		});
 		addField("Город", city1, city2, false);
 
