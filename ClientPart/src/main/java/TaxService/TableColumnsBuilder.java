@@ -184,6 +184,7 @@ public class TableColumnsBuilder
 				int index = data.getTableView().getColumns().indexOf(data.getTableColumn());
 				return new SimpleStringProperty(String.valueOf(data.getValue().get(index)));
 			});
+			anotherColumn.setSortable(false);
 			list.add(anotherColumn);
 		}
 		return list;

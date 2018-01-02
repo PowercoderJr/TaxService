@@ -16,12 +16,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static TaxService.PhraseBook.*;
 
 public class ServerAgent implements Closeable
 {
+	public static final DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 	private static ServerAgent instance = null;
 	private static final int CONNECTIONS_AVAILABLE = 10;
 

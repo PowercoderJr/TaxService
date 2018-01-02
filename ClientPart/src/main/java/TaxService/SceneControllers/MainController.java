@@ -4,6 +4,7 @@ import TaxService.CRUDs.AbstractCRUD;
 import TaxService.Callback;
 import TaxService.ClientMain;
 import TaxService.CustomUI.EditorBoxes.*;
+import TaxService.CustomUI.MaskField;
 import TaxService.DAOs.*;
 import TaxService.Deliveries.AllDelivery;
 import TaxService.Deliveries.PortionDelivery;
@@ -36,11 +37,12 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.UnaryOperator;
@@ -597,6 +599,7 @@ public class MainController
 		switch (queryCode)
 		{
 			case "_1_1":
+			{
 				ClientAgent.getInstance().send(new ReadAllOrder<Employee>(Employee.class, ClientAgent.getInstance()
 						.getLogin(), true, null));
 				Dialog<Employee> dialog = new Dialog<>();
@@ -626,7 +629,269 @@ public class MainController
 					ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance()
 							.getLogin() + SEPARATOR + queryCode + SEPARATOR + result.get().id);
 				break;
+			}
+			case "_1_2":
+			{
+				Dialog<Date> dialog = new Dialog<>();
+				dialog.setTitle("Укажите значение");
+				dialog.setHeaderText("Укажите значения для запроса");
 
+				GridPane grid = new GridPane();
+				grid.setHgap(10);
+				grid.setVgap(10);
+
+				Label label = new Label("Дата:");
+				label.setPrefWidth(50);
+				grid.add(label, 0, 0);
+				DatePicker datePicker = new DatePicker(LocalDate.now());
+				datePicker.setPrefWidth(150);
+				grid.add(datePicker, 1, 0);
+
+				dialog.getDialogPane().setContent(grid);
+				Platform.runLater(() -> datePicker.requestFocus());
+				dialog.getDialogPane().getButtonTypes().setAll(okBtn, cancelBtn);
+				dialog.setResultConverter(btn -> btn == okBtn ? Date.valueOf(datePicker.getValue()) : null);
+
+				dialog.initOwner(root.getScene().getWindow());
+				Optional<Date> result = dialog.showAndWait();
+				if (result.isPresent())
+					ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance()
+							.getLogin() + SEPARATOR + queryCode + SEPARATOR + result.get());
+				break;
+			}
+			case "_1_3":
+			{
+				ClientAgent.getInstance().send(new ReadAllOrder<Employee>(Employee.class, ClientAgent.getInstance()
+						.getLogin(), true, null));
+				Dialog<Pair<Employee, Date>> dialog = new Dialog<>();
+				dialog.setTitle("Укажите значение");
+				dialog.setHeaderText("Укажите значения для запроса");
+
+				GridPane grid = new GridPane();
+				grid.setHgap(10);
+				grid.setVgap(10);
+
+				Label label1 = new Label("Сотрудник:");
+				label1.setPrefWidth(150);
+				grid.add(label1, 0, 0);
+				ComboBox<Employee> comboBox = new ComboBox<>();
+				comboBox.setPrefWidth(300);
+				comboBox.setItems(tableStaffs.get(Employee.class).data);
+				grid.add(comboBox, 1, 0);
+
+				Label label2 = new Label("Дата:");
+				label2.setPrefWidth(50);
+				grid.add(label2, 0, 1);
+				DatePicker datePicker = new DatePicker(LocalDate.now());
+				datePicker.setPrefWidth(150);
+				grid.add(datePicker, 1, 1);
+
+				dialog.getDialogPane().setContent(grid);
+				Platform.runLater(() -> comboBox.requestFocus());
+				dialog.getDialogPane().getButtonTypes().setAll(okBtn, cancelBtn);
+				dialog.setResultConverter(btn ->
+				{
+					Employee a = comboBox.getSelectionModel().getSelectedItem();
+					Date b = datePicker.getValue() == null ? null : Date.valueOf(datePicker.getValue());
+					return btn == okBtn && a != null && b != null ? new Pair<>(a, b) : null;
+				});
+
+				dialog.initOwner(root.getScene().getWindow());
+				Optional<Pair<Employee, Date>> result = dialog.showAndWait();
+				if (result.isPresent())
+					ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance().getLogin() +
+							SEPARATOR + queryCode + SEPARATOR + result.get().getKey().getId() + SEPARATOR + result.get().getValue());
+				break;
+			}
+			case "_8_1":
+			{
+				ClientAgent.getInstance().send(new ReadAllOrder<Post>(Post.class, ClientAgent.getInstance()
+						.getLogin(), true, null));
+				Dialog<Post> dialog = new Dialog<>();
+				dialog.setTitle("Укажите значение");
+				dialog.setHeaderText("Укажите значения для запроса");
+
+				GridPane grid = new GridPane();
+				grid.setHgap(10);
+				grid.setVgap(10);
+
+				Label label = new Label("Должность:");
+				label.setPrefWidth(150);
+				grid.add(label, 0, 0);
+				ComboBox<Post> comboBox = new ComboBox<>();
+				comboBox.setPrefWidth(300);
+				comboBox.setItems(tableStaffs.get(Post.class).data);
+				grid.add(comboBox, 1, 0);
+
+				dialog.getDialogPane().setContent(grid);
+				Platform.runLater(() -> comboBox.requestFocus());
+				dialog.getDialogPane().getButtonTypes().setAll(okBtn, cancelBtn);
+				dialog.setResultConverter(btn -> btn == okBtn ? comboBox.getSelectionModel().getSelectedItem() : null);
+
+				dialog.initOwner(root.getScene().getWindow());
+				Optional<Post> result = dialog.showAndWait();
+				if (result.isPresent())
+					ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance()
+							.getLogin() + SEPARATOR + queryCode + SEPARATOR + result.get().id);
+				break;
+			}
+			case "_8_2":
+			{
+				Dialog<String> dialog = new Dialog<>();
+				dialog.setTitle("Укажите значение");
+				dialog.setHeaderText("Укажите значения для запроса");
+
+				GridPane grid = new GridPane();
+				grid.setHgap(10);
+				grid.setVgap(10);
+
+				Label label = new Label("Код оператра:");
+				label.setPrefWidth(150);
+				grid.add(label, 0, 0);
+				MaskField maskField = new MaskField();
+				maskField.setPrefWidth(150);
+				maskField.setMask("0DD");
+				maskField.setWhatMask("-##");
+				maskField.setPlaceholder("0__");
+				grid.add(maskField, 1, 0);
+
+				dialog.getDialogPane().setContent(grid);
+				Platform.runLater(() -> maskField.requestFocus());
+				dialog.getDialogPane().getButtonTypes().setAll(okBtn, cancelBtn);
+				dialog.setResultConverter(btn -> btn == okBtn ? maskField.getText() : null);
+
+				dialog.initOwner(root.getScene().getWindow());
+				Optional<String> result = dialog.showAndWait();
+				if (result.isPresent())
+					ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance()
+							.getLogin() + SEPARATOR + queryCode + SEPARATOR + result.get());
+				break;
+			}
+			case "_9":
+			{
+				Dialog<Float> dialog = new Dialog<>();
+				dialog.setTitle("Укажите значение");
+				dialog.setHeaderText("Укажите значения для запроса");
+
+				GridPane grid = new GridPane();
+				grid.setHgap(10);
+				grid.setVgap(10);
+
+				Label label = new Label("Граница суммы оплат:");
+				label.setPrefWidth(150);
+				grid.add(label, 0, 0);
+				TextField textField = new TextField();
+				textField.setPrefWidth(250);
+				grid.add(textField, 1, 0);
+
+				dialog.getDialogPane().setContent(grid);
+				Platform.runLater(() -> textField.requestFocus());
+				dialog.getDialogPane().getButtonTypes().setAll(okBtn, cancelBtn);
+				dialog.setResultConverter(btn ->
+				{
+					Float result = null;
+					try
+					{
+						if (btn == okBtn)
+							result = Float.parseFloat(textField.getText().replace(',', '.'));
+					}
+					catch (Exception e)
+					{
+						result = Float.NaN;
+					}
+					return result;
+				});
+
+				dialog.initOwner(root.getScene().getWindow());
+				Optional<Float> result = dialog.showAndWait();
+				if (result.isPresent())
+					if (result.get().equals(Float.NaN))
+					{
+						Alert alert = new Alert(Alert.AlertType.ERROR);
+						alert.setTitle("Ошибка");
+						alert.setHeaderText("Некорректный ввод");
+						alert.setContentText("Ожидается действительное число");
+						alert.initOwner(dialog.getOwner());
+						alert.showAndWait();
+					}
+					else
+						ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance()
+								.getLogin() + SEPARATOR + queryCode + SEPARATOR + result.get());
+				break;
+			}
+			case "_10":
+			{
+				ClientAgent.getInstance().send(new ReadAllOrder<Owntype>(Owntype.class, ClientAgent.getInstance()
+						.getLogin(), true, null));
+				Dialog<Pair<Owntype, Float>> dialog = new Dialog<>();
+				dialog.setTitle("Укажите значение");
+				dialog.setHeaderText("Укажите значения для запроса");
+
+				GridPane grid = new GridPane();
+				grid.setHgap(10);
+				grid.setVgap(10);
+
+				Label label1 = new Label("Тип собственности:");
+				label1.setPrefWidth(250);
+				grid.add(label1, 0, 0);
+				ComboBox<Owntype> comboBox = new ComboBox<>();
+				comboBox.setPrefWidth(300);
+				comboBox.setItems(tableStaffs.get(Owntype.class).data);
+				grid.add(comboBox, 1, 0);
+
+				Label label2 = new Label("Граница суммы оплат:");
+				label2.setPrefWidth(250);
+				grid.add(label2, 0, 1);
+				TextField textField = new TextField();
+				textField.setPrefWidth(150);
+				grid.add(textField, 1, 1);
+
+				dialog.getDialogPane().setContent(grid);
+				Platform.runLater(() -> comboBox.requestFocus());
+				dialog.getDialogPane().getButtonTypes().setAll(okBtn, cancelBtn);
+				dialog.setResultConverter(btn ->
+				{
+					Owntype a = comboBox.getSelectionModel().getSelectedItem();
+					Float b = null;
+					try
+					{
+						if (btn == okBtn)
+							b = Float.parseFloat(textField.getText().replace(',', '.'));
+					}
+					catch (Exception e)
+					{
+						b = Float.NaN;
+					}
+					return btn == okBtn && a != null && b != null ? new Pair<>(a, b) : null;
+				});
+
+				dialog.initOwner(root.getScene().getWindow());
+				Optional<Pair<Owntype, Float>> result = dialog.showAndWait();
+				if (result.isPresent())
+					if (result.get().getValue().equals(Float.NaN))
+					{
+						Alert alert = new Alert(Alert.AlertType.ERROR);
+						alert.setTitle("Ошибка");
+						alert.setHeaderText("Некорректный ввод");
+						alert.setContentText("Ожидается действительное число");
+						alert.initOwner(dialog.getOwner());
+						alert.showAndWait();
+					}
+					else
+						ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance()
+								.getLogin() + SEPARATOR + queryCode + SEPARATOR + result.get().getKey().getId()
+								+ SEPARATOR + result.get().getValue());
+				break;
+			}
+			case "_2_1":
+			case "_3":
+			case "_6":
+			case "_7":
+			{
+				ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance().getLogin() +
+						SEPARATOR + queryCode);
+				break;
+			}
 		}
 	}
 }

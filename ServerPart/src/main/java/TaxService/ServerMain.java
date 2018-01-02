@@ -88,7 +88,7 @@ public class ServerMain
 					+ "deptype_id int8 not null references deptype(id) on delete cascade,"
 					+ "name varchar(100) not null,"
 					+ "startyear numeric(4,0) not null,"
-					+ "phone varchar(17) not null,"
+					+ "phone varchar(17) not null unique,"
 					+ "city_id int8 not null references city(id) on delete cascade,"
 					+ "street varchar(30) not null,"
 					+ "house varchar(6) not null)";
@@ -143,8 +143,8 @@ public class ServerMain
 			stmt.executeUpdate(execMe);
 
 			execMe  = "CREATE FUNCTION query_1_2 (x text)\n"
-					+ "RETURNS TABLE(a int, b text, c numeric, d date, e text, f text, g text, h int, i text, j text) AS $$\n"
-					+ "\tselect payment.id, paytype.name, payment.amount, payment.date, employee.surname, employee.name, employee.patronymic, company.id, company.name, company.phone\n"
+					+ "RETURNS TABLE(a int, b text, c numeric, d date, e int, f text, g text, h text, i int, j text, k text) AS $$\n"
+					+ "\tselect payment.id, paytype.name, payment.amount, payment.date, employee.id, employee.surname, employee.name, employee.patronymic, company.id, company.name, company.phone\n"
 					+ "\t\tfrom payment\n"
 					+ "\t\tinner join paytype on payment.paytype_id = paytype.id\n"
 					+ "\t\tinner join employee on payment.employee_id = employee.id\n"
@@ -175,7 +175,7 @@ public class ServerMain
 					+ "\t\tinner join city on department.city_id = city.id\n"
 					+ "\t\tinner join employee on department.id = employee.department_id\n"
 					+ "\t\tinner join post on employee.post_id = post.id\n"
-					+ "\t\torder by 1";
+					+ "\t\torder by 1, 5";
 			stmt.executeUpdate(execMe);
 
 			execMe  = "CREATE VIEW query_3 AS\n"
@@ -213,7 +213,7 @@ public class ServerMain
 					+ "RETURNS TABLE(a int8) AS $$\n"
 					+ "\tselect count(*)\n"
 					+ "\t\tfrom department\n"
-					+ "\t\twhere phone like '+38(0' || $1 || 'z)%'"
+					+ "\t\twhere phone like '+38(' || $1 || ')%'"
 					+ "$$ LANGUAGE SQL";
 			stmt.executeUpdate(execMe);
 
