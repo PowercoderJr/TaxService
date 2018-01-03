@@ -50,6 +50,8 @@
                         <MenuItem text="Список предприятий определённого типа, которые оформили платежей на сумму меньше указанной" onAction="#executeQuery" userData="_10"/>
                         <MenuItem text="Список отделений налоговой инспекции и предприятий, которые начали работу в указанном году" onAction="#executeQuery" userData="_12"/>
                         <MenuItem text="Предприятия, совершившие платежи начиная с указанной даты" onAction="#executeQuery" userData="_13_1"/>
+                        <MenuItem text="Предприятия, не совершившие платежи начиная с указанной даты" onAction="#executeQuery" userData="_13_2"/>
+                        <MenuItem text="Количество сотрудников налоговой инспекции различных возрастных категорий" onAction="#executeQuery" userData="_13_3"/>
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="О программе">

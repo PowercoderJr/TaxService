@@ -797,7 +797,7 @@ public class MainController
 					}
 					catch (Exception e)
 					{
-						result = Float.NaN;
+						result = Float.MIN_VALUE;
 					}
 					return result;
 				});
@@ -805,7 +805,7 @@ public class MainController
 				dialog.initOwner(root.getScene().getWindow());
 				Optional<Float> result = dialog.showAndWait();
 				if (result.isPresent())
-					if (result.get().equals(Float.NaN))
+					if (result.get().equals(Float.MIN_VALUE))
 					{
 						Alert alert = new Alert(Alert.AlertType.ERROR);
 						alert.setTitle("Ошибка");
@@ -860,7 +860,7 @@ public class MainController
 					}
 					catch (Exception e)
 					{
-						b = Float.NaN;
+						b = Float.MIN_VALUE;
 					}
 					return btn == okBtn && a != null && b != null ? new Pair<>(a, b) : null;
 				});
@@ -868,7 +868,7 @@ public class MainController
 				dialog.initOwner(root.getScene().getWindow());
 				Optional<Pair<Owntype, Float>> result = dialog.showAndWait();
 				if (result.isPresent())
-					if (result.get().getValue().equals(Float.NaN))
+					if (result.get().getValue().equals(Float.MIN_VALUE))
 					{
 						Alert alert = new Alert(Alert.AlertType.ERROR);
 						alert.setTitle("Ошибка");
@@ -883,10 +883,121 @@ public class MainController
 								+ SEPARATOR + result.get().getValue());
 				break;
 			}
+			case "_12":
+			{
+				Dialog<Integer> dialog = new Dialog<>();
+				dialog.setTitle("Укажите значение");
+				dialog.setHeaderText("Укажите значения для запроса");
+
+				GridPane grid = new GridPane();
+				grid.setHgap(10);
+				grid.setVgap(10);
+
+				Label label = new Label("Год открытия:");
+				label.setPrefWidth(150);
+				grid.add(label, 0, 0);
+				TextField textField = new TextField();
+				textField.setPrefWidth(150);
+				grid.add(textField, 1, 0);
+
+				dialog.getDialogPane().setContent(grid);
+				Platform.runLater(() -> textField.requestFocus());
+				dialog.getDialogPane().getButtonTypes().setAll(okBtn, cancelBtn);
+				dialog.setResultConverter(btn ->
+				{
+					Integer result = null;
+					try
+					{
+						if (btn == okBtn)
+							result = Integer.parseInt(textField.getText());
+					}
+					catch (Exception e)
+					{
+						result = Integer.MIN_VALUE;
+					}
+					return result;
+				});
+
+				dialog.initOwner(root.getScene().getWindow());
+				Optional<Integer> result = dialog.showAndWait();
+				if (result.isPresent())
+					if (result.get().equals(Integer.MIN_VALUE))
+					{
+						Alert alert = new Alert(Alert.AlertType.ERROR);
+						alert.setTitle("Ошибка");
+						alert.setHeaderText("Некорректный ввод");
+						alert.setContentText("Ожидается целое число");
+						alert.initOwner(dialog.getOwner());
+						alert.showAndWait();
+					}
+					else
+						ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance()
+								.getLogin() + SEPARATOR + queryCode + SEPARATOR + result.get());
+				break;
+			}
+			case "_13_1":
+			{
+				Dialog<Date> dialog = new Dialog<>();
+				dialog.setTitle("Укажите значение");
+				dialog.setHeaderText("Укажите значения для запроса");
+
+				GridPane grid = new GridPane();
+				grid.setHgap(10);
+				grid.setVgap(10);
+
+				Label label = new Label("Дата:");
+				label.setPrefWidth(50);
+				grid.add(label, 0, 0);
+				DatePicker datePicker = new DatePicker(LocalDate.now());
+				datePicker.setPrefWidth(150);
+				grid.add(datePicker, 1, 0);
+
+				dialog.getDialogPane().setContent(grid);
+				Platform.runLater(() -> datePicker.requestFocus());
+				dialog.getDialogPane().getButtonTypes().setAll(okBtn, cancelBtn);
+				dialog.setResultConverter(btn -> btn == okBtn ? Date.valueOf(datePicker.getValue()) : null);
+
+				dialog.initOwner(root.getScene().getWindow());
+				Optional<Date> result = dialog.showAndWait();
+				if (result.isPresent())
+					ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance()
+							.getLogin() + SEPARATOR + queryCode + SEPARATOR + result.get());
+				break;
+			}
+			case "_13_2":
+			{
+				Dialog<Date> dialog = new Dialog<>();
+				dialog.setTitle("Укажите значение");
+				dialog.setHeaderText("Укажите значения для запроса");
+
+				GridPane grid = new GridPane();
+				grid.setHgap(10);
+				grid.setVgap(10);
+
+				Label label = new Label("Дата:");
+				label.setPrefWidth(50);
+				grid.add(label, 0, 0);
+				DatePicker datePicker = new DatePicker(LocalDate.now());
+				datePicker.setPrefWidth(150);
+				grid.add(datePicker, 1, 0);
+
+				dialog.getDialogPane().setContent(grid);
+				Platform.runLater(() -> datePicker.requestFocus());
+				dialog.getDialogPane().getButtonTypes().setAll(okBtn, cancelBtn);
+				dialog.setResultConverter(btn -> btn == okBtn ? Date.valueOf(datePicker.getValue()) : null);
+
+				dialog.initOwner(root.getScene().getWindow());
+				Optional<Date> result = dialog.showAndWait();
+				if (result.isPresent())
+					ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance()
+							.getLogin() + SEPARATOR + queryCode + SEPARATOR + result.get());
+				break;
+			}
 			case "_2_1":
 			case "_3":
 			case "_6":
 			case "_7":
+			case "_13_3":
 			{
 				ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance().getLogin() +
 						SEPARATOR + queryCode);

@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class ServerMain
 {
-	private static final boolean fromScratch = false;
+	private static final boolean fromScratch = true;
 
 	public static void main(String[] args)
 	{
@@ -271,10 +271,9 @@ public class ServerMain
 			stmt.executeUpdate(execMe);
 
 			execMe  = "CREATE FUNCTION query_13_2 (x1 text)\n"
-					+ "RETURNS TABLE(a int, b text, c int8, d numeric) AS $$\n"
-					+ "\tselect company.id, company.name, count(*), sum(payment.amount)\n"
+					+ "RETURNS TABLE(a int, b text) AS $$\n"
+					+ "\tselect company.id, company.name\n"
 					+ "\t\tfrom company\n"
-					+ "\t\tinner join payment on company.id = payment.company_id\n"
 					+ "\t\twhere company.id not in \n"
 					+ "\t\t(\n"
 					+ "\t\t\tselect company.id\n"
@@ -283,18 +282,19 @@ public class ServerMain
 					+ "\t\t\t\twhere payment.date >= $1::date\n"
 					+ "\t\t)\n"
 					+ "\t\tgroup by company.id\n"
-					+ "\t\torder by 3 desc, 4 desc"
+					+ "\t\torder by 1"
 					+ "$$ LANGUAGE SQL";
 			stmt.executeUpdate(execMe);
 
-			execMe  = "CREATE VIEW query_ AS\n"
-					+ "\tselect employee.surname, employee.name, employee.patronymic, department.name as department_name, employee.birthdate, age(current_date, employee.birthdate), case\n"
-					+ "\t\t\twhen age(current_date, birthdate) <= '20 years'::interval then 'Юношеский'\n"
-					+ "\t\t\twhen age(current_date, birthdate) > '60 years'::interval then 'Пожилой'\n"
-					+ "\t\t\telse 'Средний' end\n"
-					+ "\t\tfrom employee\n"
-					+ "\t\tinner join department on employee.department_id = department.id\n"
-					+ "\t\torder by employee.birthdate desc";
+			execMe  = "CREATE VIEW query_13_3 AS\n"
+					+ "\tselect category::text, count(*) as stats from\n"
+					+ "\t\t(select case\n"
+					+ "\t\t\t\twhen age(current_date, birthdate) <= '20 years'::interval then 'Юношеский'\n"
+					+ "\t\t\t\twhen age(current_date, birthdate) > '60 years'::interval then 'Пожилой'\n"
+					+ "\t\t\t\telse 'Средний' end\n"
+					+ "\t\t\tfrom employee) as category\n"
+					+ "\t\tgroup by category\n"
+					+ "\t\torder by stats desc";
 			stmt.executeUpdate(execMe);
 
 			/*execMe  = "CREATE VIEW query_ AS\n"

@@ -338,7 +338,8 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                     sublist.set(2, sublist.get(2).substring(0, sublist.get(2).indexOf('.') + 3));
                                     list.add(sublist);
                                 }
-                                header = "Предприятия, которые оформили платежей на сумму меньше, чем " + tokens[3];
+                                header = "Предприятия, которые оформили платежей на сумму меньше, чем " + tokens[3] +
+                                        "   - " + (list.size() - 1) + " зап.";
                                 break;
                             }
                             case "_10":
@@ -361,7 +362,89 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                 }
                                 OwntypeCRUD owntypeCRUD = new OwntypeCRUD(connection);
                                 header = "Предприятия типа \"" + owntypeCRUD.read(Long.parseLong(tokens[3]), true) +
-                                        "\", которые оформили платежей на сумму меньше, чем " + tokens[4];
+                                        "\", которые оформили платежей на сумму меньше, чем " + tokens[4] +
+                                        "   - " + (list.size() - 1) + " зап.";
+                                break;
+                            }
+                            case "_12":
+                            {
+                                rs = stmt.executeQuery("select * from " + QUERY + tokens[2] + "(" + tokens[3] + ")");
+
+                                colNames.add("Название");
+                                colNames.add("Телефон");
+                                nCol = colNames.size();
+                                list.add(colNames);
+
+                                while (rs.next())
+                                {
+                                    ArrayList<String> sublist = new ArrayList<>(nCol);
+                                    for (int i = 1; i <= nCol; ++i)
+                                        sublist.add(rs.getObject(i).toString());
+                                    list.add(sublist);
+                                }
+                                header = "Отделения налоговой инспекции и предприятия, которые начали работу в " +
+                                        tokens[3] + " году" + "   - " + (list.size() - 1) + " зап.";
+                                break;
+                            }
+                            case "_13_1":
+                            {
+                                rs = stmt.executeQuery("select * from " + QUERY + tokens[2] + "('" + tokens[3] + "')");
+
+                                colNames.add("ID");
+                                colNames.add("Название");
+                                colNames.add("Количество платежей");
+                                colNames.add("Сумма платежей");
+                                nCol = colNames.size();
+                                list.add(colNames);
+
+                                while (rs.next())
+                                {
+                                    ArrayList<String> sublist = new ArrayList<>(nCol);
+                                    for (int i = 1; i <= nCol; ++i)
+                                        sublist.add(rs.getObject(i).toString());
+                                    list.add(sublist);
+                                }
+                                header = "Предприятия, совершившие платежи начиная с " + ServerAgent.df
+                                        .format(Date.valueOf(tokens[3])) + "   - " + (list.size() - 1) + " зап.";
+                                break;
+                            }
+                            case "_13_2":
+                            {
+                                rs = stmt.executeQuery("select * from " + QUERY + tokens[2] + "('" + tokens[3] + "')");
+
+                                colNames.add("ID");
+                                colNames.add("Название");
+                                nCol = colNames.size();
+                                list.add(colNames);
+
+                                while (rs.next())
+                                {
+                                    ArrayList<String> sublist = new ArrayList<>(nCol);
+                                    for (int i = 1; i <= nCol; ++i)
+                                        sublist.add(rs.getObject(i).toString());
+                                    list.add(sublist);
+                                }
+                                header = "Предприятия, не совершившие платежи начиная с " + ServerAgent.df
+                                        .format(Date.valueOf(tokens[3])) + "   - " + (list.size() - 1) + " зап.";
+                                break;
+                            }
+                            case "_13_3":
+                            {
+                                rs = stmt.executeQuery("select * from " + QUERY + tokens[2]);
+
+                                colNames.add("Категория");
+                                colNames.add("Количество сотрудников");
+                                nCol = colNames.size();
+                                list.add(colNames);
+
+                                while (rs.next())
+                                {
+                                    ArrayList<String> sublist = new ArrayList<>(nCol);
+                                    for (int i = 1; i <= nCol; ++i)
+                                        sublist.add(rs.getObject(i).toString());
+                                    list.add(sublist);
+                                }
+                                header = "Количество сотрудников налоговой инспекции различных возрастных категорий";
                                 break;
                             }
                         }
