@@ -44,8 +44,10 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 
 		name1 = new TextField();
 		name1.setPrefWidth(200);
+		setLengthLimit(name1, 100);
 		name2 = new TextField();
 		name2.setPrefWidth(200);
+		setLengthLimit(name2, 100);
 		addField("Название", name1, name2, false);
 
 		deptype1 = new ComboBox<>();
@@ -111,14 +113,18 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 
 		street1 = new TextField();
 		street1.setPrefWidth(150);
+		setLengthLimit(street1, 30);
 		street2 = new TextField();
 		street2.setPrefWidth(150);
+		setLengthLimit(street2, 30);
 		addField("Улица", street1, street2, false);
 
 		house1 = new TextField();
 		house1.setPrefWidth(70);
+		setLengthLimit(house1, 6);
 		house2 = new TextField();
 		house2.setPrefWidth(70);
+		setLengthLimit(house2, 6);
 		addField("Дом", house1, house2, false);
 	}
 

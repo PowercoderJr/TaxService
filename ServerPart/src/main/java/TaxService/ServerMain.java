@@ -85,8 +85,8 @@ public class ServerMain
 			String execMe;
 			execMe  = "create table department("
 					+ "id serial primary key,"
-					+ "deptype_id int8 not null references deptype(id) on delete cascade,"
 					+ "name varchar(100) not null,"
+					+ "deptype_id int8 not null references deptype(id) on delete cascade,"
 					+ "startyear numeric(4,0) not null,"
 					+ "phone varchar(17) not null unique,"
 					+ "city_id int8 not null references city(id) on delete cascade,"
@@ -128,6 +128,18 @@ public class ServerMain
 			//Назначение индексов
 			execMe  = "create index emp_fullname_idx on employee (surname, name, patronymic)";
 			stmt.executeUpdate(execMe);
+
+			//Инструменты управления пользователями
+			execMe  = "CREATE TYPE custom_role AS ENUM ('USER', 'CHIEF', 'ADMIN')";
+			stmt.executeUpdate(execMe);
+
+			execMe  = "CREATE TABLE users("
+					+ "login varchar(100) primary key"
+					+ "employee_id int8 not null references employee(id) on delete cascade)"
+					+ "role custom_role not null"
+					+ "blocked boolean not null)";
+			stmt.executeUpdate(execMe);
+			//TODO: блокировать учётную запись вместо удаления
 
 			//Создание представлений и хранимых процедур
 			execMe  = "CREATE FUNCTION query_1_1 (x int)\n"

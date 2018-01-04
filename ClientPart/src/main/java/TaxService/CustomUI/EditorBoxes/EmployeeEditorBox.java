@@ -38,20 +38,26 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 
 		surname1 = new TextField();
 		surname1.setPrefWidth(150);
+		setLengthLimit(surname1, 30);
 		surname2 = new TextField();
 		surname2.setPrefWidth(150);
+		setLengthLimit(surname2, 30);
 		addField("Фамилия", surname1, surname2, false);
 
 		name1 = new TextField();
 		name1.setPrefWidth(150);
+		setLengthLimit(name1, 30);
 		name2 = new TextField();
 		name2.setPrefWidth(150);
+		setLengthLimit(name2, 30);
 		addField("Имя", name1, name2, false);
 
 		patronymic1 = new TextField();
 		patronymic1.setPrefWidth(150);
+		setLengthLimit(patronymic1, 30);
 		patronymic2 = new TextField();
 		patronymic2.setPrefWidth(150);
+		setLengthLimit(patronymic2, 30);
 		addField("Отчество", patronymic1, patronymic2, false);
 
 		department1 = new ComboBox<>();

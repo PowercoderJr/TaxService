@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.function.UnaryOperator;
 
 public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPane
 {
@@ -121,7 +122,7 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 		secondaryFieldsBox.setVisible(value);
 	}
 
-	protected boolean validateTextField(TextField field, boolean isRequired)
+	static boolean validateTextField(TextField field, boolean isRequired)
 	{
 		boolean isValid = !isRequired && field.getText().trim().isEmpty() || !field.getText().trim().isEmpty();
 		if (!isValid)
@@ -129,7 +130,7 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 		return isValid;
 	}
 
-	public boolean validateTextPositiveIntField(TextField field, boolean isRequired)
+	static boolean validateTextPositiveIntField(TextField field, boolean isRequired)
 	{
 		boolean isValid;
 		try
@@ -146,7 +147,7 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 		return isValid;
 	}
 
-	public boolean validateTextPositiveFloatField(TextField field, boolean isRequired)
+	static boolean validateTextPositiveFloatField(TextField field, boolean isRequired)
 	{
 		boolean isValid;
 		try
@@ -163,7 +164,7 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 		return isValid;
 	}
 
-	protected boolean validateMaskField(MaskField field, boolean isRequired)
+	static boolean validateMaskField(MaskField field, boolean isRequired)
 	{
 		boolean isValid = !isRequired && field.getPlainText().trim().isEmpty() || field.getPlainText()
 				.length() == StringUtils.countMatches(field.getWhatMask(), MaskField.WHAT_MASK_CHAR);
@@ -173,7 +174,7 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 		return isValid;
 	}
 
-	protected boolean validateComboBox(ComboBox field, boolean isRequired)
+	static boolean validateComboBox(ComboBox field, boolean isRequired)
 	{
 		boolean isValid = !isRequired && field.getSelectionModel().isEmpty() || !field.getSelectionModel().isEmpty();
 		if (!isValid)
@@ -181,12 +182,42 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 		return isValid;
 	}
 
+	static void setLengthLimit(TextField textField, int limit)
+	{
+		UnaryOperator<TextFormatter.Change> modifyChange = c ->
+		{
+			if (c.isContentChange())
+			{
+				int newLength = c.getControlNewText().length();
+				if (newLength > limit)
+				{
+					int oldLength = c.getControlText().length();
+					if (oldLength == limit)
+					{
+						int rangeStart = c.getRangeStart();
+						c.setText("");
+						c.setRange(rangeStart, rangeStart);
+						c.setCaretPosition(rangeStart);
+						c.selectRange(rangeStart, rangeStart);
+					}
+					else
+					{
+						c.setText(c.getControlNewText().substring(0, limit));
+						c.setRange(0, oldLength);
+					}
+				}
+			}
+			return c;
+		};
+		textField.setTextFormatter(new TextFormatter(modifyChange));
+	}
+
 	public boolean validateId1(boolean isRequired)
 	{
 		return validateTextPositiveIntField(id1, isRequired);
 	}
 
-	protected void markAsInvalid(Node field)
+	protected static void markAsInvalid(Node field)
 	{
 		field.setEffect(invalidEffect);
 	}

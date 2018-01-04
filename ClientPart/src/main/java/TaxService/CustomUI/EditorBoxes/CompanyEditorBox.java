@@ -36,8 +36,10 @@ public class CompanyEditorBox extends AbstractEditorBox<Company>
 
 		name1 = new TextField();
 		name1.setPrefWidth(200);
+		setLengthLimit(name1, 100);
 		name2 = new TextField();
 		name2.setPrefWidth(200);
+		setLengthLimit(name2, 100);
 		addField("Название", name1, name2, false);
 		
 		owntype1 = new ComboBox<>();
