@@ -6,9 +6,9 @@ public class CreateOrder<T extends AbstractDAO> extends AbstractOrder<T>
 {
 	private T object;
 
-	public CreateOrder(Class<T> itemClazz, String sendersLogin, T object)
+	public CreateOrder(Class<T> itemClazz, T object)
 	{
-		super(itemClazz, sendersLogin);
+		super(itemClazz);
 		this.object = object;
 	}
 

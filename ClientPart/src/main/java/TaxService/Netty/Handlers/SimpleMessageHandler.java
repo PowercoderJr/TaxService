@@ -45,7 +45,7 @@ public class SimpleMessageHandler extends AbstractHandler<String>
 							e.printStackTrace();
 						}
 						if (ClientAgent.doesInstanceExist())
-							ctx.channel().writeAndFlush(PING + SEPARATOR + ClientAgent.getInstance().getLogin());
+							ctx.channel().writeAndFlush(PING);
 					}).start();
 				}
 				break;

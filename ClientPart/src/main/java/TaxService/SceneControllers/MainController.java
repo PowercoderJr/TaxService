@@ -443,7 +443,7 @@ public class MainController
 	private void refreshCurrTable()
 	{
 		TableStaff staff = tableStaffs.get(currTable);
-		ClientAgent.getInstance().send(new ReadPortionOrder(currTable, ClientAgent.getInstance().getLogin(),
+		ClientAgent.getInstance().send(new ReadPortionOrder(currTable,
 				staff.currPortion, false, staff.editorBox.getFilter()));
 	}
 
@@ -507,7 +507,7 @@ public class MainController
 
 	private void gotoPage(int page)
 	{
-		ReadPortionOrder order = new ReadPortionOrder<>(currTable, ClientAgent.getInstance().getLogin(), page, false,
+		ReadPortionOrder order = new ReadPortionOrder<>(currTable, page, false,
 				tableStaffs.get(currTable).editorBox.getFilter());
 		ClientAgent.getInstance().send(order);
 	}
@@ -554,7 +554,7 @@ public class MainController
 		if (ClientAgent.doesInstanceExist())
 		{
 			ClientAgent.getInstance().stopPinging();
-			ClientAgent.getInstance().send(BYE + SEPARATOR + ClientAgent.getInstance().getLogin());
+			ClientAgent.getInstance().send(BYE);
 			ClientAgent.getInstance().close();
 		}
 		ClientAgent.unsubscribeExceptionReceived(onExceptionReceived);
@@ -600,8 +600,7 @@ public class MainController
 		{
 			case "_1_1":
 			{
-				ClientAgent.getInstance().send(new ReadAllOrder<Employee>(Employee.class, ClientAgent.getInstance()
-						.getLogin(), true, null));
+				ClientAgent.getInstance().send(new ReadAllOrder<Employee>(Employee.class, true, null));
 				Dialog<Employee> dialog = new Dialog<>();
 				dialog.setTitle("Укажите значение");
 				dialog.setHeaderText("Укажите значения для запроса");
@@ -626,8 +625,7 @@ public class MainController
 				dialog.initOwner(root.getScene().getWindow());
 				Optional<Employee> result = dialog.showAndWait();
 				if (result.isPresent())
-					ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance()
-							.getLogin() + SEPARATOR + queryCode + SEPARATOR + result.get().id);
+					ClientAgent.getInstance().send(QUERY + SEPARATOR + queryCode + SEPARATOR + result.get().id);
 				break;
 			}
 			case "_1_2":
@@ -655,14 +653,12 @@ public class MainController
 				dialog.initOwner(root.getScene().getWindow());
 				Optional<Date> result = dialog.showAndWait();
 				if (result.isPresent())
-					ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance()
-							.getLogin() + SEPARATOR + queryCode + SEPARATOR + result.get());
+					ClientAgent.getInstance().send(QUERY + SEPARATOR + queryCode + SEPARATOR + result.get());
 				break;
 			}
 			case "_1_3":
 			{
-				ClientAgent.getInstance().send(new ReadAllOrder<Employee>(Employee.class, ClientAgent.getInstance()
-						.getLogin(), true, null));
+				ClientAgent.getInstance().send(new ReadAllOrder<Employee>(Employee.class, true, null));
 				Dialog<Pair<Employee, Date>> dialog = new Dialog<>();
 				dialog.setTitle("Укажите значение");
 				dialog.setHeaderText("Укажите значения для запроса");
@@ -699,14 +695,13 @@ public class MainController
 				dialog.initOwner(root.getScene().getWindow());
 				Optional<Pair<Employee, Date>> result = dialog.showAndWait();
 				if (result.isPresent())
-					ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance().getLogin() +
-							SEPARATOR + queryCode + SEPARATOR + result.get().getKey().getId() + SEPARATOR + result.get().getValue());
+					ClientAgent.getInstance().send(QUERY + SEPARATOR + queryCode + SEPARATOR +
+							result.get().getKey().getId() + SEPARATOR + result.get().getValue());
 				break;
 			}
 			case "_8_1":
 			{
-				ClientAgent.getInstance().send(new ReadAllOrder<Post>(Post.class, ClientAgent.getInstance()
-						.getLogin(), true, null));
+				ClientAgent.getInstance().send(new ReadAllOrder<Post>(Post.class, true, null));
 				Dialog<Post> dialog = new Dialog<>();
 				dialog.setTitle("Укажите значение");
 				dialog.setHeaderText("Укажите значения для запроса");
@@ -731,8 +726,7 @@ public class MainController
 				dialog.initOwner(root.getScene().getWindow());
 				Optional<Post> result = dialog.showAndWait();
 				if (result.isPresent())
-					ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance()
-							.getLogin() + SEPARATOR + queryCode + SEPARATOR + result.get().id);
+					ClientAgent.getInstance().send(QUERY + SEPARATOR + queryCode + SEPARATOR + result.get().id);
 				break;
 			}
 			case "_8_2":
@@ -763,8 +757,7 @@ public class MainController
 				dialog.initOwner(root.getScene().getWindow());
 				Optional<String> result = dialog.showAndWait();
 				if (result.isPresent())
-					ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance()
-							.getLogin() + SEPARATOR + queryCode + SEPARATOR + result.get());
+					ClientAgent.getInstance().send(QUERY + SEPARATOR + queryCode + SEPARATOR + result.get());
 				break;
 			}
 			case "_9":
@@ -815,14 +808,12 @@ public class MainController
 						alert.showAndWait();
 					}
 					else
-						ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance()
-								.getLogin() + SEPARATOR + queryCode + SEPARATOR + result.get());
+						ClientAgent.getInstance().send(QUERY + SEPARATOR + queryCode + SEPARATOR + result.get());
 				break;
 			}
 			case "_10":
 			{
-				ClientAgent.getInstance().send(new ReadAllOrder<Owntype>(Owntype.class, ClientAgent.getInstance()
-						.getLogin(), true, null));
+				ClientAgent.getInstance().send(new ReadAllOrder<Owntype>(Owntype.class, true, null));
 				Dialog<Pair<Owntype, Float>> dialog = new Dialog<>();
 				dialog.setTitle("Укажите значение");
 				dialog.setHeaderText("Укажите значения для запроса");
@@ -878,9 +869,8 @@ public class MainController
 						alert.showAndWait();
 					}
 					else
-						ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance()
-								.getLogin() + SEPARATOR + queryCode + SEPARATOR + result.get().getKey().getId()
-								+ SEPARATOR + result.get().getValue());
+						ClientAgent.getInstance().send(QUERY + SEPARATOR + queryCode + SEPARATOR +
+								result.get().getKey().getId() + SEPARATOR + result.get().getValue());
 				break;
 			}
 			case "_12":
@@ -931,8 +921,7 @@ public class MainController
 						alert.showAndWait();
 					}
 					else
-						ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance()
-								.getLogin() + SEPARATOR + queryCode + SEPARATOR + result.get());
+						ClientAgent.getInstance().send(QUERY + SEPARATOR + queryCode + SEPARATOR + result.get());
 				break;
 			}
 			case "_13_1":
@@ -960,8 +949,7 @@ public class MainController
 				dialog.initOwner(root.getScene().getWindow());
 				Optional<Date> result = dialog.showAndWait();
 				if (result.isPresent())
-					ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance()
-							.getLogin() + SEPARATOR + queryCode + SEPARATOR + result.get());
+					ClientAgent.getInstance().send(QUERY + SEPARATOR + queryCode + SEPARATOR + result.get());
 				break;
 			}
 			case "_13_2":
@@ -989,8 +977,7 @@ public class MainController
 				dialog.initOwner(root.getScene().getWindow());
 				Optional<Date> result = dialog.showAndWait();
 				if (result.isPresent())
-					ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance()
-							.getLogin() + SEPARATOR + queryCode + SEPARATOR + result.get());
+					ClientAgent.getInstance().send(QUERY + SEPARATOR + queryCode + SEPARATOR + result.get());
 				break;
 			}
 			case "_2_1":
@@ -999,8 +986,7 @@ public class MainController
 			case "_7":
 			case "_13_3":
 			{
-				ClientAgent.getInstance().send(QUERY + SEPARATOR + ClientAgent.getInstance().getLogin() +
-						SEPARATOR + queryCode);
+				ClientAgent.getInstance().send(QUERY + SEPARATOR + queryCode);
 				break;
 			}
 		}

@@ -7,6 +7,7 @@ import TaxService.DAOs.Department;
 import TaxService.Deliveries.QueryResultDelivery;
 import TaxService.ServerAgent;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelId;
 import javafx.util.Pair;
 
 import java.sql.*;
@@ -32,21 +33,27 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                 try
                 {
                     ServerAgent.connectionsMutex.lock();
-                    Map<String, Pair<Connection, Long>> connections = ServerAgent.getInstance().getConnections();
-                    Pair<Connection, Long> oldPair = connections.get(tokens[1]);
-                    if (oldPair == null || !oldPair.getKey().isValid(10))
+                    Map<ChannelId, Pair<Connection, Long>> connections = ServerAgent.getInstance().getConnections();
+                    Pair<Connection, Long> oldPair = connections.get(ctx.channel().id());
+                    //Блок нескольких подключений с одного аккаунта
+                    /*if (oldPair == null || !oldPair.getKey().isValid(CONNECTION_TIMEOUT_MILLIS))
                     {
                         if (oldPair != null)
                         {
                             oldPair.getKey().close();
-                            connections.remove(tokens[1]);
+                            connections.remove(ctx.channel().id());
                         }
                         newConnection = DriverManager.getConnection("jdbc:postgresql://localhost/TaxService", tokens[1], tokens[2]);
-                        connections.put(tokens[1], new Pair<>(newConnection, System.currentTimeMillis()));
+                        connections.put(ctx.channel().id(), new Pair<>(newConnection, System.currentTimeMillis()));
                         accessResult = ACCESS_RESULT_SUCCESS;
                     }
                     else
-                        accessResult = ACCESS_RESULT_ALREADY_LOGGED;
+                        accessResult = ACCESS_RESULT_ALREADY_LOGGED;*/
+
+                    //Нет блока
+                    newConnection = DriverManager.getConnection("jdbc:postgresql://localhost/TaxService", tokens[1], tokens[2]);
+                    connections.put(ctx.channel().id(), new Pair<>(newConnection, System.currentTimeMillis()));
+                    accessResult = ACCESS_RESULT_SUCCESS;
                 }
                 catch (SQLException e)
                 {
@@ -68,11 +75,11 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                 break;
             case PING:
                 ServerAgent.connectionsMutex.lock();
-                if (ServerAgent.getInstance().getConnections().get(tokens[1]) != null)
+                if (ServerAgent.getInstance().getConnections().get(ctx.channel().id()) != null)
                 {
                     Pair<Connection, Long> updatedPair = new Pair<>(ServerAgent.getInstance().getConnections()
-                            .get(tokens[1]).getKey(), System.currentTimeMillis());
-                    ServerAgent.getInstance().getConnections().put(tokens[1], updatedPair);
+                            .get(ctx.channel().id()).getKey(), System.currentTimeMillis());
+                    ServerAgent.getInstance().getConnections().put(ctx.channel().id(), updatedPair);
                     new Thread(() ->
                     {
                         try
@@ -92,11 +99,11 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                 ServerAgent.connectionsMutex.lock();
                 try
                 {
-                    Map<String, Pair<Connection, Long>> connections = ServerAgent.getInstance().getConnections();
-                    if (connections.get(tokens[1]) != null)
+                    Map<ChannelId, Pair<Connection, Long>> connections = ServerAgent.getInstance().getConnections();
+                    if (connections.get(ctx.channel().id()) != null)
                     {
-                        connections.get(tokens[1]).getKey().close();
-                        connections.remove(tokens[1]);
+                        connections.get(ctx.channel().id()).getKey().close();
+                        connections.remove(ctx.channel().id());
                     }
                 }
                 catch (SQLException e)
@@ -107,10 +114,10 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                 {
                     ServerAgent.connectionsMutex.unlock();
                 }
-                System.out.println(tokens[1] + " disconnected");
+                System.out.println(ctx.channel().id().asLongText() + " disconnected");
                 break;
             case QUERY:
-                Pair<Connection, Long> pair = ServerAgent.getInstance().getConnections().get(tokens[1]);
+                Pair<Connection, Long> pair = ServerAgent.getInstance().getConnections().get(ctx.channel().id());
                 if (pair != null)
                 {
                     Connection connection = pair.getKey();
@@ -121,11 +128,11 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                         List<ArrayList> list = new ArrayList<>();
                         ArrayList<String> colNames = new ArrayList<>();
                         int nCol;
-                        switch (tokens[2])
+                        switch (tokens[1])
                         {
                             case "_1_1":
                             {
-                                rs = stmt.executeQuery("select * from " + QUERY + tokens[2] + "(" + tokens[3] + ")");
+                                rs = stmt.executeQuery("select * from " + QUERY + tokens[1] + "(" + tokens[2] + ")");
 
                                 colNames.add("ID платежа");
                                 colNames.add("Тип платежа");
@@ -146,12 +153,12 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                 }
                                 EmployeeCRUD employeeCRUD = new EmployeeCRUD(connection);
                                 header = "Платежи, которые оформил(а) " + employeeCRUD
-                                        .read(Long.parseLong(tokens[3]), true) + "   - " + (list.size() - 1) + " зап.";
+                                        .read(Long.parseLong(tokens[2]), true) + "   - " + (list.size() - 1) + " зап.";
                                 break;
                             }
                             case "_1_2":
                             {
-                                rs = stmt.executeQuery("select * from " + QUERY + tokens[2] + "('" + tokens[3] + "')");
+                                rs = stmt.executeQuery("select * from " + QUERY + tokens[1] + "('" + tokens[2] + "')");
 
                                 colNames.add("ID платежа");
                                 colNames.add("Тип платежа");
@@ -175,12 +182,12 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                     list.add(sublist);
                                 }
                                 header = "Платежи, оформленные, начиная с " + ServerAgent.df
-                                        .format(Date.valueOf(tokens[3])) + "   - " + (list.size() - 1) + " зап.";
+                                        .format(Date.valueOf(tokens[2])) + "   - " + (list.size() - 1) + " зап.";
                                 break;
                             }
                             case "_1_3":
                             {
-                                rs = stmt.executeQuery("select * from " + QUERY + tokens[2] + "(" + tokens[3] + ",'" + tokens[4] + "')");
+                                rs = stmt.executeQuery("select * from " + QUERY + tokens[1] + "(" + tokens[2] + ",'" + tokens[3] + "')");
 
                                 colNames.add("ID платежа");
                                 colNames.add("Тип платежа");
@@ -202,13 +209,13 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                 }
                                 EmployeeCRUD employeeCRUD = new EmployeeCRUD(connection);
                                 header = "Платежи, которые оформил(а) " + employeeCRUD
-                                        .read(Long.parseLong(tokens[3]), true) + ", начиная с " + ServerAgent.df
-                                        .format(Date.valueOf(tokens[4])) + "   - " + (list.size() - 1) + " зап.";
+                                        .read(Long.parseLong(tokens[2]), true) + ", начиная с " + ServerAgent.df
+                                        .format(Date.valueOf(tokens[3])) + "   - " + (list.size() - 1) + " зап.";
                                 break;
                             }
                             case "_2_1":
                             {
-                                rs = stmt.executeQuery("select * from " + QUERY + tokens[2]);
+                                rs = stmt.executeQuery("select * from " + QUERY + tokens[1]);
 
                                 colNames.add("ID");
                                 colNames.add("Название");
@@ -234,7 +241,7 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                             }
                             case "_3":
                             {
-                                rs = stmt.executeQuery("select * from " + QUERY + tokens[2]);
+                                rs = stmt.executeQuery("select * from " + QUERY + tokens[1]);
 
                                 colNames.add("ID");
                                 colNames.add("Название");
@@ -254,7 +261,7 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                             }
                             case "_6":
                             {
-                                rs = stmt.executeQuery("select * from " + QUERY + tokens[2]);
+                                rs = stmt.executeQuery("select * from " + QUERY + tokens[1]);
 
                                 colNames.add("Значение");
                                 nCol = colNames.size();
@@ -270,7 +277,7 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                             }
                             case "_7":
                             {
-                                rs = stmt.executeQuery("select * from " + QUERY + tokens[2]);
+                                rs = stmt.executeQuery("select * from " + QUERY + tokens[1]);
 
                                 colNames.add("Образование");
                                 colNames.add("Должность");
@@ -290,7 +297,7 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                             }
                             case "_8_1":
                             {
-                                rs = stmt.executeQuery("select * from " + QUERY + tokens[2] + "(" + tokens[3] + ")");
+                                rs = stmt.executeQuery("select * from " + QUERY + tokens[1] + "(" + tokens[2] + ")");
 
                                 colNames.add("Значение");
                                 nCol = colNames.size();
@@ -302,12 +309,12 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                 sublist.add(tmp.substring(0, tmp.indexOf('.') + 3));
                                 list.add(sublist);
                                 PostCRUD postCRUD = new PostCRUD(connection);
-                                header = "Средний размер зарплаты среди должности " + postCRUD.read(Long.parseLong(tokens[3]), true);
+                                header = "Средний размер зарплаты среди должности " + postCRUD.read(Long.parseLong(tokens[2]), true);
                                 break;
                             }
                             case "_8_2":
                             {
-                                rs = stmt.executeQuery("select * from " + QUERY + tokens[2] + "('" + tokens[3] + "')");
+                                rs = stmt.executeQuery("select * from " + QUERY + tokens[1] + "('" + tokens[2] + "')");
 
                                 colNames.add("Значение");
                                 nCol = colNames.size();
@@ -317,12 +324,12 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                 ArrayList<String> sublist = new ArrayList<>(nCol);
                                 sublist.add(rs.getObject(1).toString());
                                 list.add(sublist);
-                                header = "Количество отделений налоговой инспекции, телефонный оператор которых имеет код " + tokens[3];
+                                header = "Количество отделений налоговой инспекции, телефонный оператор которых имеет код " + tokens[2];
                                 break;
                             }
                             case "_9":
                             {
-                                rs = stmt.executeQuery("select * from " + QUERY + tokens[2] + "(" + tokens[3] + ")");
+                                rs = stmt.executeQuery("select * from " + QUERY + tokens[1] + "(" + tokens[2] + ")");
 
                                 colNames.add("ID");
                                 colNames.add("Название");
@@ -338,13 +345,13 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                     sublist.set(2, sublist.get(2).substring(0, sublist.get(2).indexOf('.') + 3));
                                     list.add(sublist);
                                 }
-                                header = "Предприятия, которые оформили платежей на сумму меньше, чем " + tokens[3] +
+                                header = "Предприятия, которые оформили платежей на сумму меньше, чем " + tokens[2] +
                                         "   - " + (list.size() - 1) + " зап.";
                                 break;
                             }
                             case "_10":
                             {
-                                rs = stmt.executeQuery("select * from " + QUERY + tokens[2] + "(" + tokens[3] + "," + tokens[4] + ")");
+                                rs = stmt.executeQuery("select * from " + QUERY + tokens[1] + "(" + tokens[2] + "," + tokens[3] + ")");
 
                                 colNames.add("ID");
                                 colNames.add("Название");
@@ -361,14 +368,14 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                     list.add(sublist);
                                 }
                                 OwntypeCRUD owntypeCRUD = new OwntypeCRUD(connection);
-                                header = "Предприятия типа \"" + owntypeCRUD.read(Long.parseLong(tokens[3]), true) +
-                                        "\", которые оформили платежей на сумму меньше, чем " + tokens[4] +
+                                header = "Предприятия типа \"" + owntypeCRUD.read(Long.parseLong(tokens[2]), true) +
+                                        "\", которые оформили платежей на сумму меньше, чем " + tokens[3] +
                                         "   - " + (list.size() - 1) + " зап.";
                                 break;
                             }
                             case "_12":
                             {
-                                rs = stmt.executeQuery("select * from " + QUERY + tokens[2] + "(" + tokens[3] + ")");
+                                rs = stmt.executeQuery("select * from " + QUERY + tokens[1] + "(" + tokens[2] + ")");
 
                                 colNames.add("Название");
                                 colNames.add("Телефон");
@@ -383,12 +390,12 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                     list.add(sublist);
                                 }
                                 header = "Отделения налоговой инспекции и предприятия, которые начали работу в " +
-                                        tokens[3] + " году" + "   - " + (list.size() - 1) + " зап.";
+                                        tokens[2] + " году" + "   - " + (list.size() - 1) + " зап.";
                                 break;
                             }
                             case "_13_1":
                             {
-                                rs = stmt.executeQuery("select * from " + QUERY + tokens[2] + "('" + tokens[3] + "')");
+                                rs = stmt.executeQuery("select * from " + QUERY + tokens[1] + "('" + tokens[2] + "')");
 
                                 colNames.add("ID");
                                 colNames.add("Название");
@@ -405,12 +412,12 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                     list.add(sublist);
                                 }
                                 header = "Предприятия, совершившие платежи начиная с " + ServerAgent.df
-                                        .format(Date.valueOf(tokens[3])) + "   - " + (list.size() - 1) + " зап.";
+                                        .format(Date.valueOf(tokens[2])) + "   - " + (list.size() - 1) + " зап.";
                                 break;
                             }
                             case "_13_2":
                             {
-                                rs = stmt.executeQuery("select * from " + QUERY + tokens[2] + "('" + tokens[3] + "')");
+                                rs = stmt.executeQuery("select * from " + QUERY + tokens[1] + "('" + tokens[2] + "')");
 
                                 colNames.add("ID");
                                 colNames.add("Название");
@@ -425,12 +432,12 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                     list.add(sublist);
                                 }
                                 header = "Предприятия, не совершившие платежи начиная с " + ServerAgent.df
-                                        .format(Date.valueOf(tokens[3])) + "   - " + (list.size() - 1) + " зап.";
+                                        .format(Date.valueOf(tokens[2])) + "   - " + (list.size() - 1) + " зап.";
                                 break;
                             }
                             case "_13_3":
                             {
-                                rs = stmt.executeQuery("select * from " + QUERY + tokens[2]);
+                                rs = stmt.executeQuery("select * from " + QUERY + tokens[1]);
 
                                 colNames.add("Категория");
                                 colNames.add("Количество сотрудников");

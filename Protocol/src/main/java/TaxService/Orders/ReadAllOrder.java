@@ -7,9 +7,9 @@ public class ReadAllOrder<T extends AbstractDAO> extends AbstractOrder<T>
 	private boolean isLazy;
 	private String filter;
 
-	public ReadAllOrder(Class itemClazz, String sendersLogin, boolean isLazy, String filter)
+	public ReadAllOrder(Class itemClazz, boolean isLazy, String filter)
 	{
-		super(itemClazz, sendersLogin);
+		super(itemClazz);
 		this.isLazy = isLazy;
 		this.filter = filter;
 	}

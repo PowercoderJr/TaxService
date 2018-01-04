@@ -108,7 +108,6 @@ public class AuthController
 			try
 			{
 				ClientAgent.buildInstance(InetAddress.getLocalHost(), PORT);
-				ClientAgent.getInstance().setLogin(loginField.getText());
 				ClientAgent.getInstance().send(msg);
 			}
 			catch (InvocationTargetException e)

@@ -8,9 +8,9 @@ public class ReadPortionOrder<T extends AbstractDAO> extends AbstractOrder<T>
 	private boolean isLazy;
 	private String filter;
 
-	public ReadPortionOrder(Class itemClazz, String sendersLogin, int portion, boolean isLazy, String filter)
+	public ReadPortionOrder(Class<T> itemClazz, int portion, boolean isLazy, String filter)
 	{
-		super(itemClazz, sendersLogin);
+		super(itemClazz);
 		this.portion = portion;
 		this.isLazy = isLazy;
 		this.filter = filter;

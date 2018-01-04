@@ -16,7 +16,7 @@ public class CreateOrderHandler<T extends AbstractDAO> extends AbstractHandler<C
 		super.channelRead0(ctx, msg);
 		try
 		{
-			int created = ServerAgent.getInstance().create(msg.getObject(), msg.getSendersLogin());
+			int created = ServerAgent.getInstance().create(msg.getObject(), ctx.channel().id());
 			ctx.channel().writeAndFlush(PhraseBook.NOTIFICATION + PhraseBook.SEPARATOR + "Добавлено строк: " + created);
 		}
 		catch (SQLException e)

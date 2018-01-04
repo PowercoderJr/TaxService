@@ -4,6 +4,7 @@ import TaxService.CRUDs.AbstractCRUD;
 import TaxService.DAOs.AbstractDAO;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelId;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -36,7 +37,7 @@ public class ServerAgent implements Closeable
 	}
 
 	public static Mutex connectionsMutex = new Mutex();
-	private Map<String, Pair<Connection, Long>> connections;
+	private Map<ChannelId, Pair<Connection, Long>> connections;
 
 	private NioEventLoopGroup acceptorGroup;
 	private NioEventLoopGroup handlerGroup;
@@ -71,11 +72,10 @@ public class ServerAgent implements Closeable
 			{
 				while (pingLoop)
 				{
-					//System.out.println("Ping check");
 					Thread.sleep(CONNECTION_TIMEOUT_MILLIS);
-					List<String> toDisconnect = new ArrayList<>();
+					List<ChannelId> toDisconnect = new ArrayList<>();
 					connectionsMutex.lock();
-					connections.forEach((login, pair) ->
+					connections.forEach((channelId, pair) ->
 					{
 						if (System.currentTimeMillis() - pair.getValue() > CONNECTION_TIMEOUT_MILLIS)
 						{
@@ -87,13 +87,13 @@ public class ServerAgent implements Closeable
 							{
 								e.printStackTrace();
 							}
-							toDisconnect.add(login);
+							toDisconnect.add(channelId);
 						}
 					});
-					toDisconnect.forEach(login ->
+					toDisconnect.forEach(channelId ->
 					{
-						connections.remove(login);
-						System.out.println(login + " disconnected");
+						connections.remove(channelId);
+						System.out.println(channelId.asLongText() + " disconnected");
 					});
 					connectionsMutex.unlock();
 				}
@@ -138,61 +138,61 @@ public class ServerAgent implements Closeable
 		handlerGroup.shutdownGracefully();
 	}
 
-	public int create(AbstractDAO dao, String sendersLogin) throws SQLException
+	public int create(AbstractDAO dao, ChannelId channelId) throws SQLException
 	{
-		AbstractCRUD crud = getCrudForClass(dao.getClass(), sendersLogin);
+		AbstractCRUD crud = getCrudForClass(dao.getClass(), channelId);
 		if (crud != null)
 			return crud.create(dao);
 		return 0;
 	}
 
-	public <T extends AbstractDAO> List readPortion(Class<T> clazz, String sendersLogin, int portion, boolean isLazy, String filter) throws SQLException
+	public <T extends AbstractDAO> List readPortion(Class<T> clazz, ChannelId channelId, int portion, boolean isLazy, String filter) throws SQLException
 	{
-		AbstractCRUD instance = getCrudForClass(clazz, sendersLogin);
+		AbstractCRUD instance = getCrudForClass(clazz, channelId);
 		return instance.readPortion(portion, isLazy, filter);
 	}
 
-	public <T extends AbstractDAO> List readAll(Class<T> clazz, String sendersLogin, boolean isLazy, String filter) throws SQLException
+	public <T extends AbstractDAO> List readAll(Class<T> clazz, ChannelId channelId, boolean isLazy, String filter) throws SQLException
 	{
-		AbstractCRUD instance = getCrudForClass(clazz, sendersLogin);
+		AbstractCRUD instance = getCrudForClass(clazz, channelId);
 		return instance.readAll(isLazy, filter);
 	}
 
-	public <T extends AbstractDAO> int update(Class<T> clazz, String sendersLogin, String filter, String newValues) throws SQLException
+	public <T extends AbstractDAO> int update(Class<T> clazz, ChannelId channelId, String filter, String newValues) throws SQLException
 	{
-		AbstractCRUD crud = getCrudForClass(clazz, sendersLogin);
+		AbstractCRUD crud = getCrudForClass(clazz, channelId);
 		if (crud != null)
 			return crud.update(filter, newValues);
 		return 0;
 	}
 
-	public <T extends AbstractDAO> int delete(Class<T> clazz, String sendersLogin, long id) throws SQLException
+	public <T extends AbstractDAO> int delete(Class<T> clazz, ChannelId channelId, long id) throws SQLException
 	{
-		AbstractCRUD crud = getCrudForClass(clazz, sendersLogin);
+		AbstractCRUD crud = getCrudForClass(clazz, channelId);
 		if (crud != null)
 			return crud.delete(id);
 		return 0;
 	}
 
-	public int delete(AbstractDAO dao, String sendersLogin) throws SQLException
+	public int delete(AbstractDAO dao, ChannelId channelId) throws SQLException
 	{
-		AbstractCRUD crud = getCrudForClass(dao.getClass(), sendersLogin);
+		AbstractCRUD crud = getCrudForClass(dao.getClass(), channelId);
 		if (crud != null)
 			return crud.delete(dao.getId());
 		return 0;
 	}
 
-	public <T extends AbstractDAO> int delete(Class<T> clazz, String sendersLogin, String filter) throws SQLException
+	public <T extends AbstractDAO> int delete(Class<T> clazz, ChannelId channelId, String filter) throws SQLException
 	{
-		AbstractCRUD crud = getCrudForClass(clazz, sendersLogin);
+		AbstractCRUD crud = getCrudForClass(clazz, channelId);
 		if (crud != null)
 			return crud.delete(filter);
 		return 0;
 	}
 
-	public <T extends AbstractDAO> int count(Class<T> clazz, String sendersLogin, String filter) throws SQLException
+	public <T extends AbstractDAO> int count(Class<T> clazz, ChannelId channelId, String filter) throws SQLException
 	{
-		AbstractCRUD crud = getCrudForClass(clazz, sendersLogin);
+		AbstractCRUD crud = getCrudForClass(clazz, channelId);
 		if (crud != null)
 			return crud.count(filter);
 		return 0;
@@ -214,12 +214,12 @@ public class ServerAgent implements Closeable
 		return instance;
 	}
 
-	public <T extends AbstractDAO> AbstractCRUD getCrudForClass(Class<T> clazz, String sendersLogin)
+	public <T extends AbstractDAO> AbstractCRUD getCrudForClass(Class<T> clazz, ChannelId channelId)
 	{
-		return getCrudForClass(clazz, connections.get(sendersLogin).getKey());
+		return getCrudForClass(clazz, connections.get(channelId).getKey());
 	}
 
-	public Map<String, Pair<Connection, Long>> getConnections()
+	public Map<ChannelId, Pair<Connection, Long>> getConnections()
 	{
 		return connections;
 	}

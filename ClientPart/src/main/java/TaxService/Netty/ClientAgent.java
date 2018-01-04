@@ -239,7 +239,6 @@ public class ClientAgent implements Closeable
 
 	private ChannelFuture future;
 	private EventLoopGroup group;
-	private String login;
 
 	private ClientAgent(InetAddress inetAddress, int port)
 	{
@@ -291,7 +290,7 @@ public class ClientAgent implements Closeable
 
 	public void startPinging()
 	{
-		send(PING + SEPARATOR + login);
+		send(PING + SEPARATOR);
 		pingLoop = true;
 		new Thread(() ->
 		{
@@ -322,15 +321,5 @@ public class ClientAgent implements Closeable
 	public void stopPinging()
 	{
 		pingLoop = false;
-	}
-
-	public String getLogin()
-	{
-		return login;
-	}
-
-	public void setLogin(String login)
-	{
-		this.login = login;
 	}
 }

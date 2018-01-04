@@ -19,13 +19,13 @@ public class ReadPortionOrderHandler<T extends AbstractDAO> extends AbstractHand
 		super.channelRead0(ctx, msg);
 		try
 		{
-			int total = ServerAgent.getInstance().count(msg.getItemClazz(), msg.getSendersLogin(), msg.getFilter());
+			int total = ServerAgent.getInstance().count(msg.getItemClazz(), ctx.channel().id(), msg.getFilter());
 			int portion = Math.min(msg.getPortion(), (total - 1) / AbstractCRUD.PORTION_SIZE + 1);
 			if (portion < 1)
 				portion = 1;
 			int first = Math.min((portion - 1) * AbstractCRUD.PORTION_SIZE + 1, total);
 			int last = Math.min(first + AbstractCRUD.PORTION_SIZE - 1, total);
-			List<T> list = ServerAgent.getInstance().readPortion(msg.getItemClazz(), msg.getSendersLogin(), portion, msg.isLazy(), msg.getFilter());
+			List<T> list = ServerAgent.getInstance().readPortion(msg.getItemClazz(), ctx.channel().id(), portion, msg.isLazy(), msg.getFilter());
 
 			ctx.writeAndFlush(new PortionDelivery<>(msg.getItemClazz(), list, first, last, total));
 		}

@@ -42,8 +42,7 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 		{
 			paytype1.getSelectionModel().clearSelection();
 			paytype1.getEditor().clear();
-			ClientAgent.getInstance().send(new ReadAllOrder<Paytype>(Paytype.class, ClientAgent.getInstance().getLogin(),
-					true, null));
+			ClientAgent.getInstance().send(new ReadAllOrder<Paytype>(Paytype.class, true, null));
 		});
 		paytype2 = new ComboBox<>();
 		paytype2.setPrefWidth(170);
@@ -51,8 +50,7 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 		{
 			paytype2.getSelectionModel().clearSelection();
 			paytype2.getEditor().clear();
-			ClientAgent.getInstance().send(new ReadAllOrder<Paytype>(Paytype.class, ClientAgent.getInstance().getLogin(),
-					true, null));
+			ClientAgent.getInstance().send(new ReadAllOrder<Paytype>(Paytype.class, true, null));
 		});
 		addField("Тип платежа", paytype1, paytype2, false);
 
@@ -75,8 +73,7 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 		{
 			employee1.getSelectionModel().clearSelection();
 			employee1.getEditor().clear();
-			ClientAgent.getInstance().send(new ReadAllOrder<Employee>(Employee.class, ClientAgent.getInstance().getLogin(),
-					true, null));
+			ClientAgent.getInstance().send(new ReadAllOrder<Employee>(Employee.class, true, null));
 		});
 		employee2 = new ComboBox<>();
 		employee2.setPrefWidth(200);
@@ -84,8 +81,7 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 		{
 			employee2.getSelectionModel().clearSelection();
 			employee2.getEditor().clear();
-			ClientAgent.getInstance().send(new ReadAllOrder<Employee>(Employee.class, ClientAgent.getInstance().getLogin(),
-					true, null));
+			ClientAgent.getInstance().send(new ReadAllOrder<Employee>(Employee.class, true, null));
 		});
 		addField("Сотрудник-оформитель", employee1, employee2, false);
 
@@ -95,8 +91,7 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 		{
 			department1.getSelectionModel().clearSelection();
 			department1.getEditor().clear();
-			ClientAgent.getInstance().send(new ReadAllOrder<Department>(Department.class, ClientAgent.getInstance().getLogin(),
-					true, null));
+			ClientAgent.getInstance().send(new ReadAllOrder<Department>(Department.class, true, null));
 		});
 		department2 = new ComboBox<>();
 		department2.setPrefWidth(200);
@@ -104,8 +99,7 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 		{
 			department2.getSelectionModel().clearSelection();
 			department2.getEditor().clear();
-			ClientAgent.getInstance().send(new ReadAllOrder<Department>(Department.class, ClientAgent.getInstance().getLogin(),
-					true, null));
+			ClientAgent.getInstance().send(new ReadAllOrder<Department>(Department.class, true, null));
 		});
 		addField("Отделение-оформитель", department1, department2, false);
 
@@ -115,8 +109,7 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 		{
 			company1.getSelectionModel().clearSelection();
 			company1.getEditor().clear();
-			ClientAgent.getInstance().send(new ReadAllOrder<Company>(Company.class, ClientAgent.getInstance().getLogin(),
-					true, null));
+			ClientAgent.getInstance().send(new ReadAllOrder<Company>(Company.class, true, null));
 		});
 		company2 = new ComboBox<>();
 		company2.setPrefWidth(200);
@@ -124,8 +117,7 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 		{
 			company2.getSelectionModel().clearSelection();
 			company2.getEditor().clear();
-			ClientAgent.getInstance().send(new ReadAllOrder<Company>(Company.class, ClientAgent.getInstance().getLogin(),
-					true, null));
+			ClientAgent.getInstance().send(new ReadAllOrder<Company>(Company.class, true, null));
 		});
 		addField("Компания-плательщик", company1, company2, false);
 	}

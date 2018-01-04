@@ -7,9 +7,9 @@ public class UpdateOrder<T extends AbstractDAO> extends AbstractOrder<T>
 	private String filter;
 	private String newValues;
 
-	public UpdateOrder(Class<T> itemClazz, String sendersLogin, String filter, String newValues)
+	public UpdateOrder(Class<T> itemClazz, String filter, String newValues)
 	{
-		super(itemClazz, sendersLogin);
+		super(itemClazz);
 		this.filter = filter;
 		this.newValues = newValues;
 	}

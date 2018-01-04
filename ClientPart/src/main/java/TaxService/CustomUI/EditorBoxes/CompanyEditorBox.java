@@ -46,8 +46,7 @@ public class CompanyEditorBox extends AbstractEditorBox<Company>
 		{
 			owntype1.getSelectionModel().clearSelection();
 			owntype1.getEditor().clear();
-			ClientAgent.getInstance().send(new ReadAllOrder<Owntype>(Owntype.class, ClientAgent.getInstance().getLogin(),
-					true, null));
+			ClientAgent.getInstance().send(new ReadAllOrder<Owntype>(Owntype.class, true, null));
 		});
 		owntype2 = new ComboBox<>();
 		owntype2.setPrefWidth(170);
@@ -55,8 +54,7 @@ public class CompanyEditorBox extends AbstractEditorBox<Company>
 		{
 			owntype2.getSelectionModel().clearSelection();
 			owntype2.getEditor().clear();
-			ClientAgent.getInstance().send(new ReadAllOrder<Owntype>(Owntype.class, ClientAgent.getInstance().getLogin(),
-					true, null));
+			ClientAgent.getInstance().send(new ReadAllOrder<Owntype>(Owntype.class, true, null));
 		});
 		addField("Форма собственности", owntype1, owntype2, false);
 

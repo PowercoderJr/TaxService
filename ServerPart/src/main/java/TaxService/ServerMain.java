@@ -9,7 +9,7 @@ import java.util.Set;
 
 public class ServerMain
 {
-	private static final boolean fromScratch = true;
+	private static final boolean fromScratch = false;
 
 	public static void main(String[] args)
 	{

@@ -8,21 +8,14 @@ public abstract class AbstractOrder<T extends AbstractDAO> implements Serializab
 {
 	protected static final long serialVersionUID = -8256861204339672530L;
 	protected Class<T> itemClazz;
-	protected String sendersLogin;
 
-	public AbstractOrder(Class<T> itemClazz, String sendersLogin)
+	public AbstractOrder(Class<T> itemClazz)
 	{
 		this.itemClazz = itemClazz;
-		this.sendersLogin = sendersLogin;
 	}
 
 	public Class<T> getItemClazz()
 	{
 		return itemClazz;
-	}
-
-	public String getSendersLogin()
-	{
-		return sendersLogin;
 	}
 }

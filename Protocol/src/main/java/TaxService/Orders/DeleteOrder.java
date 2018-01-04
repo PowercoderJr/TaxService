@@ -6,9 +6,9 @@ public class DeleteOrder<T extends AbstractDAO> extends AbstractOrder<T>
 {
 	private String filter;
 
-	public DeleteOrder(Class<T> itemClazz, String sendersLogin, String filter)
+	public DeleteOrder(Class<T> itemClazz, String filter)
 	{
-		super(itemClazz, sendersLogin);
+		super(itemClazz);
 		this.filter = filter;
 	}
 
