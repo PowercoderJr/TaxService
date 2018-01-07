@@ -15,6 +15,8 @@
             <menus>
                 <Menu mnemonicParsing="false" text="База данных">
                     <items>
+                  <MenuItem mnemonicParsing="false" onAction="#openUserManager" text="Менеджер пользователей" />
+                  <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" onAction="#fsMode" text="На весь экран" />
                         <MenuItem mnemonicParsing="false" onAction="#disconnect" text="Отключиться" />
                         <MenuItem mnemonicParsing="false" onAction="#exit" text="Выход" />
@@ -37,21 +39,21 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="Запросы">
                     <items>
-                        <MenuItem text="Список платежей, которые оформил указанный сотрудник" onAction="#executeQuery" userData="_1_1"/>
-                        <MenuItem text="Список платежей, оформленных начиная с указанной даты" onAction="#executeQuery" userData="_1_2"/>
-                        <MenuItem text="Список платежей, которые оформил указанный сотрудник после указанной даты" onAction="#executeQuery" userData="_1_3"/>
-                        <MenuItem text="Список сотрудников каждого отделения" onAction="#executeQuery" userData="_2_1"/>
-                        <MenuItem text="Дата последнего платежа каждого предприятия" onAction="#executeQuery" userData="_3"/>
-                        <MenuItem text="Средний размер штата предприятий в базе данных" onAction="#executeQuery" userData="_6"/>
-                        <MenuItem text="Статистика сотрудников: степень образования + занимаемая должность" onAction="#executeQuery" userData="_7"/>
-                        <MenuItem text="Средняя зарплата по должности" onAction="#executeQuery" userData="_8_1"/>
-                        <MenuItem text="Количество отделений, телефонный номер которых имеет заданный код оператора" onAction="#executeQuery" userData="_8_2"/>
-                        <MenuItem text="Список предприятий, которые оформили платежей на сумму меньше указанной" onAction="#executeQuery" userData="_9"/>
-                        <MenuItem text="Список предприятий определённого типа, которые оформили платежей на сумму меньше указанной" onAction="#executeQuery" userData="_10"/>
-                        <MenuItem text="Список отделений налоговой инспекции и предприятий, которые начали работу в указанном году" onAction="#executeQuery" userData="_12"/>
-                        <MenuItem text="Предприятия, совершившие платежи начиная с указанной даты" onAction="#executeQuery" userData="_13_1"/>
-                        <MenuItem text="Предприятия, не совершившие платежи начиная с указанной даты" onAction="#executeQuery" userData="_13_2"/>
-                        <MenuItem text="Количество сотрудников налоговой инспекции различных возрастных категорий" onAction="#executeQuery" userData="_13_3"/>
+                        <MenuItem onAction="#executeQuery" text="Список платежей, которые оформил указанный сотрудник" userData="_1_1" />
+                        <MenuItem onAction="#executeQuery" text="Список платежей, оформленных начиная с указанной даты" userData="_1_2" />
+                        <MenuItem onAction="#executeQuery" text="Список платежей, которые оформил указанный сотрудник после указанной даты" userData="_1_3" />
+                        <MenuItem onAction="#executeQuery" text="Список сотрудников каждого отделения" userData="_2_1" />
+                        <MenuItem onAction="#executeQuery" text="Дата последнего платежа каждого предприятия" userData="_3" />
+                        <MenuItem onAction="#executeQuery" text="Средний размер штата предприятий в базе данных" userData="_6" />
+                        <MenuItem onAction="#executeQuery" text="Статистика сотрудников: степень образования + занимаемая должность" userData="_7" />
+                        <MenuItem onAction="#executeQuery" text="Средняя зарплата по должности" userData="_8_1" />
+                        <MenuItem onAction="#executeQuery" text="Количество отделений, телефонный номер которых имеет заданный код оператора" userData="_8_2" />
+                        <MenuItem onAction="#executeQuery" text="Список предприятий, которые оформили платежей на сумму меньше указанной" userData="_9" />
+                        <MenuItem onAction="#executeQuery" text="Список предприятий определённого типа, которые оформили платежей на сумму меньше указанной" userData="_10" />
+                        <MenuItem onAction="#executeQuery" text="Список отделений налоговой инспекции и предприятий, которые начали работу в указанном году" userData="_12" />
+                        <MenuItem onAction="#executeQuery" text="Предприятия, совершившие платежи начиная с указанной даты" userData="_13_1" />
+                        <MenuItem onAction="#executeQuery" text="Предприятия, не совершившие платежи начиная с указанной даты" userData="_13_2" />
+                        <MenuItem onAction="#executeQuery" text="Количество сотрудников налоговой инспекции различных возрастных категорий" userData="_13_3" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="О программе">

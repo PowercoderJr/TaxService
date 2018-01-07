@@ -12,6 +12,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -21,6 +23,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import static TaxService.PhraseBook.PORT;
 
@@ -95,7 +98,7 @@ public class AuthController
 		ClientAgent.subscribeAuth(onAuth);
 	}
 
-	public void auth(ActionEvent actionEvent) throws IOException
+	public void auth(ActionEvent actionEvent)
 	{
 		if (!ClientAgent.doesInstanceExist())
 		{
@@ -115,6 +118,16 @@ public class AuthController
 				statusLabel.setText("Соединение не установлено");
 				statusLabel.setVisible(true);
 			}
+			catch (UnknownHostException e)
+			{
+				e.printStackTrace();
+			}
 		}
+	}
+
+	public void onKeyPressed(KeyEvent keyEvent)
+	{
+		if (keyEvent.getCode() == KeyCode.ENTER)
+			auth(null);
 	}
 }

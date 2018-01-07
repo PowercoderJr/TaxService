@@ -26,6 +26,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -39,11 +40,13 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
+import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.UnaryOperator;
 
@@ -164,8 +167,6 @@ public class MainController
 			{
 				TableView tv = tableStaffs.get(currTable).tableView;
 				tv.getItems().clear();
-				tv.getColumns().clear();
-				tv.getColumns().addAll(TableColumnsBuilder.buildForDAO(delivery.getContentClazz()));
 				tv.setItems(FXCollections.observableList(delivery.getContent()));
 				statusLabel.setText("Отображены записи с " + delivery.getFirst() + " по " + delivery.getLast()
 						+ " из " + delivery.getTotal());
@@ -178,7 +179,12 @@ public class MainController
 		onAllReceived = o ->
 		{
 			AllDelivery<AbstractDAO> delivery = (AllDelivery<AbstractDAO>) o;
-			Platform.runLater(() -> tableStaffs.get(delivery.getContentClazz()).data.setAll(delivery.getContent()));
+			Platform.runLater(() ->
+			{
+				TableStaff staff = tableStaffs.get(delivery.getContentClazz());
+				if (staff != null)
+					staff.data.setAll(delivery.getContent());
+			});
 		};
 		ClientAgent.subscribeAllReceived(onAllReceived);
 
@@ -467,11 +473,6 @@ public class MainController
 		borderPane.setCenter(staff.tableView);
 	}
 
-	public void fsMode(ActionEvent actionEvent)
-	{
-		((Stage)root.getScene().getWindow()).setFullScreen(true);
-	}
-
 	public void gotoFirstPage(ActionEvent actionEvent)
 	{
 		gotoPage(0);
@@ -563,6 +564,90 @@ public class MainController
 		ClientAgent.unsubscribeNotificationReceived(onNotificationReceived);
 		ClientAgent.unsubscribeConnectionLost(onConnectionLost);
 		ClientAgent.unsubscribeQueryResultReceived(onQueryResultReceived);
+	}
+
+	public void openUserManager(ActionEvent actionEvent) throws IOException
+	{
+		FXMLLoader loader = new FXMLLoader(ClientMain.class.getResource("/UserManagerScene/interface.fxml"));
+		Parent umSceneFXML = loader.load();
+		Stage umStage = new Stage();
+		umStage.setTitle("Менеджер пользоваелей");
+		umStage.setX((Toolkit.getDefaultToolkit().getScreenSize().width - ClientMain.DEFAULT_WINDOW_WIDTH) / 2);
+		umStage.setY((Toolkit.getDefaultToolkit().getScreenSize().height - ClientMain.DEFAULT_WINDOW_HEIGHT) / 2);
+		umStage.setOnCloseRequest(event -> ((UserManagerController)loader.getController()).onClose());
+		Scene umScene = new Scene(umSceneFXML);
+		umScene.getStylesheets().add("/UserManagerScene/style.css");
+		umStage.setScene(umScene);
+		umStage.initOwner(root.getScene().getWindow());
+		umStage.initModality(Modality.APPLICATION_MODAL);
+		umStage.showAndWait();
+	}
+
+	/*public void createUser(ActionEvent actionEvent)
+	{
+		ButtonType okBtn = new ButtonType("ОК", ButtonBar.ButtonData.OK_DONE);
+		ButtonType cancelBtn = new ButtonType("Отмена", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+		Dialog<String> dialog = new Dialog<>();
+		dialog.setTitle("Создание пользователя");
+		dialog.setHeaderText("Создание пользователя");
+
+		GridPane grid = new GridPane();
+		grid.setHgap(10);
+		grid.setVgap(10);
+
+		Label label1 = new Label("Логин:");
+		label1.setPrefWidth(150);
+		grid.add(label1, 0, 0);
+		TextField textField = new TextField();
+		textField.setPrefWidth(300);
+		UnaryOperator<TextFormatter.Change> loginFilter = change ->
+		{
+			String newText = change.getControlNewText();
+			if (newText.matches("^[a-zA-Z]+\\w*"))
+				return change;
+			else
+				return null;
+		};
+		textField.setTextFormatter(new TextFormatter<Integer>(loginFilter));
+		grid.add(textField, 1, 0);
+
+		Label label1 = new Label("Логин:");
+		label1.setPrefWidth(150);
+		grid.add(label1, 0, 0);
+		ComboBox<Employee> comboBox = new ComboBox<>();
+		comboBox.setPrefWidth(300);
+		comboBox.setItems(tableStaffs.get(Employee.class).data);
+		grid.add(comboBox, 1, 0);
+
+		Label label1 = new Label("Логин:");
+		label1.setPrefWidth(150);
+		grid.add(label1, 0, 0);
+		ComboBox<Employee> comboBox = new ComboBox<>();
+		comboBox.setPrefWidth(300);
+		comboBox.setItems(tableStaffs.get(Employee.class).data);
+		grid.add(comboBox, 1, 0);
+
+		dialog.getDialogPane().setContent(grid);
+		Platform.runLater(() -> comboBox.requestFocus());
+		dialog.getDialogPane().getButtonTypes().setAll(okBtn, cancelBtn);
+		dialog.setResultConverter(btn ->
+		{
+			Employee a = comboBox.getSelectionModel().getSelectedItem();
+			Date b = datePicker.getValue() == null ? null : Date.valueOf(datePicker.getValue());
+			return btn == okBtn && a != null && b != null ? new Pair<>(a, b) : null;
+		});
+
+		dialog.initOwner(root.getScene().getWindow());
+		Optional<Pair<Employee, Date>> result = dialog.showAndWait();
+		if (result.isPresent())
+			ClientAgent.getInstance().send(QUERY + SEPARATOR + queryCode + SEPARATOR +
+					result.get().getKey().getId() + SEPARATOR + result.get().getValue());
+	}*/
+
+	public void fsMode(ActionEvent actionEvent)
+	{
+		((Stage)root.getScene().getWindow()).setFullScreen(true);
 	}
 
 	public void disconnect(ActionEvent actionEvent)

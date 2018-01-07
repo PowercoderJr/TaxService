@@ -22,8 +22,10 @@ public abstract class AbstractRefEditorBox<T extends AbstractRefDAO> extends Abs
 
 		name1 = new TextField();
 		name1.setPrefWidth(200);
+		setLengthLimit(name1, 100);
 		name2 = new TextField();
 		name2.setPrefWidth(200);
+		setLengthLimit(name2, 100);
 		addField("Наименование", name1, name2, false);
 	}
 

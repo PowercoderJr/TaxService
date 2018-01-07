@@ -6,7 +6,6 @@ public class PhraseBook
 	public static final int PING_FREQUENCY_MILLIS = 10000;
 	public static final int CONNECTION_TIMEOUT_MILLIS = PING_FREQUENCY_MILLIS * 3;
 	public static final char SEPARATOR = '$';
-	public static final String WRONG_SYMBOLS = "\"\'" + SEPARATOR;
 
 	public static final String AUTH = "auth";
 	public static final String BYE = "bye";

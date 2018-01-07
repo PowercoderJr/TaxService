@@ -230,6 +230,8 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 			return Time.valueOf(value);
 		if (Timestamp.class == clazz)
 			return Timestamp.valueOf(value);
+		if (Account.Roles.class == clazz)
+			return Enum.valueOf(clazz, value);
 
 		//Неиспользуемые
 		/*if (Blob.class == clazz) return ;

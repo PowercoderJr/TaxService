@@ -130,16 +130,30 @@ public class ServerMain
 			stmt.executeUpdate(execMe);
 
 			//Инструменты управления пользователями
-			execMe  = "CREATE TYPE custom_role AS ENUM ('USER', 'CHIEF', 'ADMIN')";
+			execMe  = "CREATE TYPE custom_role AS ENUM ('JUSTUSER', 'OPERATOR', 'ADMIN')";
 			stmt.executeUpdate(execMe);
 
-			execMe  = "CREATE TABLE users("
-					+ "login varchar(100) primary key"
-					+ "employee_id int8 not null references employee(id) on delete cascade)"
-					+ "role custom_role not null"
+			execMe  = "CREATE TABLE account("
+					+ "id serial primary key,"
+					+ "login varchar(100) not null unique,"
+					+ "employee_id int8 not null references employee(id) on delete cascade,"
+					+ "role custom_role not null,"
 					+ "blocked boolean not null)";
 			stmt.executeUpdate(execMe);
 			//TODO: блокировать учётную запись вместо удаления
+
+			/*execMe  = "CREATE ROLE justuser;"
+					+ "GRANT SELECT ON department, employee, company, payment, deptype, city, post, education, owntype, paytype TO justuser;"
+					+ "GRANT INSERT ON payment TO justuser;";
+			stmt.executeUpdate(execMe);
+
+			execMe  = "CREATE ROLE operator;"
+					+ "GRANT ALL ON department, employee, company, payment, deptype, city, post, education, owntype, paytype TO justuser;";
+			stmt.executeUpdate(execMe);
+
+			execMe  = "CREATE ROLE admin WITH CREATEROLE ADMIN justuser, operator;"
+					+ "GRANT ALL ON ALL TABLES IN SCHEMA public TO admin;";
+			stmt.executeUpdate(execMe);*/
 
 			//Создание представлений и хранимых процедур
 			execMe  = "CREATE FUNCTION query_1_1 (x int)\n"

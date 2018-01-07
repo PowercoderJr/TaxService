@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.GridPane?>
 
-<GridPane fx:id="root" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" vgap="20.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="TaxService.SceneControllers.AuthController">
+<GridPane fx:id="root" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" vgap="20.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="TaxService.SceneControllers.AuthController" onKeyPressed="#onKeyPressed">
   <children>
   <TextField fx:id="loginField" prefWidth="200.0" promptText="Логин" GridPane.rowIndex="1" />
   <PasswordField fx:id="passField" prefWidth="200.0" promptText="Пароль" GridPane.rowIndex="2" />
