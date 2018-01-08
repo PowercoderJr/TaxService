@@ -20,7 +20,7 @@ public class ClientInitializer extends ChannelInitializer<SocketChannel>
 		System.out.println("Something happened on client");
 		ChannelPipeline pipeline = ch.pipeline();
 		//pipeline.addLast(LineBasedFrameDecoder.class.getName(), new LineBasedFrameDecoder(256));
-		pipeline.addLast("decoder", new ObjectDecoder(ClassResolvers.cacheDisabled(null)));
+		pipeline.addLast("decoder", new ObjectDecoder(10 * 1024 * 1024, ClassResolvers.cacheDisabled(null)));
 		pipeline.addLast("encoder", new ObjectEncoder());
 		pipeline.addLast(new SimpleMessageHandler());
 		pipeline.addLast(new PortionReceiver());

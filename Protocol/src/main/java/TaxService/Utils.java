@@ -26,7 +26,7 @@ public class Utils
 			try
 			{
 				if (AbstractDAO.class.isAssignableFrom(item.getType()))
-					result = String.valueOf(((AbstractDAO) item.get(dao)).getId());
+					result = item.get(dao) == null ? "0" : String.valueOf(((AbstractDAO) item.get(dao)).getId());
 				else
 					result = String.valueOf(item.get(dao));
 			}

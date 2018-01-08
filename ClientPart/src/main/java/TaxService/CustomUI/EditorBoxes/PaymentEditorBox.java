@@ -83,7 +83,8 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 			employee2.getEditor().clear();
 			ClientAgent.getInstance().send(new ReadAllOrder<Employee>(Employee.class, true, null));
 		});
-		addField("Сотрудник-оформитель", employee1, employee2, false);
+		employee2.setVisible(false); //Будет генерироваться автоматически при добавлении записи, изменить нельзя
+		addField("Сотрудник-оформитель", employee1, employee2, true);
 
 		department1 = new ComboBox<>();
 		department1.setPrefWidth(200);
@@ -126,7 +127,7 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 	public Payment withdrawPrimaryAll()
 	{
 		Paytype paytype = paytype1.getSelectionModel().getSelectedItem();
-		Date date = Date.valueOf(date1.getValue());
+		Date date = date1.getValue() == null ? Date.valueOf("2001-01-01") : Date.valueOf(date1.getValue());
 		BigDecimal amount = new BigDecimal(amount1.getText().trim());
 		Employee employee = employee1.getSelectionModel().getSelectedItem();
 		Department department = department1.getSelectionModel().getSelectedItem();
@@ -291,7 +292,7 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 		return validateComboBox(paytype1, allRequired) &
 				//validatePayDate(date1, allRequired) &
 				validateTextPositiveFloatField(amount1, allRequired) &
-				validateComboBox(employee1, allRequired) &
+				//validateComboBox(employee1, allRequired) &
 				validateComboBox(department1, allRequired) &
 				validateComboBox(company1, allRequired);
 	}
@@ -302,7 +303,7 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 		return validateComboBox(paytype2, allRequired) &
 				//validatePayDate(date2, allRequired) &
 				validateTextPositiveFloatField(amount2, allRequired) &
-				validateComboBox(employee2, allRequired) &
+				//validateComboBox(employee2, allRequired) &
 				validateComboBox(department2, allRequired) &
 				validateComboBox(company2, allRequired);
 	}

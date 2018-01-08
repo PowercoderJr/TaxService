@@ -31,7 +31,7 @@ public class ServerMain
 
 				timeZero = System.currentTimeMillis();
 				EmployeeCRUD employeeCRUD = new EmployeeCRUD(superConnection);
-				employeeCRUD.insertRandomBeans(1000);
+				employeeCRUD.insertRandomBeans(40000);
 				System.out.println("Employees generation completed in " + (System.currentTimeMillis() - timeZero) + " ms");
 
 				timeZero = System.currentTimeMillis();
@@ -41,12 +41,12 @@ public class ServerMain
 
 				timeZero = System.currentTimeMillis();
 				PaymentCRUD paymentCRUD = new PaymentCRUD(superConnection);
-				paymentCRUD.insertRandomBeans(1000);
+				paymentCRUD.insertRandomBeans(50000);
 				System.out.println("Payments generation completed in " + (System.currentTimeMillis() - timeZero) + " ms");
 
-				departmentCRUD.delete(2);
+				/*departmentCRUD.delete(2);
 				departmentCRUD.delete(22);
-				departmentCRUD.delete(222);
+				departmentCRUD.delete(222);*/
 
 				setupTriggers(superConnection);
 			}
@@ -324,6 +324,20 @@ public class ServerMain
 			stmt.executeUpdate(execMe);
 			//TODO: блокировать учётную запись вместо удаления
 
+			execMe  = "revoke all on all tables in schema public from justuser;"
+					+ "revoke all on all sequences in schema public from justuser;"
+					+ "revoke all on all functions in schema public from justuser;"
+					+ "drop role justuser;"
+					+ "revoke all on all tables in schema public from operator;"
+					+ "revoke all on all sequences in schema public from operator;"
+					+ "revoke all on all functions in schema public from operator;"
+					+ "drop role operator;"
+					+ "revoke all on all tables in schema public from admin;"
+					+ "revoke all on all sequences in schema public from admin;"
+					+ "revoke all on all functions in schema public from admin;"
+					+ "drop role admin;";
+			stmt.executeUpdate(execMe);
+
 			execMe  = "CREATE ROLE justuser;"
 					+ "GRANT SELECT ON ALL TABLES IN SCHEMA public TO justuser;"
 					+ "GRANT INSERT ON payment TO justuser;"
@@ -331,15 +345,15 @@ public class ServerMain
 			stmt.executeUpdate(execMe);
 
 			execMe  = "CREATE ROLE operator;"
-					+ "GRANT ALL ON department, employee, company, payment, deptype, city, post, education, owntype, paytype TO operator;"
-					+ "GRANT SELECT ON account TO operator;"
+					+ "GRANT ALL ON employee, company, deptype, city, post, education, owntype, paytype TO operator;"
+					+ "GRANT SELECT, INSERT ON payment TO operator;"
+					+ "GRANT SELECT ON department, account TO operator;"
 					+ "GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO operator;"
 					+ "GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO operator;";
 			stmt.executeUpdate(execMe);
 
 			execMe  = "SELECT 'GRANT SELECT ON ' || quote_ident(schemaname) || '.' || quote_ident(viewname) || ' TO operator;'"
 					+ " FROM pg_views WHERE schemaname = 'public';";
-
 			ResultSet rs = stmt.executeQuery(execMe);
 			List<String> queries = new ArrayList<>();
 			while (rs.next())
@@ -355,7 +369,6 @@ public class ServerMain
 
 			execMe  = "SELECT 'GRANT SELECT ON ' || quote_ident(schemaname) || '.' || quote_ident(viewname) || ' TO admin;'"
 					+ " FROM pg_views WHERE schemaname = 'public';";
-
 			rs = stmt.executeQuery(execMe);queries = new ArrayList<>();
 			while (rs.next())
 				queries.add(rs.getString(1));
@@ -370,8 +383,12 @@ public class ServerMain
 		{
 			String execMe;
 			execMe  = "create function setPaymentDateToday() returns trigger as $$\n"
+					+ "declare\n"
+					+ "current_account account%rowtype;\n"
 					+ "begin\n"
 					+ "new.date = current_date;\n"
+					+ "execute 'select * from account where login = current_user' into current_account;\n"
+					+ "new.employee_id = current_account.employee_id;\n"
 					+ "return new;\n"
 					+ "end;\n"
 					+ "$$ LANGUAGE 'plpgsql';";
