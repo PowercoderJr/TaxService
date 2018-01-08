@@ -197,7 +197,7 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 	{
 		//Примитивные
 		if (Boolean.class == clazz || Boolean.TYPE == clazz)
-			return Boolean.parseBoolean(value);
+			return value.equalsIgnoreCase("t");
 		if (Byte.class == clazz || Byte.TYPE == clazz)
 			return Byte.parseByte(value);
 		if (Short.class == clazz || Short.TYPE == clazz)

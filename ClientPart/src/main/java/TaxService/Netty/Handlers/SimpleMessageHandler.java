@@ -20,7 +20,7 @@ public class SimpleMessageHandler extends AbstractHandler<String>
 		switch (tokens[0])
 		{
 			case ACCESS:
-				ClientAgent.publishAuth(tokens[1]);
+				ClientAgent.publishAuth(new Pair(tokens[1], tokens[2]));
 				break;
 			case ERROR:
 				String original = Arrays.stream(tokens).collect(Collectors.joining(String.valueOf(SEPARATOR)));

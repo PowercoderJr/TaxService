@@ -3,6 +3,7 @@ package TaxService.Handlers;
 import TaxService.CRUDs.EmployeeCRUD;
 import TaxService.CRUDs.OwntypeCRUD;
 import TaxService.CRUDs.PostCRUD;
+import TaxService.DAOs.Account;
 import TaxService.DAOs.Department;
 import TaxService.Deliveries.QueryResultDelivery;
 import TaxService.ServerAgent;
@@ -28,7 +29,7 @@ public class SimpleMessageHandler extends AbstractHandler<String>
         switch (tokens[0])
         {
             case AUTH:
-                String accessResult = ACCESS_RESULT_INVALID_LOGIN_PASSWORD;
+                String accessResult = ACCESS_RESULT_INVALID_LOGIN_PASSWORD + SEPARATOR + "-";
                 Connection newConnection;
                 try
                 {
@@ -44,16 +45,36 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                             connections.remove(ctx.channel().id());
                         }
                         newConnection = DriverManager.getConnection("jdbc:postgresql://localhost/TaxService", tokens[1], tokens[2]);
+                        Statement stmt = newConnection.createStatement();
+                        String role = "-";
+                        if (tokens[1].equals("postgres"))
+                            role = String.valueOf(Account.Roles.ADMIN);
+                        else
+                        {
+                            ResultSet rs = stmt.executeQuery("SELECT role FROM account WHERE (login) = ('" + tokens[1] + "')");
+                            if (rs.next())
+                                role = rs.getString(1);
+                        }
                         connections.put(ctx.channel().id(), new Pair<>(newConnection, System.currentTimeMillis()));
-                        accessResult = ACCESS_RESULT_SUCCESS;
+                        accessResult = ACCESS_RESULT_SUCCESS + SEPARATOR + role;
                     }
                     else
-                        accessResult = ACCESS_RESULT_ALREADY_LOGGED;*/
+                        accessResult = ACCESS_RESULT_ALREADY_LOGGED + SEPARATOR + "-";*/
 
                     //Нет блока
                     newConnection = DriverManager.getConnection("jdbc:postgresql://localhost/TaxService", tokens[1], tokens[2]);
+                    Statement stmt = newConnection.createStatement();
+                    String role = "-";
+                    if (tokens[1].equals("postgres"))
+                        role = String.valueOf(Account.Roles.ADMIN);
+                    else
+                    {
+                        ResultSet rs = stmt.executeQuery("SELECT role FROM account WHERE (login) = ('" + tokens[1] + "')");
+                        if (rs.next())
+                            role = rs.getString(1);
+                    }
                     connections.put(ctx.channel().id(), new Pair<>(newConnection, System.currentTimeMillis()));
-                    accessResult = ACCESS_RESULT_SUCCESS;
+                    accessResult = ACCESS_RESULT_SUCCESS + SEPARATOR + role;
                 }
                 catch (SQLException e)
                 {

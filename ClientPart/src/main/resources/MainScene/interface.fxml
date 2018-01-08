@@ -15,7 +15,7 @@
             <menus>
                 <Menu mnemonicParsing="false" text="База данных">
                     <items>
-                  <MenuItem mnemonicParsing="false" onAction="#openUserManager" text="Менеджер пользователей" />
+                  <MenuItem fx:id="openUserManagerMenuItem" mnemonicParsing="false" onAction="#openUserManager" text="Менеджер пользователей" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                         <MenuItem mnemonicParsing="false" onAction="#fsMode" text="На весь экран" />
                         <MenuItem mnemonicParsing="false" onAction="#disconnect" text="Отключиться" />
@@ -37,7 +37,7 @@
                         <MenuItem fx:id="switchToPaytypeMenuItem" mnemonicParsing="false" />
                     </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Запросы">
+                <Menu fx:id="queriesMenu" mnemonicParsing="false" text="Запросы">
                     <items>
                         <MenuItem onAction="#executeQuery" text="Список платежей, которые оформил указанный сотрудник" userData="_1_1" />
                         <MenuItem onAction="#executeQuery" text="Список платежей, оформленных начиная с указанной даты" userData="_1_2" />

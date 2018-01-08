@@ -5,6 +5,8 @@ import TaxService.DAOs.*;
 import org.reflections.Reflections;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class ServerMain
@@ -128,32 +130,6 @@ public class ServerMain
 			//Назначение индексов
 			execMe  = "create index emp_fullname_idx on employee (surname, name, patronymic)";
 			stmt.executeUpdate(execMe);
-
-			//Инструменты управления пользователями
-			execMe  = "CREATE TYPE custom_role AS ENUM ('JUSTUSER', 'OPERATOR', 'ADMIN')";
-			stmt.executeUpdate(execMe);
-
-			execMe  = "CREATE TABLE account("
-					+ "id serial primary key,"
-					+ "login varchar(100) not null unique,"
-					+ "employee_id int8 not null references employee(id) on delete cascade,"
-					+ "role custom_role not null,"
-					+ "blocked boolean not null)";
-			stmt.executeUpdate(execMe);
-			//TODO: блокировать учётную запись вместо удаления
-
-			/*execMe  = "CREATE ROLE justuser;"
-					+ "GRANT SELECT ON department, employee, company, payment, deptype, city, post, education, owntype, paytype TO justuser;"
-					+ "GRANT INSERT ON payment TO justuser;";
-			stmt.executeUpdate(execMe);
-
-			execMe  = "CREATE ROLE operator;"
-					+ "GRANT ALL ON department, employee, company, payment, deptype, city, post, education, owntype, paytype TO justuser;";
-			stmt.executeUpdate(execMe);
-
-			execMe  = "CREATE ROLE admin WITH CREATEROLE ADMIN justuser, operator;"
-					+ "GRANT ALL ON ALL TABLES IN SCHEMA public TO admin;";
-			stmt.executeUpdate(execMe);*/
 
 			//Создание представлений и хранимых процедур
 			execMe  = "CREATE FUNCTION query_1_1 (x int)\n"
@@ -334,6 +310,57 @@ public class ServerMain
 			execMe  = "CREATE VIEW query_ AS\n"
 					+ "\t";
 			stmt.executeUpdate(execMe);*/
+
+			//Инструменты управления пользователями
+			execMe  = "CREATE TYPE custom_role AS ENUM ('JUSTUSER', 'OPERATOR', 'ADMIN')";
+			stmt.executeUpdate(execMe);
+
+			execMe  = "CREATE TABLE account("
+					+ "id serial primary key,"
+					+ "login varchar(100) not null unique,"
+					+ "employee_id int8 not null references employee(id) on delete cascade,"
+					+ "role custom_role not null,"
+					+ "blocked boolean not null)";
+			stmt.executeUpdate(execMe);
+			//TODO: блокировать учётную запись вместо удаления
+
+			execMe  = "CREATE ROLE justuser;"
+					+ "GRANT SELECT ON ALL TABLES IN SCHEMA public TO justuser;"
+					+ "GRANT INSERT ON payment TO justuser;"
+					+ "GRANT USAGE ON payment_id_seq TO justuser;";
+			stmt.executeUpdate(execMe);
+
+			execMe  = "CREATE ROLE operator;"
+					+ "GRANT ALL ON department, employee, company, payment, deptype, city, post, education, owntype, paytype TO operator;"
+					+ "GRANT SELECT ON account TO operator;"
+					+ "GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO operator;"
+					+ "GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO operator;";
+			stmt.executeUpdate(execMe);
+
+			execMe  = "SELECT 'GRANT SELECT ON ' || quote_ident(schemaname) || '.' || quote_ident(viewname) || ' TO operator;'"
+					+ " FROM pg_views WHERE schemaname = 'public';";
+
+			ResultSet rs = stmt.executeQuery(execMe);
+			List<String> queries = new ArrayList<>();
+			while (rs.next())
+				queries.add(rs.getString(1));
+			for (String query : queries)
+				stmt.executeUpdate(query);
+
+			execMe  = "CREATE ROLE admin WITH CREATEROLE;"
+					+ "GRANT ALL ON ALL TABLES IN SCHEMA public TO admin;"
+					+ "GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO admin;"
+					+ "GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO admin;";
+			stmt.executeUpdate(execMe);
+
+			execMe  = "SELECT 'GRANT SELECT ON ' || quote_ident(schemaname) || '.' || quote_ident(viewname) || ' TO admin;'"
+					+ " FROM pg_views WHERE schemaname = 'public';";
+
+			rs = stmt.executeQuery(execMe);queries = new ArrayList<>();
+			while (rs.next())
+				queries.add(rs.getString(1));
+			for (String query : queries)
+				stmt.executeUpdate(query);
 		}
 	}
 

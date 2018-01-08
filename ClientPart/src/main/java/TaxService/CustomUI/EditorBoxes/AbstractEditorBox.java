@@ -97,9 +97,7 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 			public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue)
 			{
 				if (newPropertyValue)
-				{
 					primary.setEffect(null);
-				}
 			}
 		});
 
@@ -110,9 +108,7 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 			public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue)
 			{
 				if (newPropertyValue)
-				{
 					secondary.setEffect(null);
-				}
 			}
 		});
 	}

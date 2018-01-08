@@ -28,6 +28,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
@@ -108,6 +109,8 @@ public class MainController
 	@FXML
 	public GridPane updateConfirmPane;
 	@FXML
+	public MenuItem openUserManagerMenuItem;
+	@FXML
 	public MenuItem switchToDepartmentMenuItem;
 	@FXML
 	public MenuItem switchToEmployeeMenuItem;
@@ -127,6 +130,8 @@ public class MainController
 	public MenuItem switchToOwntypeMenuItem;
 	@FXML
 	public MenuItem switchToPaytypeMenuItem;
+	@FXML
+	public Menu queriesMenu;
 	@FXML
 	public Label statusLabel;
 	@FXML
@@ -580,70 +585,11 @@ public class MainController
 		umStage.setScene(umScene);
 		umStage.initOwner(root.getScene().getWindow());
 		umStage.initModality(Modality.APPLICATION_MODAL);
+
+		ClientAgent.unsubscribeNotificationReceived(onNotificationReceived);
 		umStage.showAndWait();
+		ClientAgent.subscribeNotificationReceived(onNotificationReceived);
 	}
-
-	/*public void createUser(ActionEvent actionEvent)
-	{
-		ButtonType okBtn = new ButtonType("ОК", ButtonBar.ButtonData.OK_DONE);
-		ButtonType cancelBtn = new ButtonType("Отмена", ButtonBar.ButtonData.CANCEL_CLOSE);
-
-		Dialog<String> dialog = new Dialog<>();
-		dialog.setTitle("Создание пользователя");
-		dialog.setHeaderText("Создание пользователя");
-
-		GridPane grid = new GridPane();
-		grid.setHgap(10);
-		grid.setVgap(10);
-
-		Label label1 = new Label("Логин:");
-		label1.setPrefWidth(150);
-		grid.add(label1, 0, 0);
-		TextField textField = new TextField();
-		textField.setPrefWidth(300);
-		UnaryOperator<TextFormatter.Change> loginFilter = change ->
-		{
-			String newText = change.getControlNewText();
-			if (newText.matches("^[a-zA-Z]+\\w*"))
-				return change;
-			else
-				return null;
-		};
-		textField.setTextFormatter(new TextFormatter<Integer>(loginFilter));
-		grid.add(textField, 1, 0);
-
-		Label label1 = new Label("Логин:");
-		label1.setPrefWidth(150);
-		grid.add(label1, 0, 0);
-		ComboBox<Employee> comboBox = new ComboBox<>();
-		comboBox.setPrefWidth(300);
-		comboBox.setItems(tableStaffs.get(Employee.class).data);
-		grid.add(comboBox, 1, 0);
-
-		Label label1 = new Label("Логин:");
-		label1.setPrefWidth(150);
-		grid.add(label1, 0, 0);
-		ComboBox<Employee> comboBox = new ComboBox<>();
-		comboBox.setPrefWidth(300);
-		comboBox.setItems(tableStaffs.get(Employee.class).data);
-		grid.add(comboBox, 1, 0);
-
-		dialog.getDialogPane().setContent(grid);
-		Platform.runLater(() -> comboBox.requestFocus());
-		dialog.getDialogPane().getButtonTypes().setAll(okBtn, cancelBtn);
-		dialog.setResultConverter(btn ->
-		{
-			Employee a = comboBox.getSelectionModel().getSelectedItem();
-			Date b = datePicker.getValue() == null ? null : Date.valueOf(datePicker.getValue());
-			return btn == okBtn && a != null && b != null ? new Pair<>(a, b) : null;
-		});
-
-		dialog.initOwner(root.getScene().getWindow());
-		Optional<Pair<Employee, Date>> result = dialog.showAndWait();
-		if (result.isPresent())
-			ClientAgent.getInstance().send(QUERY + SEPARATOR + queryCode + SEPARATOR +
-					result.get().getKey().getId() + SEPARATOR + result.get().getValue());
-	}*/
 
 	public void fsMode(ActionEvent actionEvent)
 	{
@@ -674,6 +620,31 @@ public class MainController
 	{
 		((Stage)root.getScene().getWindow()).close();
 		root.getScene().getWindow().getOnCloseRequest().handle(null);
+	}
+
+	public void setUI(Account.Roles role)
+	{
+		switch (role)
+		{
+			case JUSTUSER:
+				updateBtn.setDisable(true);
+				deleteBtn.setDisable(true);
+				queriesMenu.setDisable(true);
+				openUserManagerMenuItem.setDisable(true);
+				break;
+			case OPERATOR:
+				updateBtn.setDisable(false);
+				deleteBtn.setDisable(false);
+				queriesMenu.setDisable(false);
+				openUserManagerMenuItem.setDisable(true);
+				break;
+			case ADMIN:
+				updateBtn.setDisable(false);
+				deleteBtn.setDisable(false);
+				queriesMenu.setDisable(false);
+				openUserManagerMenuItem.setDisable(false);
+				break;
+		}
 	}
 
 	public void executeQuery(ActionEvent actionEvent)

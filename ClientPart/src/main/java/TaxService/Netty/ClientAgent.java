@@ -11,6 +11,7 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import javafx.util.Pair;
 import sun.awt.Mutex;
 
 import java.io.Closeable;
@@ -93,7 +94,7 @@ public class ClientAgent implements Closeable
 		authSubsMutex.unlock();
 	}
 
-	public static void publishAuth(String result)
+	public static void publishAuth(Pair<String, String> result)
 	{
 		authSubsMutex.lock();
 		for (Callback s : authSubs)

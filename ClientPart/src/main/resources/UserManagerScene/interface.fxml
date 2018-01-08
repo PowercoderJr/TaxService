@@ -7,11 +7,64 @@
 
 <BorderPane fx:id="root" opacity="0.99" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="TaxService.SceneControllers.UserManagerController">
    <left>
-      <VBox alignment="TOP_CENTER" prefWidth="300.0" spacing="10.0" BorderPane.alignment="CENTER">
+      <VBox prefWidth="450.0" spacing="10.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="createBtn" mnemonicParsing="false" prefHeight="40.0" prefWidth="290.0" text="Создать" />
-            <Button fx:id="editBtn" disable="true" mnemonicParsing="false" prefHeight="40.0" prefWidth="290.0" text="Изменить" />
-            <Button fx:id="toggleBlockedBtn" disable="true" mnemonicParsing="false" prefHeight="40.0" prefWidth="290.0" text="Заблокировать / Разблокировать" />
+            <Label fx:id="statsLabel" text="Статистика" wrapText="true" />
+            <Button maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#toggleShowBlocked" prefHeight="40.0" text="Показать / скрыть заблокированных" />
+            <Button maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#refresh" prefHeight="40.0" text="Обновить список пользователей" />
+            <TitledPane fx:id="createPane" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" text="Создание пользователя">
+               <content>
+                  <GridPane hgap="10.0" vgap="10.0">
+                    <columnConstraints>
+                      <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" percentWidth="30.0" />
+                      <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <Button fx:id="createBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onCreateClicked" prefHeight="40.0" text="Создать" GridPane.columnSpan="2" GridPane.rowIndex="6" />
+                        <Label text="Логин:" />
+                        <Label text="Пароль:" GridPane.rowIndex="1" />
+                        <Label text="Ещё раз:" GridPane.rowIndex="2" />
+                        <Label text="Владелец:" GridPane.rowIndex="3" />
+                        <Label text="Роль:" GridPane.rowIndex="4" />
+                        <Label text="Заблокирован:" GridPane.rowIndex="5" />
+                        <TextField fx:id="loginCrField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" />
+                        <PasswordField fx:id="pass1CrField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
+                        <PasswordField fx:id="pass2CrField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" />
+                        <ComboBox fx:id="ownerCrCb" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" />
+                        <ComboBox fx:id="roleCrCb" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" />
+                        <CheckBox fx:id="blockedCrChb" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                     </children>
+                  </GridPane>
+               </content>
+            </TitledPane>
+            <TitledPane fx:id="updatePane" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" text="Редактирование пользователя">
+               <content>
+                  <GridPane hgap="10.0" vgap="10.0">
+                     <columnConstraints>
+                        <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" percentWidth="40.0" />
+                        <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                        <Button fx:id="updateBtn" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onUpdateClicked" prefHeight="40.0" text="Сохранить изменения" GridPane.columnSpan="2" GridPane.rowIndex="1" />
+                        <Label text="Заблокирован:" />
+                        <CheckBox fx:id="blockedUpdChb" mnemonicParsing="false" GridPane.columnIndex="1" />
+                     </children>
+                  </GridPane>
+               </content>
+            </TitledPane>
          </children>
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

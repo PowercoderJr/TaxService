@@ -1,6 +1,7 @@
 package TaxService.SceneControllers;
 
 import TaxService.*;
+import TaxService.DAOs.Account;
 import TaxService.Netty.ClientAgent;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -17,6 +18,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import javafx.util.Pair;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.awt.*;
@@ -55,10 +57,10 @@ public class AuthController
 
 		onAuth = o ->
 		{
-			final String accessResult = o.toString();
+			final Pair<String, String> accessResult = (Pair<String, String>) o;
 			Platform.runLater(() ->
 			{
-				switch (accessResult)
+				switch (accessResult.getKey())
 				{
 					case PhraseBook.ACCESS_RESULT_SUCCESS:
 						try
@@ -71,6 +73,7 @@ public class AuthController
 							mainStage.setX((Toolkit.getDefaultToolkit().getScreenSize().width - ClientMain.DEFAULT_WINDOW_WIDTH) / 2);
 							mainStage.setY((Toolkit.getDefaultToolkit().getScreenSize().height - ClientMain.DEFAULT_WINDOW_HEIGHT) / 2);
 							mainStage.setOnCloseRequest(event -> ((MainController)loader.getController()).shutdown());
+							((MainController)loader.getController()).setUI(Enum.valueOf(Account.Roles.class, accessResult.getValue()));
 							Scene mainScene = new Scene(mainSceneFXML);
 							mainScene.getStylesheets().add("/MainScene/style.css");
 							mainStage.setScene(mainScene);
@@ -107,7 +110,6 @@ public class AuthController
 			String msg = PhraseBook.AUTH + PhraseBook.SEPARATOR +
 					loginField.getText() + PhraseBook.SEPARATOR +
 					passField.getText();
-				//DigestUtils.sha256Hex(DigestUtils.sha256Hex(passField.getText()));
 			try
 			{
 				ClientAgent.buildInstance(InetAddress.getLocalHost(), PORT);
