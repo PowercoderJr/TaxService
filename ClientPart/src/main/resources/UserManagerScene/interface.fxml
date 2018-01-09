@@ -56,11 +56,14 @@
                      <rowConstraints>
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
-                        <Button fx:id="updateBtn" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onUpdateClicked" prefHeight="40.0" text="Сохранить изменения" GridPane.columnSpan="2" GridPane.rowIndex="1" />
-                        <Label text="Заблокирован:" />
-                        <CheckBox fx:id="blockedUpdChb" mnemonicParsing="false" GridPane.columnIndex="1" />
+                        <Button fx:id="updateBtn" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#onUpdateClicked" prefHeight="40.0" text="Сохранить изменения" GridPane.columnSpan="2" GridPane.rowIndex="2" />
+                        <Label text="Заблокирован:" GridPane.rowIndex="1" />
+                        <CheckBox fx:id="blockedUpdChb" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label text="Роль:" />
+                        <ComboBox fx:id="roleUpdCb" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" />
                      </children>
                   </GridPane>
                </content>
@@ -72,6 +75,10 @@
       </VBox>
    </left>
    <center>
-      <TableView fx:id="tableView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <TableView fx:id="tableView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+          <placeholder>
+              <Label text="НЕТ ПОЛЬЗОВАТЕЛЕЙ" />
+          </placeholder>
+      </TableView>
    </center>
 </BorderPane>

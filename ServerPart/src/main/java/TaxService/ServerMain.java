@@ -26,22 +26,22 @@ public class ServerMain
 
 				timeZero = System.currentTimeMillis();
 				DepartmentCRUD departmentCRUD = new DepartmentCRUD(superConnection);
-				departmentCRUD.insertRandomBeans(1000);
+				departmentCRUD.insertRandomBeans(100);
 				System.out.println("Departments generation completed in " + (System.currentTimeMillis() - timeZero) + " ms");
 
 				timeZero = System.currentTimeMillis();
 				EmployeeCRUD employeeCRUD = new EmployeeCRUD(superConnection);
-				employeeCRUD.insertRandomBeans(40000);
+				employeeCRUD.insertRandomBeans(1000);
 				System.out.println("Employees generation completed in " + (System.currentTimeMillis() - timeZero) + " ms");
 
 				timeZero = System.currentTimeMillis();
 				CompanyCRUD companyCRUD = new CompanyCRUD(superConnection);
-				companyCRUD.insertRandomBeans(1000);
+				companyCRUD.insertRandomBeans(100);
 				System.out.println("Companies generation completed in " + (System.currentTimeMillis() - timeZero) + " ms");
 
 				timeZero = System.currentTimeMillis();
 				PaymentCRUD paymentCRUD = new PaymentCRUD(superConnection);
-				paymentCRUD.insertRandomBeans(50000);
+				paymentCRUD.insertRandomBeans(10000);
 				System.out.println("Payments generation completed in " + (System.currentTimeMillis() - timeZero) + " ms");
 
 				/*departmentCRUD.delete(2);
@@ -318,25 +318,30 @@ public class ServerMain
 			execMe  = "CREATE TABLE account("
 					+ "id serial primary key,"
 					+ "login varchar(100) not null unique,"
-					+ "employee_id int8 not null references employee(id) on delete cascade,"
+					+ "password varchar(100) not null,"
+					+ "employee_id int8 not null unique references employee(id) on delete cascade,"
 					+ "role custom_role not null,"
 					+ "blocked boolean not null)";
 			stmt.executeUpdate(execMe);
-			//TODO: блокировать учётную запись вместо удаления
 
 			execMe  = "revoke all on all tables in schema public from justuser;"
 					+ "revoke all on all sequences in schema public from justuser;"
 					+ "revoke all on all functions in schema public from justuser;"
-					+ "drop role justuser;"
 					+ "revoke all on all tables in schema public from operator;"
 					+ "revoke all on all sequences in schema public from operator;"
 					+ "revoke all on all functions in schema public from operator;"
-					+ "drop role operator;"
 					+ "revoke all on all tables in schema public from admin;"
 					+ "revoke all on all sequences in schema public from admin;"
-					+ "revoke all on all functions in schema public from admin;"
-					+ "drop role admin;";
+					+ "revoke all on all functions in schema public from admin;";
 			stmt.executeUpdate(execMe);
+
+			execMe  = "SELECT 'DROP ROLE ' || quote_ident(rolname) FROM pg_roles WHERE rolname NOT IN ('postgres', 'pg_signal_backend');";
+			ResultSet rs = stmt.executeQuery(execMe);
+			List<String> queries = new ArrayList<>();
+			while (rs.next())
+				queries.add(rs.getString(1));
+			for (String query : queries)
+				stmt.executeUpdate(query);
 
 			execMe  = "CREATE ROLE justuser;"
 					+ "GRANT SELECT ON ALL TABLES IN SCHEMA public TO justuser;"
@@ -354,8 +359,8 @@ public class ServerMain
 
 			execMe  = "SELECT 'GRANT SELECT ON ' || quote_ident(schemaname) || '.' || quote_ident(viewname) || ' TO operator;'"
 					+ " FROM pg_views WHERE schemaname = 'public';";
-			ResultSet rs = stmt.executeQuery(execMe);
-			List<String> queries = new ArrayList<>();
+			rs = stmt.executeQuery(execMe);
+			queries = new ArrayList<>();
 			while (rs.next())
 				queries.add(rs.getString(1));
 			for (String query : queries)
@@ -382,20 +387,97 @@ public class ServerMain
 		try (Statement stmt = connection.createStatement())
 		{
 			String execMe;
-			execMe  = "create function setPaymentDateToday() returns trigger as $$\n"
+			execMe  = "create function autofill_payment() returns trigger as $$\n"
 					+ "declare\n"
-					+ "current_account account%rowtype;\n"
+					+ "\tcurrent_account account%rowtype;\n"
 					+ "begin\n"
-					+ "new.date = current_date;\n"
-					+ "execute 'select * from account where login = current_user' into current_account;\n"
-					+ "new.employee_id = current_account.employee_id;\n"
-					+ "return new;\n"
+					+ "\tnew.date = current_date;\n"
+					+ "\texecute 'select * from account where login = current_user' into current_account;\n"
+					+ "\tnew.employee_id = current_account.employee_id;\n"
+					+ "\treturn new;\n"
 					+ "end;\n"
 					+ "$$ LANGUAGE 'plpgsql';";
 			stmt.executeUpdate(execMe);
 
-			execMe  = "create trigger setPaymentDateToday before insert on payment "
-					+ "for each row execute procedure setPaymentDateToday()";
+			execMe  = "create trigger autofill_payment before insert on payment "
+					+ "for each row execute procedure autofill_payment()";
+			stmt.executeUpdate(execMe);
+
+			execMe  = "create function block_user_instead_of_deleting() returns trigger as $$\n"
+					+ "begin\n"
+					+ "\told.blocked = true;\n"
+					+ "\texecute format('ALTER USER %s WITH NOLOGIN', old.login);\n"
+					+ "\treturn null;\n"
+					+ "end;\n"
+					+ "$$ LANGUAGE 'plpgsql';";
+			stmt.executeUpdate(execMe);
+
+			execMe  = "create trigger block_user_instead_of_deleting before delete on account "
+					+ "for each row execute procedure block_user_instead_of_deleting()";
+			stmt.executeUpdate(execMe);
+
+			execMe  = "create function prevent_deleting_current_employee() returns trigger as $$\n"
+					+ "declare\n"
+					+ "\tcurrent_account account%rowtype;\n"
+					+ "begin\n"
+					+ "\texecute 'select * from account where login = current_user' into current_account;\n"
+					+ "\tif old.id = current_account.employee_id then\n"
+					+ "\t\traise exception 'Employee with ID % was not deleted because his owner are you!', old.id "
+					+ "using hint = 'However, the rest of the query was executed successfully';\n"
+					+ "\t\treturn null;\n"
+					+ "\telse\n"
+					+ "\t\treturn old;\n"
+					+ "\tend if;\n"
+					+ "end;\n"
+					+ "$$ LANGUAGE 'plpgsql';";
+			stmt.executeUpdate(execMe);
+
+			execMe  = "create trigger prevent_deleting_current_employee before delete on employee "
+					+ "for each row execute procedure prevent_deleting_current_employee()";
+			stmt.executeUpdate(execMe);
+
+			execMe  = "create function create_new_user() returns trigger as $$\n"
+					+ "begin\n"
+					+ "\texecute format('CREATE USER %s WITH PASSWORD $pass$%s$pass$ IN ROLE %s', new.login, new.password, new.role);\n"
+					+ "\tnew.password = '********';\n"
+					+ "\tif new.role = 'ADMIN' then\n"
+					+ "\t\texecute format('ALTER USER %s WITH CREATEROLE', new.login);\n"
+					+ "\tend if;\n"
+					+ "\treturn new;\n"
+					+ "end;\n"
+					+ "$$ LANGUAGE 'plpgsql';";
+			stmt.executeUpdate(execMe);
+
+			execMe  = "create trigger create_new_user before insert on account "
+					+ "for each row execute procedure create_new_user()";
+			stmt.executeUpdate(execMe);
+
+			//Disconnect blocked user if it active with: pg_stat_activity + pg_terminate_backend() would be nice,
+			//but it requires superuser rights whereas blocking doesn't
+			execMe  = "create function update_user() returns trigger as $$\n"
+					+ "begin\n"
+					+ "\t if TG_OP = 'UPDATE' AND old.login = current_user then\n"
+					+ "\t\traise exception 'You can not edit your account by yourself';\n"
+					+ "\telse"
+					+ "\t\tif TG_OP = 'UPDATE' AND new.role <> old.role then\n"
+					+ "\t\t\tnew.login = old.login;\n"
+					+ "\t\t\tnew.employee_id = old.employee_id;\n"
+					+ "\t\t\texecute format('REVOKE %s FROM %s', old.role, old.login);\n"
+					+ "\t\t\texecute format('GRANT %s TO %s', new.role, old.login);\n"
+					+ "\t\tend if;\n"
+					+ "\t\tif new.blocked then\n"
+					+ "\t\t\texecute format('ALTER USER %s WITH NOLOGIN', new.login);\n"
+					+ "\t\telse\n"
+					+ "\t\t\texecute format('ALTER USER %s WITH LOGIN', new.login);\n"
+					+ "\t\tend if;\n"
+					+ "\tend if;\n"
+					+ "\treturn new;\n"
+					+ "end;\n"
+					+ "$$ LANGUAGE 'plpgsql';";
+			stmt.executeUpdate(execMe);
+
+			execMe  = "create trigger update_user after insert or update on account "
+					+ "for each row execute procedure update_user()";
 			stmt.executeUpdate(execMe);
 		}
 	}

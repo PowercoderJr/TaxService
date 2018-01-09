@@ -28,7 +28,7 @@ public class Utils
 				if (AbstractDAO.class.isAssignableFrom(item.getType()))
 					result = item.get(dao) == null ? "0" : String.valueOf(((AbstractDAO) item.get(dao)).getId());
 				else
-					result = String.valueOf(item.get(dao));
+					result = String.valueOf(item.get(dao)).replace("'", "''");
 			}
 			catch (IllegalAccessException e)
 			{

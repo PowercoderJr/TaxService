@@ -235,7 +235,7 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 		{
 			String colNames = Utils.fieldNamesToString(primaryPair.getValue().stream());
 			String values = Utils.fieldValuesToString(primaryPair.getValue().stream(), primaryPair.getKey());
-			localFilter = " WHERE (" + colNames + ") = (" + values + ")";
+			localFilter = "(" + colNames + ") = (" + values + ")";
 		}
 
 		Pair<T, List<Field>> secondaryPair = withdrawSecondaryFilled();
@@ -258,7 +258,7 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 		{
 			String colNames = Utils.fieldNamesToString(pair.getValue().stream());
 			String values = Utils.fieldValuesToString(pair.getValue().stream(), pair.getKey());
-			filter = " WHERE (" + colNames + ") = (" + values + ")";
+			filter = "(" + colNames + ") = (" + values + ")";
 		}
 		return !filter.equals(oldFilter);
 	}
@@ -273,7 +273,7 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 		{
 			String colNames = Utils.fieldNamesToString(pair.getValue().stream());
 			String values = Utils.fieldValuesToString(pair.getValue().stream(), pair.getKey());
-			localFilter = " WHERE (" + colNames + ") = (" + values + ")";
+			localFilter = "(" + colNames + ") = (" + values + ")";
 		}
 		ClientAgent.getInstance().send(new DeleteOrder<>(clazz, localFilter));
 		return true;

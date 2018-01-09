@@ -23,7 +23,7 @@ public class CompanyCRUD extends AbstractRandomableCRUD<Company>
 		String name = RandomHelper.getRandomCompany();
 
 		OwntypeCRUD owntypeCRUD = new OwntypeCRUD(connection);
-		Owntype owntype = owntypeCRUD.readRandom(true);
+		Owntype owntype = owntypeCRUD.readRandom(true, null);
 
 		String phone = RandomHelper.getRandomPhone();
 

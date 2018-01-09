@@ -237,23 +237,13 @@ public class MainController
 			QueryResultDelivery delivery = (QueryResultDelivery) o;
 			Platform.runLater(() ->
 			{
-				HBox hbox = new HBox(new Label(ClientAgent.df.format(delivery.getDate()) + " - " + delivery.getHeader()));
-				hbox.setPrefHeight(30);
-				TableView tv = new TableView();
-				tv.setPlaceholder(new Label("НЕТ ЗАПИСЕЙ"));
-				List<ArrayList> rows = delivery.getContent();
-				tv.getColumns().setAll(TableColumnsBuilder.buildForListOfStrings(rows.get(0)));
-				rows.remove(0);
-				tv.getItems().setAll(rows);
-
 				try
 				{
 					FXMLLoader loader = new FXMLLoader(ClientMain.class.getResource("/QueryResultScene/interface.fxml"));
 					BorderPane root = loader.load();
-					root.setTop(hbox);
-					root.setCenter(tv);
+					((QueryResultController) loader.getController()).setData(delivery.getContent(), delivery.getHeader(), delivery.getDate());
 					Stage stage = new Stage();
-					stage.setTitle("Результат запроса");
+					stage.setTitle("Результат запроса - " + delivery.getHeader());
 					Scene scene = new Scene(root);
 					scene.getStylesheets().add("/QueryResultScene/style.css");
 					stage.setScene(scene);

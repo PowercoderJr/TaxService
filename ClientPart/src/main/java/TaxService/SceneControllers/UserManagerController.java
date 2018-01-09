@@ -26,12 +26,17 @@ import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.Effect;
 import javafx.scene.layout.BorderPane;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
 public class UserManagerController
 {
+	@FXML
+	public BorderPane root;
+	@FXML
+	public Label statsLabel;
 	@FXML
 	public TableView tableView;
 	@FXML
@@ -53,11 +58,9 @@ public class UserManagerController
 	@FXML
 	public TitledPane updatePane;
 	@FXML
+	public ComboBox<Account.Roles> roleUpdCb;
+	@FXML
 	public CheckBox blockedUpdChb;
-	@FXML
-	public BorderPane root;
-	@FXML
-	public Label statsLabel;
 
 	private static Effect invalidEffect = new ColorAdjust(0, 0.5, 0, 0);
 
@@ -100,22 +103,32 @@ public class UserManagerController
 		tableView.setItems(accounts);
 
 		//Формы создания и редактирования
+		UnaryOperator<TextFormatter.Change> loginFilter = change ->
+		{
+			String newText = change.getControlNewText();
+			if (newText.matches("^[a-zA-Z]+\\w*$|^$"))
+				return change;
+			else
+				return null;
+		};
+		loginCrField.setTextFormatter(new TextFormatter<Integer>(loginFilter));
 		employees = FXCollections.observableArrayList(new ArrayList<Employee>());
 		ownerCrCb.setItems(employees);
-		roleCrCb.getItems().setAll(Account.Roles.values());
-
 		ownerCrCb.setOnShowing(event ->
 		{
 			ownerCrCb.getSelectionModel().clearSelection();
 			ownerCrCb.getEditor().clear();
 			ClientAgent.getInstance().send(new ReadAllOrder<Employee>(Employee.class, true, null));
 		});
+		roleCrCb.getItems().setAll(Account.Roles.values());
 
 		setEffectsResetter(loginCrField);
 		setEffectsResetter(pass1CrField);
 		setEffectsResetter(pass2CrField);
 		setEffectsResetter(ownerCrCb);
 		setEffectsResetter(roleCrCb);
+
+		roleUpdCb.getItems().setAll(Account.Roles.values());
 
 		tableView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener()
 		{
@@ -134,20 +147,11 @@ public class UserManagerController
 				{
 					Account account = (Account) tableView.getSelectionModel().getSelectedItem();
 					updatePane.setText("Редактирование: " + account);
+					roleUpdCb.getSelectionModel().select(account.getRole());
 					blockedUpdChb.setSelected(account.isBlocked());
 				}
 			}
 		});
-
-		UnaryOperator<TextFormatter.Change> loginFilter = change ->
-		{
-			String newText = change.getControlNewText();
-				if (newText.matches("^[a-zA-Z]+\\w*$|^$"))
-					return change;
-				else
-					return null;
-		};
-		loginCrField.setTextFormatter(new TextFormatter<Integer>(loginFilter));
 
 		//
 		onAllReceived = o ->
@@ -186,12 +190,10 @@ public class UserManagerController
 		{
 			if (pass1CrField.getText().equals(pass2CrField.getText()))
 			{
-				Account account = new Account(trimmedLogin,
+				Account account = new Account(trimmedLogin, pass1CrField.getText(),
 						ownerCrCb.getSelectionModel().getSelectedItem(), roleCrCb.getSelectionModel().getSelectedItem(),
 						blockedCrChb.isSelected());
-				Account accountToSend = new Account(account.getLogin() + PhraseBook.SEPARATOR + pass1CrField.getText(),
-						account.getEmployee(), account.getRole(), account.isBlocked());
-				ClientAgent.getInstance().send(new CreateOrder<>(Account.class, accountToSend));
+				ClientAgent.getInstance().send(new CreateOrder<>(Account.class, account));
 				Platform.runLater(() ->
 				{
 					((FilteredList) tableView.getItems()).getSource().add(account);
@@ -212,13 +214,17 @@ public class UserManagerController
 	public void onUpdateClicked(ActionEvent actionEvent)
 	{
 		Account account = (Account) tableView.getSelectionModel().getSelectedItem();
-		ClientAgent.getInstance().send(new UpdateOrder<>(Account.class, account.getLogin(), String.valueOf(blockedUpdChb.isSelected())));
+		ClientAgent.getInstance().send(new UpdateOrder<>(Account.class, "(login) = ('" + account.getLogin() + "')",
+				"(role, blocked) = ('" + String.valueOf(roleUpdCb.getSelectionModel().getSelectedItem()) +
+						"', " + String.valueOf(blockedUpdChb.isSelected()) + ")"));
+		account.setRole(roleUpdCb.getSelectionModel().getSelectedItem());
 		account.setBlocked(blockedUpdChb.isSelected());
 		Platform.runLater(() ->
 		{
 			updateAccountsFilter();
 			tableView.refresh();
 			refreshStatsLabel();
+			//clearUpdateForm();
 		});
 	}
 
@@ -244,6 +250,13 @@ public class UserManagerController
 		roleCrCb.getSelectionModel().clearSelection();
 		roleCrCb.getEditor().clear();
 		blockedCrChb.setSelected(false);
+	}
+
+	private void clearUpdateForm()
+	{
+		roleUpdCb.getSelectionModel().clearSelection();
+		roleUpdCb.getEditor().clear();
+		blockedUpdChb.setSelected(false);
 	}
 
 	private void updateAccountsFilter()

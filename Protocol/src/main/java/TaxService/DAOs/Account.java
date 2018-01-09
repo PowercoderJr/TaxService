@@ -7,6 +7,7 @@ public class Account extends AbstractDAO
     public enum Roles {JUSTUSER, OPERATOR, ADMIN}
 
     public String login;
+    public String password;
     public Employee employee;
     public Roles role;
     public boolean blocked;
@@ -31,9 +32,10 @@ public class Account extends AbstractDAO
         super();
     }
 
-    public Account(String login, Employee employee, Roles role, boolean blocked)
+    public Account(String login, String password, Employee employee, Roles role, boolean blocked)
     {
         this.login = login;
+        this.password = password;
         this.employee = employee;
         this.role = role;
         this.blocked = blocked;
@@ -47,6 +49,16 @@ public class Account extends AbstractDAO
     public void setLogin(String login)
     {
         this.login = login;
+    }
+
+    public String getPassword()
+    {
+        return password;
+    }
+
+    public void setPassword(String password)
+    {
+        this.password = password;
     }
 
     public Employee getEmployee()

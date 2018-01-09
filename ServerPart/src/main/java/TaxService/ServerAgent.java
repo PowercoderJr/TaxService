@@ -170,7 +170,7 @@ public class ServerAgent implements Closeable
 	{
 		AbstractCRUD crud = getCrudForClass(clazz, channelId);
 		if (crud != null)
-			return crud.delete(id);
+			return crud.delete(id, null);
 		return 0;
 	}
 
@@ -178,7 +178,7 @@ public class ServerAgent implements Closeable
 	{
 		AbstractCRUD crud = getCrudForClass(dao.getClass(), channelId);
 		if (crud != null)
-			return crud.delete(dao.getId());
+			return crud.delete(dao.getId(), null);
 		return 0;
 	}
 

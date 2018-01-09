@@ -29,7 +29,7 @@ public class SimpleMessageHandler extends AbstractHandler<String>
         switch (tokens[0])
         {
             case AUTH:
-                String accessResult = ACCESS_RESULT_INVALID_LOGIN_PASSWORD + SEPARATOR + "-";
+                String accessResult = ACCESS_RESULT_FORBIDDEN + SEPARATOR + "-";
                 Connection newConnection;
                 try
                 {
@@ -174,7 +174,7 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                 }
                                 EmployeeCRUD employeeCRUD = new EmployeeCRUD(connection);
                                 header = "Платежи, которые оформил(а) " + employeeCRUD
-                                        .read(Long.parseLong(tokens[2]), true) + "   - " + (list.size() - 1) + " зап.";
+                                        .read(Long.parseLong(tokens[2]), true, null) + " (" + (list.size() - 1) + " зап.)";
                                 break;
                             }
                             case "_1_2":
@@ -203,7 +203,7 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                     list.add(sublist);
                                 }
                                 header = "Платежи, оформленные, начиная с " + ServerAgent.df
-                                        .format(Date.valueOf(tokens[2])) + "   - " + (list.size() - 1) + " зап.";
+                                        .format(Date.valueOf(tokens[2])) + " (" + (list.size() - 1) + " зап.)";
                                 break;
                             }
                             case "_1_3":
@@ -230,8 +230,8 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                 }
                                 EmployeeCRUD employeeCRUD = new EmployeeCRUD(connection);
                                 header = "Платежи, которые оформил(а) " + employeeCRUD
-                                        .read(Long.parseLong(tokens[2]), true) + ", начиная с " + ServerAgent.df
-                                        .format(Date.valueOf(tokens[3])) + "   - " + (list.size() - 1) + " зап.";
+                                        .read(Long.parseLong(tokens[2]), true, null) + ", начиная с " + ServerAgent.df
+                                        .format(Date.valueOf(tokens[3])) + " (" + (list.size() - 1) + " зап.)";
                                 break;
                             }
                             case "_2_1":
@@ -257,7 +257,7 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                         sublist.add(rs.getObject(i).toString());
                                     list.add(sublist);
                                 }
-                                header = "Список сотрудников каждого отделения" + "   - " + (list.size() - 1) + " зап.";
+                                header = "Список сотрудников каждого отделения" + " (" + (list.size() - 1) + " зап.)";
                                 break;
                             }
                             case "_3":
@@ -330,7 +330,8 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                 sublist.add(tmp.substring(0, tmp.indexOf('.') + 3));
                                 list.add(sublist);
                                 PostCRUD postCRUD = new PostCRUD(connection);
-                                header = "Средний размер зарплаты среди должности " + postCRUD.read(Long.parseLong(tokens[2]), true);
+                                header = "Средний размер зарплаты среди должности " + postCRUD.read(Long.parseLong(tokens[2]),
+                                        true, null);
                                 break;
                             }
                             case "_8_2":
@@ -389,7 +390,7 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                     list.add(sublist);
                                 }
                                 OwntypeCRUD owntypeCRUD = new OwntypeCRUD(connection);
-                                header = "Предприятия типа \"" + owntypeCRUD.read(Long.parseLong(tokens[2]), true) +
+                                header = "Предприятия типа \"" + owntypeCRUD.read(Long.parseLong(tokens[2]), true, null) +
                                         "\", которые оформили платежей на сумму меньше, чем " + tokens[3] +
                                         "   - " + (list.size() - 1) + " зап.";
                                 break;
@@ -411,7 +412,7 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                     list.add(sublist);
                                 }
                                 header = "Отделения налоговой инспекции и предприятия, которые начали работу в " +
-                                        tokens[2] + " году" + "   - " + (list.size() - 1) + " зап.";
+                                        tokens[2] + " году" + " (" + (list.size() - 1) + " зап.)";
                                 break;
                             }
                             case "_13_1":
@@ -433,7 +434,7 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                     list.add(sublist);
                                 }
                                 header = "Предприятия, совершившие платежи начиная с " + ServerAgent.df
-                                        .format(Date.valueOf(tokens[2])) + "   - " + (list.size() - 1) + " зап.";
+                                        .format(Date.valueOf(tokens[2])) + " (" + (list.size() - 1) + " зап.)";
                                 break;
                             }
                             case "_13_2":
@@ -453,7 +454,7 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                     list.add(sublist);
                                 }
                                 header = "Предприятия, не совершившие платежи начиная с " + ServerAgent.df
-                                        .format(Date.valueOf(tokens[2])) + "   - " + (list.size() - 1) + " зап.";
+                                        .format(Date.valueOf(tokens[2])) + " (" + (list.size() - 1) + " зап.)";
                                 break;
                             }
                             case "_13_3":

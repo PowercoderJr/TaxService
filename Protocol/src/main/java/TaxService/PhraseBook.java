@@ -11,12 +11,12 @@ public class PhraseBook
 	public static final String BYE = "bye";
 	public static final String ACCESS = "access";
 	public static final String ACCESS_RESULT_SUCCESS = "succ";
-	public static final String ACCESS_RESULT_INVALID_LOGIN_PASSWORD = "invpl";
+	public static final String ACCESS_RESULT_FORBIDDEN = "frbd";
 	public static final String ACCESS_RESULT_ALREADY_LOGGED = "alrlogd";
 	public static final String ERROR = "err";
 	public static final String NOTIFICATION = "ntfc";
 	public static final String PING = "P";
-	public static final String QUERY = "query";
+	public static final String QUERY = "query";;
 
 	private PhraseBook(){
 	}

@@ -17,6 +17,7 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel>
 		//pipeline.addLast(LineBasedFrameDecoder.class.getName(), new LineBasedFrameDecoder(256));
 		pipeline.addLast("decoder", new ObjectDecoder(ClassResolvers.cacheDisabled(null)));
 		pipeline.addLast("encoder", new ObjectEncoder());
+		pipeline.addLast(new BadMessagesFilter());
 		pipeline.addLast(new SimpleMessageHandler());
 		pipeline.addLast(new CreateOrderHandler());
 		pipeline.addLast(new ReadPortionOrderHandler());

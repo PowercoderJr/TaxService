@@ -3,6 +3,8 @@ package TaxService.CRUDs;
 import TaxService.DAOs.*;
 import TaxService.Utils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
@@ -10,7 +12,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public abstract class AbstractCRUD<T extends AbstractDAO>
 {
@@ -55,23 +56,25 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 		}
 	}
 
-	public T read(long id, boolean isLazy) throws SQLException
+	public T read(long id, boolean isLazy, @Nullable String filter) throws SQLException
 	{
 		try (Statement stmt = connection.createStatement())
 		{
+			if (filter == null) filter = "";
+			filter = conjunctFilters("id = " + id, filter);
 			String fields;
 			if (isLazy)
 				fields = Utils.fieldNamesToString(Arrays.stream(AbstractDAO.getReadEvenIfLazy(clazz)));
 			else
 				fields = "*";
-			ResultSet rs = stmt.executeQuery("SELECT " + fields + " FROM " + clazz.getSimpleName() +
-					" WHERE id = " + id);
+			filter = adjustFilter(filter);
+			ResultSet rs = stmt.executeQuery("SELECT " + fields + " FROM " + clazz.getSimpleName() + filter);
 			List<T> result = reflectResultSet(rs, isLazy);
 			return result.isEmpty() ? null : result.get(0);
 		}
 	}
 
-	public List<T> readPortion(int portion, boolean isLazy, String filter) throws SQLException
+	public List<T> readPortion(int portion, boolean isLazy, @Nullable String filter) throws SQLException
 	{
 		try (Statement stmt = connection.createStatement())
 		{
@@ -81,6 +84,7 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 				fields = Utils.fieldNamesToString(Arrays.stream(AbstractDAO.getReadEvenIfLazy(clazz)));
 			else
 				fields = "*";
+			filter = adjustFilter(filter);
 			ResultSet rs = stmt.executeQuery("SELECT " + fields + " FROM " + clazz.getSimpleName() +
 					filter + " ORDER BY 1 ASC OFFSET " + ((portion - 1) * AbstractCRUD.PORTION_SIZE) +
 					" LIMIT " + AbstractCRUD.PORTION_SIZE);
@@ -88,7 +92,7 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 		}
 	}
 
-	public List<T> readAll(boolean isLazy, String filter) throws SQLException
+	public List<T> readAll(boolean isLazy, @Nullable String filter) throws SQLException
 	{
 		try (Statement stmt = connection.createStatement())
 		{
@@ -98,13 +102,16 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 				fields = Utils.fieldNamesToString(Arrays.stream(AbstractDAO.getReadEvenIfLazy(clazz)));
 			else
 				fields = "*";
+			filter = adjustFilter(filter);
 			ResultSet rs = stmt.executeQuery("SELECT " + fields + " FROM " + clazz.getSimpleName() + filter + " ORDER BY 1 ASC");
 			return reflectResultSet(rs, isLazy);
 		}
 	}
 
-	public T readRandom(boolean isLazy) throws SQLException
+	public T readRandom(boolean isLazy, @Nullable String filter) throws SQLException
 	{
+		if (filter == null) filter = "";
+		filter = conjunctFilters("", filter);
 		try (Statement stmt = connection.createStatement())
 		{
 			String fields;
@@ -112,42 +119,50 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 				fields = Utils.fieldNamesToString(Arrays.stream(AbstractDAO.getReadEvenIfLazy(clazz)));
 			else
 				fields = "*";
+			filter = adjustFilter(filter);
 			ResultSet rs = stmt.executeQuery("SELECT " + fields + " FROM " + clazz.getSimpleName() +
-					" OFFSET FLOOR(RANDOM()*(SELECT COUNT(*) FROM " + clazz.getSimpleName() + ")) LIMIT 1");
+					filter + " OFFSET FLOOR(RANDOM()*(SELECT COUNT(*) FROM " + clazz.getSimpleName() + filter + ")) LIMIT 1");
 			List<T> result = reflectResultSet(rs, isLazy);
 			return result != null ? result.get(0) : null;
 		}
 	}
 
-	public int update(String filter, String newValues) throws SQLException
+	public int update(@Nonnull String filter, String newValues) throws SQLException
 	{
 		try (Statement stmt = connection.createStatement())
 		{
+			filter = adjustFilter(filter);
 			return stmt.executeUpdate("UPDATE " + clazz.getSimpleName() + " SET " + newValues + filter);
 		}
 	}
 
-	public int delete(long id) throws SQLException
+	public int delete(long id, @Nullable String filter) throws SQLException
 	{
+		if (filter == null) filter = "";
+		filter = conjunctFilters("id = " + id, filter);
 		try (Statement stmt = connection.createStatement())
 		{
-			return stmt.executeUpdate("DELETE FROM " + clazz.getSimpleName() + " WHERE id = " + id);
-		}
-	}
-
-	public int delete(String filter) throws SQLException
-	{
-		try (Statement stmt = connection.createStatement())
-		{
+			filter = adjustFilter(filter);
 			return stmt.executeUpdate("DELETE FROM " + clazz.getSimpleName() + filter);
 		}
 	}
 
-	public int count(String filter) throws SQLException
+	public int delete(@Nullable String filter) throws SQLException
 	{
 		if (filter == null) filter = "";
 		try (Statement stmt = connection.createStatement())
 		{
+			filter = adjustFilter(filter);
+			return stmt.executeUpdate("DELETE FROM " + clazz.getSimpleName() + filter);
+		}
+	}
+
+	public int count(@Nullable String filter) throws SQLException
+	{
+		if (filter == null) filter = "";
+		try (Statement stmt = connection.createStatement())
+		{
+			filter = adjustFilter(filter);
 			ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM " + clazz.getSimpleName() + filter);
 			rs.next();
 			return rs.getInt(1);
@@ -216,7 +231,7 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 		{
 			Class crudClass = Class.forName("TaxService.CRUDs." + clazz.getSimpleName() + "CRUD");
 			AbstractCRUD instance = (AbstractCRUD) crudClass.getConstructor(Connection.class).newInstance(connection);
-			return instance.read(Long.parseLong(value), true);
+			return instance.read(Long.parseLong(value), true, null);
 		}
 
 		//Другие
@@ -246,5 +261,28 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 		if (OffsetDateTime.class == clazz) return ;
 		if (Map.class == clazz) return ;*/
 		return null;
+	}
+
+	protected String conjunctFilters(@Nullable String filter1, @Nullable String filter2)
+	{
+		if (filter1 == null) filter1 = "";
+		if (filter2 == null) filter2 = "";
+		if (!filter2.isEmpty())
+		{
+			if (filter1.isEmpty())
+				filter1 = filter2;
+			else
+				filter1 += " AND " + filter2;
+		}
+		return filter1;
+	}
+
+	private String adjustFilter(@Nullable String filter)
+	{
+		if (filter == null)
+			filter = "";
+		if (!filter.isEmpty())
+			filter = " WHERE " + filter;
+		return filter;
 	}
 }

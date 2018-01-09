@@ -60,6 +60,7 @@ public class AuthController
 			final Pair<String, String> accessResult = (Pair<String, String>) o;
 			Platform.runLater(() ->
 			{
+				String errMsg = "";
 				switch (accessResult.getKey())
 				{
 					case PhraseBook.ACCESS_RESULT_SUCCESS:
@@ -87,14 +88,21 @@ public class AuthController
 							e.printStackTrace();
 						}
 						break;
-					case PhraseBook.ACCESS_RESULT_INVALID_LOGIN_PASSWORD:
-					case PhraseBook.ACCESS_RESULT_ALREADY_LOGGED:
-					default:
-						statusLabel.setText(accessResult.equals(PhraseBook.ACCESS_RESULT_ALREADY_LOGGED) ?
-								"Пользователь уже авторизован с другого компьютера" : "Доступ запрещён");
-						statusLabel.setVisible(true);
-						ClientAgent.getInstance().close();
+					case PhraseBook.ACCESS_RESULT_FORBIDDEN:
+						errMsg = "Доступ запрещён";
 						break;
+					case PhraseBook.ACCESS_RESULT_ALREADY_LOGGED:
+						errMsg = "Пользователь уже авторизован с другого устройства";
+						break;
+					default:
+						errMsg = "Доступ запрещён";
+						break;
+				}
+				if (!errMsg.isEmpty())
+				{
+					statusLabel.setText(errMsg);
+					statusLabel.setVisible(true);
+					ClientAgent.getInstance().close();
 				}
 			});
 		};
