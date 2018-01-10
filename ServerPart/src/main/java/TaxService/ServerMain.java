@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class ServerMain
 {
-	private static final boolean fromScratch = false;
+	private static final boolean fromScratch = true;
 
 	public static void main(String[] args)
 	{
@@ -88,10 +88,10 @@ public class ServerMain
 			execMe  = "create table department("
 					+ "id serial primary key,"
 					+ "name varchar(100) not null,"
-					+ "deptype_id int8 not null references deptype(id) on delete cascade,"
-					+ "startyear numeric(4,0) not null,"
+					+ "deptype_id int8 not null references deptype(id) on delete restrict,"
+					+ "startyear numeric(4,0) not null check (startyear <= date_part('year', current_date)),"
 					+ "phone varchar(17) not null unique,"
-					+ "city_id int8 not null references city(id) on delete cascade,"
+					+ "city_id int8 not null references city(id) on delete restrict,"
 					+ "street varchar(30) not null,"
 					+ "house varchar(6) not null)";
 			stmt.executeUpdate(execMe);
@@ -102,29 +102,29 @@ public class ServerMain
 					+ "name varchar(30) not null,"
 					+ "patronymic varchar(30) not null,"
 					+ "department_id int8 not null references department(id) on delete cascade,"
-					+ "birthdate date not null,"
+					+ "birthdate date not null check (birthdate <= current_date),"
 					+ "post_id int8 not null references post(id),"
-					+ "salary int4 not null,"
-					+ "education_id int8 not null references education(id) on delete cascade)";
+					+ "salary int4 not null check (salary > 0),"
+					+ "education_id int8 not null references education(id) on delete restrict)";
 			stmt.executeUpdate(execMe);
 
 			execMe  = "create table company("
 					+ "id serial primary key,"
 					+ "name varchar(100) not null,"
-					+ "owntype_id serial not null references owntype(id) on delete cascade,"
+					+ "owntype_id serial not null references owntype(id) on delete restrict,"
 					+ "phone varchar(17) not null,"
-					+ "startyear numeric(4,0) not null,"
-					+ "statesize int4 not null)";
+					+ "startyear numeric(4,0) not null check (startyear <= date_part('year', current_date)),"
+					+ "statesize int4 not null check (statesize > 0))";
 			stmt.executeUpdate(execMe);
 
 			execMe  = "create table payment("
 					+ "id serial primary key,"
-					+ "paytype_id int8 not null references paytype(id) on delete cascade,"
+					+ "paytype_id int8 not null references paytype(id) on delete restrict,"
 					+ "date date not null,"
-					+ "amount numeric(12,2) not null,"
-					+ "employee_id int8 not null references employee(id) on delete cascade,"
-					+ "department_id int8 not null references department(id) on delete cascade,"
-					+ "company_id int8 not null references company(id) on delete cascade)";
+					+ "amount numeric(12,2) not null check (amount > 0),"
+					+ "employee_id int8 not null references employee(id) on delete restrict,"
+					+ "department_id int8 not null references department(id) on delete restrict,"
+					+ "company_id int8 not null references company(id) on delete restrict)";
 			stmt.executeUpdate(execMe);
 
 			//Назначение индексов
