@@ -18,12 +18,15 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
@@ -34,9 +37,11 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Pair;
@@ -250,6 +255,46 @@ public class MainController
 					stage.initOwner(this.root.getScene().getWindow());
 					stage.initModality(Modality.APPLICATION_MODAL);
 					stage.showAndWait();
+
+					//Ashamed
+					//https://docs.oracle.com/javafx/2/charts/pie-chart.htm
+					if (delivery.getHeader().equals("Количество сотрудников налоговой инспекции различных возрастных категорий"))
+					{
+						ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
+						for (int i = 1; i < delivery.getContent().size(); ++i)
+							pieChartData.add(new PieChart.Data(delivery.getContent().get(i).get(0).toString(),
+									Integer.parseInt(delivery.getContent().get(i).get(1).toString())));
+						final PieChart chart = new PieChart(pieChartData);
+						chart.setTitle("Отношение количества сотрудников налоговой инспекции по возрастным категориям");
+
+						/*final Label caption = new Label("");
+						caption.setTextFill(Color.DARKORANGE);
+						caption.setStyle("-fx-font: 24 arial;");
+
+						for (final PieChart.Data data : chart.getData())
+						{
+							data.getNode().addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>()
+							{
+								@Override
+								public void handle(MouseEvent e)
+								{
+									caption.setTranslateX(e.getSceneX());
+									caption.setTranslateY(e.getSceneY());
+									caption.setText(String.valueOf(data.getPieValue()) + "%");
+								}
+							});
+						}*/
+
+						Dialog dialog = new Dialog();
+						dialog.setTitle("Диаграмма");
+						dialog.getDialogPane().setContent(chart);
+						dialog.getDialogPane().getButtonTypes().setAll(ButtonType.OK);
+						dialog.getDialogPane().setPrefWidth(1000);
+						dialog.getDialogPane().setPrefHeight(700);
+						dialog.initOwner(root.getScene().getWindow());
+						dialog.initModality(Modality.APPLICATION_MODAL);
+						dialog.showAndWait();
+					}
 				}
 				catch (IOException e)
 				{
@@ -817,7 +862,7 @@ public class MainController
 				grid.setVgap(10);
 
 				Label label = new Label("Граница суммы оплат:");
-				label.setPrefWidth(150);
+				label.setPrefWidth(200);
 				grid.add(label, 0, 0);
 				TextField textField = new TextField();
 				textField.setPrefWidth(250);
@@ -1031,6 +1076,7 @@ public class MainController
 			case "_6":
 			case "_7":
 			case "_13_3":
+			case "_13_4":
 			{
 				ClientAgent.getInstance().send(QUERY + SEPARATOR + queryCode);
 				break;

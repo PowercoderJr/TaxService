@@ -18,8 +18,6 @@ public class PaymentCRUD extends AbstractRandomableLocalizableCRUD<Payment>
 	@Override
 	protected Payment generateRandomBean() throws SQLException
 	{
-		String filter = getLocalizationFilterIfNotPrivileged();
-
 		PaytypeCRUD paytypeCRUD = new PaytypeCRUD(connection);
 		Paytype paytype = paytypeCRUD.readRandom(true, null);
 
@@ -31,7 +29,7 @@ public class PaymentCRUD extends AbstractRandomableLocalizableCRUD<Payment>
 		BigDecimal amount = BigDecimal.valueOf(rnd.nextDouble() * 100000);
 
 		EmployeeCRUD employeeCRUD = new EmployeeCRUD(connection);
-		Employee employee = employeeCRUD.readRandom(true, filter);
+		Employee employee = employeeCRUD.readRandom(true, null);
 
 		DepartmentCRUD departmentCRUD = new DepartmentCRUD(connection);
 		Department department = departmentCRUD.readRandom(true, null);

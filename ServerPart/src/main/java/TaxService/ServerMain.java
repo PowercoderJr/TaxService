@@ -299,6 +299,21 @@ public class ServerMain
 					+ "\t\torder by stats desc";
 			stmt.executeUpdate(execMe);
 
+			execMe  = "CREATE VIEW query_13_4 AS\n"
+					+ "\tselect company_id, company_name, payment_count from\n"
+					+ "\t\t(select company.id as company_id, company.name as company_name, count(payment.id) as payment_count\n"
+					+ "\t\t\tfrom company\n"
+					+ "\t\t\tinner join payment on company.id = payment.company_id\n"
+					+ "\t\t\tgroup by company.id) sbqr\n"
+					+ "\t\twhere sbqr.payment_count = \n"
+					+ "\t\t\t(select max(payment_count) from \n"
+					+ "\t\t\t\t(select company.id, company.name as company_name, count(payment.id) as payment_count\n"
+					+ "\t\t\t\t\tfrom company\n"
+					+ "\t\t\t\t\tinner join payment on company.id = payment.company_id\n"
+					+ "\t\t\t\t\tgroup by company.id) \n"
+					+ "\t\t\t\tsbsbqr)";
+			stmt.executeUpdate(execMe);
+
 			/*execMe  = "CREATE VIEW query_ AS\n"
 					+ "\t";
 			stmt.executeUpdate(execMe);

@@ -25,7 +25,7 @@ public class EmployeeCRUD extends AbstractRandomableLocalizableCRUD<Employee>
 		DepartmentCRUD departmentCRUD = new DepartmentCRUD(connection);
 		Department department = departmentCRUD.readRandom(true, null);
 
-		Date birthdate = RandomHelper.getRandomDateBetween(LocalDate.of(1950, 1, 1), LocalDate.of(1990, 12, 31));
+		Date birthdate = RandomHelper.getRandomDateBetween(LocalDate.of(1950, 1, 1), LocalDate.of(2005, 12, 31));
 
 		PostCRUD postCRUD = new PostCRUD(connection);
 		Post post = postCRUD.readRandom(true, null);

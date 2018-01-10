@@ -54,6 +54,7 @@
                         <MenuItem onAction="#executeQuery" text="Предприятия, совершившие платежи начиная с указанной даты" userData="_13_1" />
                         <MenuItem onAction="#executeQuery" text="Предприятия, не совершившие платежи начиная с указанной даты" userData="_13_2" />
                         <MenuItem onAction="#executeQuery" text="Количество сотрудников налоговой инспекции различных возрастных категорий" userData="_13_3" />
+                        <MenuItem onAction="#executeQuery" text="Предприятия, совершившие наибольшее число платежей" userData="_13_4" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="О программе">

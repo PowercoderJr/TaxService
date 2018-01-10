@@ -476,6 +476,26 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                 header = "Количество сотрудников налоговой инспекции различных возрастных категорий";
                                 break;
                             }
+                            case "_13_4":
+                            {
+                                rs = stmt.executeQuery("select * from " + QUERY + tokens[1]);
+
+                                colNames.add("ID");
+                                colNames.add("Предприятие");
+                                colNames.add("Число платежей");
+                                nCol = colNames.size();
+                                list.add(colNames);
+
+                                while (rs.next())
+                                {
+                                    ArrayList<String> sublist = new ArrayList<>(nCol);
+                                    for (int i = 1; i <= nCol; ++i)
+                                        sublist.add(rs.getObject(i).toString());
+                                    list.add(sublist);
+                                }
+                                header = "Предприятия, совершившие наибольшее число платежей";
+                                break;
+                            }
                         }
                         ctx.channel().writeAndFlush(new QueryResultDelivery(list, header, Date.valueOf(LocalDate.now())));
                     }

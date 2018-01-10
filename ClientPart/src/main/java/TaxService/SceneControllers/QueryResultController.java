@@ -17,6 +17,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,9 +41,9 @@ public class QueryResultController
 
 	public void setData(List<ArrayList> rows, String queryHeader, Date date)
 	{
-		columnHeaders = rows.get(0);
-		rows.remove(0);
-		this.rows = rows;
+		columnHeaders = new ArrayList<>(rows.get(0));
+		this.rows = new ArrayList<>(rows);
+		this.rows.remove(0);
 		this.queryHeader = queryHeader;
 		this.date = date;
 
@@ -50,7 +51,7 @@ public class QueryResultController
 		{
 			headerLabel.setText(ClientAgent.df.format(date) + " - " + queryHeader);
 			tableView.getColumns().setAll(TableColumnsBuilder.buildForListOfStrings(columnHeaders));
-			tableView.getItems().setAll(rows);
+			tableView.getItems().setAll(this.rows);
 		});
 	}
 
