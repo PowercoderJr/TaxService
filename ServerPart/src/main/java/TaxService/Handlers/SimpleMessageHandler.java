@@ -399,6 +399,7 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                             {
                                 rs = stmt.executeQuery("select * from " + QUERY + tokens[1] + "(" + tokens[2] + ")");
 
+                                colNames.add("Тип организации");
                                 colNames.add("Название");
                                 colNames.add("Телефон");
                                 nCol = colNames.size();
