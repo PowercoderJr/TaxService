@@ -289,13 +289,13 @@ public class ServerMain
 			stmt.executeUpdate(execMe);
 
 			execMe  = "CREATE VIEW query_13_3 AS\n"
-					+ "\tselect category::text, count(*) as stats from\n"
+					+ "\tselect category.caption, count(*) as stats from\n"
 					+ "\t\t(select case\n"
-					+ "\t\t\t\twhen age(current_date, birthdate) <= '20 years'::interval then 'Юношеский'\n"
-					+ "\t\t\t\twhen age(current_date, birthdate) > '60 years'::interval then 'Пожилой'\n"
-					+ "\t\t\t\telse 'Средний' end\n"
+					+ "\t\t\t\twhen age(current_date, birthdate) <= '20 years'::interval then 'Юношеский (до 20)'\n"
+					+ "\t\t\t\twhen age(current_date, birthdate) > '60 years'::interval then 'Пожилой (от 61)'\n"
+					+ "\t\t\t\telse 'Средний (от 21 до 60)' end as caption\n"
 					+ "\t\t\tfrom employee) as category\n"
-					+ "\t\tgroup by category\n"
+					+ "\t\tgroup by category.caption\n"
 					+ "\t\torder by stats desc";
 			stmt.executeUpdate(execMe);
 
@@ -313,6 +313,10 @@ public class ServerMain
 					+ "\t\t\t\t\tgroup by company.id) \n"
 					+ "\t\t\t\tsbsbqr)";
 			stmt.executeUpdate(execMe);
+
+			stmt.executeUpdate("REVOKE ALL ON FUNCTION query_1_1 (x int), query_1_2 (x text), query_1_3 (x1 int, x2 text),"
+					+ " query_8_1 (x1 int), query_8_2 (x1 text), query_9 (x1 numeric), query_10 (x1 int, x2 numeric), "
+					+ "query_12 (x1 int), query_13_1 (x1 text), query_13_2 (x1 text) FROM public");
 
 			/*execMe  = "CREATE VIEW query_ AS\n"
 					+ "\t";
@@ -360,7 +364,20 @@ public class ServerMain
 					+ "GRANT USAGE ON payment_id_seq TO justuser;";
 			stmt.executeUpdate(execMe);
 
-			//TODO: изменить права на функции и вью в соответствии с доступными запросами
+			execMe  = "REVOKE ALL ON FUNCTION query_1_1 (x int), query_1_2 (x text), query_1_3 (x1 int, x2 text),"
+					+ " query_8_1 (x1 int), query_8_2 (x1 text), query_9 (x1 numeric), query_10 (x1 int, x2 numeric), "
+					+ "query_12 (x1 int), query_13_1 (x1 text), query_13_2 (x1 text) FROM justuser";
+			stmt.executeUpdate(execMe);
+
+			execMe  = "SELECT 'REVOKE SELECT ON ' || quote_ident(schemaname) || '.' || quote_ident(viewname) || ' FROM justuser;'"
+					+ " FROM pg_views WHERE schemaname = 'public';";
+			rs = stmt.executeQuery(execMe);
+			queries = new ArrayList<>();
+			while (rs.next())
+				queries.add(rs.getString(1));
+			for (String query : queries)
+				stmt.executeUpdate(query);
+
 			execMe  = "CREATE ROLE operator;"
 					+ "GRANT ALL ON employee, company, deptype, city, post, education, owntype, paytype TO operator;"
 					+ "GRANT SELECT, INSERT ON payment TO operator;"
@@ -377,6 +394,10 @@ public class ServerMain
 				queries.add(rs.getString(1));
 			for (String query : queries)
 				stmt.executeUpdate(query);
+
+			execMe  = "REVOKE ALL ON FUNCTION query_1_2(text) FROM operator;";
+			execMe += "REVOKE ALL ON query_2_1, query_7 FROM operator;";
+			stmt.executeUpdate(execMe);
 
 			execMe  = "CREATE ROLE admin WITH CREATEROLE;"
 					+ "GRANT ALL ON ALL TABLES IN SCHEMA public TO admin;"
@@ -421,9 +442,13 @@ public class ServerMain
 					+ "\t\t\t(select employee_id from account where login = current_user)\n"
 					+ "\t\t)\n"
 					+ "\t);\n"
+					+ "CREATE POLICY locale_policy_payment_insert ON payment\n"
+					+ "\tFOR INSERT\n"
+					+ "\tTO justuser, operator\n"
+					+ "\tWITH CHECK (true);"
 					+ "CREATE POLICY locale_policy_admin ON payment\n"
 					+ "\tTO admin\n"
-					+ "\tUSING (true)";
+					+ "\tUSING (true);";
 			stmt.executeUpdate(execMe);
 		}
 	}
