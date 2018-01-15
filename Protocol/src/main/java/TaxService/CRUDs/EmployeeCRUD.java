@@ -7,7 +7,7 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.List;
 
-public class EmployeeCRUD extends AbstractRandomableLocalizableCRUD<Employee>
+public class EmployeeCRUD extends AbstractRandomableCRUD<Employee>
 {
 	public EmployeeCRUD(Connection connection)
 	{

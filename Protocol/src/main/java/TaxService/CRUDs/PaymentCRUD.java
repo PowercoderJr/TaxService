@@ -8,7 +8,7 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.List;
 
-public class PaymentCRUD extends AbstractRandomableLocalizableCRUD<Payment>
+public class PaymentCRUD extends AbstractRandomableCRUD<Payment>
 {
 	public PaymentCRUD(Connection connection)
 	{

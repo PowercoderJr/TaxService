@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class ServerMain
 {
-	private static final boolean fromScratch = true;
+	private static final boolean fromScratch = false;
 
 	public static void main(String[] args)
 	{
@@ -320,10 +320,6 @@ public class ServerMain
 
 			execMe  = "CREATE VIEW query_ AS\n"
 					+ "\t";
-			stmt.executeUpdate(execMe);
-
-			execMe  = "CREATE VIEW query_ AS\n"
-					+ "\t";
 			stmt.executeUpdate(execMe);*/
 
 			//Инструменты управления пользователями
@@ -364,6 +360,7 @@ public class ServerMain
 					+ "GRANT USAGE ON payment_id_seq TO justuser;";
 			stmt.executeUpdate(execMe);
 
+			//TODO: изменить права на функции и вью в соответствии с доступными запросами
 			execMe  = "CREATE ROLE operator;"
 					+ "GRANT ALL ON employee, company, deptype, city, post, education, owntype, paytype TO operator;"
 					+ "GRANT SELECT, INSERT ON payment TO operator;"
@@ -394,6 +391,40 @@ public class ServerMain
 				queries.add(rs.getString(1));
 			for (String query : queries)
 				stmt.executeUpdate(query);
+
+			//Установка защиты на уровне строк
+			execMe  = "CREATE VIEW employees_from_curr_department AS \n"
+					+ "\t(SELECT id FROM employee WHERE department_id = \n"
+					+ "\t\t(SELECT department_id FROM employee WHERE id =\n"
+					+ "\t\t\t(SELECT employee_id FROM account WHERE login = current_user)\n"
+					+ "\t\t)\n"
+					+ "\t);"
+					+ "GRANT SELECT ON employees_from_curr_department TO justuser;"
+					+ "GRANT SELECT ON employees_from_curr_department TO operator;"
+					+ "GRANT ALL ON employees_from_curr_department TO admin;";
+			stmt.executeUpdate(execMe);
+
+			execMe  = "ALTER TABLE employee ENABLE ROW LEVEL SECURITY;\n"
+					+ "CREATE POLICY locale_policy ON employee\n"
+					+ "\tTO justuser, operator\n"
+					+ "\tUSING (id IN (SELECT id FROM employees_from_curr_department));\n"
+					+ "CREATE POLICY locale_policy_admin ON employee\n"
+					+ "\tTO admin\n"
+					+ "\tUSING (true)";
+			stmt.executeUpdate(execMe);
+
+			execMe  = "ALTER TABLE payment ENABLE ROW LEVEL SECURITY;\n"
+					+ "CREATE POLICY locale_policy ON payment\n"
+					+ "\tTO justuser, operator\n"
+					+ "\tUSING (department_id =\n"
+					+ "\t\t(select department_id from employee where id =\n"
+					+ "\t\t\t(select employee_id from account where login = current_user)\n"
+					+ "\t\t)\n"
+					+ "\t);\n"
+					+ "CREATE POLICY locale_policy_admin ON payment\n"
+					+ "\tTO admin\n"
+					+ "\tUSING (true)";
+			stmt.executeUpdate(execMe);
 		}
 	}
 
