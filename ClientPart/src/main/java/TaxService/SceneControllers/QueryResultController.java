@@ -112,7 +112,8 @@ public class QueryResultController
 				row.createCell(j).setCellValue(rows.get(i).get(j).toString());
 		}
 
-		sheet.autoSizeColumn(1);
+		for (int i = 0; i < columnHeaders.size(); ++i)
+			sheet.autoSizeColumn(i);
 		book.write(new FileOutputStream(file));
 		book.close();
 	}

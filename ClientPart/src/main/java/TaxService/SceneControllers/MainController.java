@@ -62,6 +62,7 @@ import static TaxService.PhraseBook.*;
 public class MainController
 {
 	private static Map<Class<? extends AbstractDAO>, TableStaff> tableStaffs = new HashMap<>();
+	private static Class<? extends AbstractDAO> DEFAULT_TABLE = Department.class;
 
 	private class TableStaff<T extends AbstractDAO>
 	{
@@ -138,6 +139,12 @@ public class MainController
 	@FXML
 	public Menu queriesMenu;
 	@FXML
+	public MenuItem query_1_2_MenuItem;
+	@FXML
+	public MenuItem query_2_1_MenuItem;
+	@FXML
+	public MenuItem query_7_MenuItem;
+	@FXML
 	public Label statusLabel;
 	@FXML
 	public Label specificPageLabel;
@@ -154,6 +161,7 @@ public class MainController
 	private static final int NOTIFICATION_DURATION = 3000;
 	private final ScheduledExecutorService notificationsScheduler = Executors.newSingleThreadScheduledExecutor();
 	private ScheduledFuture<?> hideNotificationFuture;
+	private Account.Roles userRole = Account.Roles.ADMIN;
 
 	public void initialize()
 	{
@@ -321,7 +329,7 @@ public class MainController
 		for (TableStaff staff : tableStaffs.values())
 			staff.editorBox.bindDataSources(dataSources);
 
-		switchActiveTable(Department.class);
+		switchActiveTable(DEFAULT_TABLE);
 		ClientAgent.getInstance().startPinging();
 	}
 
@@ -511,6 +519,20 @@ public class MainController
 		currTableLabel.setText(staff.niceName);
 		portionField.setText(String.valueOf(staff.currPortion));
 		borderPane.setCenter(staff.tableView);
+
+		//UI
+		switch (userRole)
+		{
+			case JUSTUSER:
+				createBtn.setVisible(tableClazz == Payment.class);
+				break;
+			case OPERATOR:
+				boolean canEdit = tableClazz != Department.class && tableClazz != Payment.class;
+				createBtn.setVisible(tableClazz != Department.class);
+				updateBtn.setVisible(canEdit);
+				deleteBtn.setVisible(canEdit);
+				break;
+		}
 	}
 
 	public void gotoFirstPage(ActionEvent actionEvent)
@@ -659,25 +681,28 @@ public class MainController
 
 	public void setUI(Account.Roles role)
 	{
+		this.userRole = role;
 		switch (role)
 		{
 			case JUSTUSER:
-				updateBtn.setDisable(true);
-				deleteBtn.setDisable(true);
-				queriesMenu.setDisable(true);
-				openUserManagerMenuItem.setDisable(true);
+				createBtn.setVisible(DEFAULT_TABLE == Payment.class);
+				updateBtn.setVisible(false);
+				deleteBtn.setVisible(false);
+				queriesMenu.setVisible(false);
+				openUserManagerMenuItem.setVisible(false);
 				break;
 			case OPERATOR:
-				updateBtn.setDisable(false);
-				deleteBtn.setDisable(false);
-				queriesMenu.setDisable(false);
-				openUserManagerMenuItem.setDisable(true);
+				createBtn.setVisible(DEFAULT_TABLE != Department.class);
+				boolean canEdit = DEFAULT_TABLE != Department.class && DEFAULT_TABLE != Payment.class;
+				updateBtn.setVisible(canEdit);
+				deleteBtn.setVisible(canEdit);
+				openUserManagerMenuItem.setVisible(false);
+				query_1_2_MenuItem.setVisible(false);
+				query_2_1_MenuItem.setVisible(false);
+				query_7_MenuItem.setVisible(false);
 				break;
 			case ADMIN:
-				updateBtn.setDisable(false);
-				deleteBtn.setDisable(false);
-				queriesMenu.setDisable(false);
-				openUserManagerMenuItem.setDisable(false);
+				//hallelujah
 				break;
 		}
 	}

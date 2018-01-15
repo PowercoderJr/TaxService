@@ -243,12 +243,12 @@ public class ServerMain
 			stmt.executeUpdate(execMe);
 
 			execMe  = "CREATE FUNCTION query_12 (x1 int)\n"
-					+ "RETURNS TABLE(a text, b text) AS $$\n"
-					+ "\tselect name, phone\n"
+					+ "RETURNS TABLE(a text, b text, c text) AS $$\n"
+					+ "\tselect 'Отделение налоговой инспекции' as orgtype, name, phone\n"
 					+ "\t\tfrom department\n"
 					+ "\t\twhere startyear = $1\n"
 					+ "\tunion\n"
-					+ "\tselect name, phone\n"
+					+ "\tselect 'Предприятие' as orgtype, name, phone\n"
 					+ "\t\tfrom company\n"
 					+ "\t\twhere startyear = $1\n"
 					+ "\t\torder by 1"

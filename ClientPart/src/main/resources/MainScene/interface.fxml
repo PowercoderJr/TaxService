@@ -40,12 +40,12 @@
                 <Menu fx:id="queriesMenu" mnemonicParsing="false" text="Запросы">
                     <items>
                         <MenuItem onAction="#executeQuery" text="Список платежей, которые оформил указанный сотрудник" userData="_1_1" />
-                        <MenuItem onAction="#executeQuery" text="Список платежей, оформленных начиная с указанной даты" userData="_1_2" />
+                        <MenuItem fx:id="query_1_2_MenuItem" onAction="#executeQuery" text="Список платежей, оформленных начиная с указанной даты" userData="_1_2" />
                         <MenuItem onAction="#executeQuery" text="Список платежей, которые оформил указанный сотрудник после указанной даты" userData="_1_3" />
-                        <MenuItem onAction="#executeQuery" text="Список сотрудников каждого отделения" userData="_2_1" />
+                        <MenuItem fx:id="query_2_1_MenuItem" onAction="#executeQuery" text="Список сотрудников каждого отделения" userData="_2_1" />
                         <MenuItem onAction="#executeQuery" text="Дата последнего платежа каждого предприятия" userData="_3" />
                         <MenuItem onAction="#executeQuery" text="Средний размер штата предприятий в базе данных" userData="_6" />
-                        <MenuItem onAction="#executeQuery" text="Статистика сотрудников: степень образования + занимаемая должность" userData="_7" />
+                        <MenuItem fx:id="query_7_MenuItem" onAction="#executeQuery" text="Статистика сотрудников: степень образования + занимаемая должность" userData="_7" />
                         <MenuItem onAction="#executeQuery" text="Средняя зарплата по должности" userData="_8_1" />
                         <MenuItem onAction="#executeQuery" text="Количество отделений, телефонный номер которых имеет заданный код оператора" userData="_8_2" />
                         <MenuItem onAction="#executeQuery" text="Список предприятий, которые оформили платежей на сумму меньше указанной" userData="_9" />

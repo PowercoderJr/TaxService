@@ -31,7 +31,7 @@
          </BorderPane.margin>
          <children>
             <Button maxHeight="1.7976931348623157E308" mnemonicParsing="false" onAction="#onExportClicked" text="Экспорт в Excel" GridPane.columnIndex="2" />
-            <Label fx:id="headerLabel" text="..." />
+            <Label fx:id="headerLabel" wrapText="true" text="..." />
             <Label fx:id="savingStatusLabel" GridPane.columnIndex="1" />
          </children>
       </GridPane>
