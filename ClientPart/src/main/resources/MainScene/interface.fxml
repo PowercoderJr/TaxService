@@ -86,7 +86,7 @@
                 </HBox>
             </bottom>
             <top>
-                <HBox spacing="20.0">
+                <HBox spacing="20.0" alignment="BOTTOM_LEFT">
                     <children>
                   <ToggleButton maxHeight="1.7976931348623157E308" mnemonicParsing="false" onAction="#toggleOperationsPanel" selected="true" text="Панель операций" />
                         <Label fx:id="currTableLabel" />

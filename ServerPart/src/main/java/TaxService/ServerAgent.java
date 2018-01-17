@@ -2,6 +2,8 @@ package TaxService;
 
 import TaxService.CRUDs.AbstractCRUD;
 import TaxService.DAOs.AbstractDAO;
+import TaxService.DAOs.Account;
+import TaxService.DAOs.Employee;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelId;
@@ -14,10 +16,7 @@ import sun.awt.Mutex;
 import java.io.Closeable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -148,6 +147,40 @@ public class ServerAgent implements Closeable
 		if (crud != null)
 			return crud.create(dao);
 		return 0;
+	}
+
+	@Deprecated
+	public int createEmployeePlusAccount(Employee employee, Account account, ChannelId channelId) throws SQLException
+	{
+		Connection connection = connections.get(channelId).getKey();
+		boolean inserted = false;
+		connection.setAutoCommit(false);
+		try
+		{
+			Statement stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery("INSERT INTO employee (surname, name, patronymic, department_id, "
+					+ "birthdate, post_id, salary, education_id) VALUES ('" + employee.getSurname() + "', '" + employee.getName()
+					+ "', '" + employee.getPatronymic() + "', " + employee.getDepartment().getId() + ", '" + employee.getBirthdate()
+					+ "', " + employee.getPost().getId() + ", " + employee.getSalary() + ", " + employee.getEducation().getId()
+					+ ") RETURNING id");
+			rs.next();
+
+			stmt.executeUpdate("INSERT INTO account (login, password, employee_id, role, blocked) VALUES ('" + account.getLogin()
+					+ "', '" + account.getPassword()+ "', " + rs.getString(1) + ", '" + account.getRole()+ "', "
+					+ (account.isBlocked() ? "true" : "false") + ")");
+			inserted = true;
+			connection.commit();
+		}
+		catch (Exception e)
+		{
+			connection.rollback();
+			throw e;
+		}
+		finally
+		{
+			connection.setAutoCommit(true);
+		}
+		return inserted ? 1 : 0;
 	}
 
 	public <T extends AbstractDAO> List readPortion(Class<T> clazz, ChannelId channelId, int portion, boolean isLazy, String filter) throws SQLException

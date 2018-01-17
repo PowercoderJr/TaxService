@@ -378,9 +378,18 @@ public class MainController
 	public void createBtnClicked(ActionEvent actionEvent)
 	{
 		AbstractEditorBox eb = tableStaffs.get(currTable).editorBox;
-		if (eb.validatePrimary(true))
-			if (eb.create())
-				refreshCurrTable();
+
+		if (currTable == Employee.class && ((EmployeeEditorBox) eb).getToggleAccBtn().isSelected())
+		{
+			EmployeeEditorBox employeeEditorBox = (EmployeeEditorBox) eb;
+			if (employeeEditorBox.validatePrimaryPlusAccount(true))
+				if (employeeEditorBox.createPlusAccount())
+					refreshCurrTable();
+		}
+		else
+			if (eb.validatePrimary(true))
+				if (eb.create())
+					refreshCurrTable();
 	}
 
 	public void updateBtnClicked(ActionEvent actionEvent)
@@ -700,6 +709,7 @@ public class MainController
 				deleteBtn.setVisible(false);
 				queriesMenu.setVisible(false);
 				openUserManagerMenuItem.setVisible(false);
+				setVisibleAndManaged(((EmployeeEditorBox)tableStaffs.get(Employee.class).editorBox).getToggleAccBtn(), false);
 				break;
 			case OPERATOR:
 				createBtn.setVisible(DEFAULT_TABLE != Department.class);
@@ -710,6 +720,7 @@ public class MainController
 				query_1_2_MenuItem.setVisible(false);
 				query_2_1_MenuItem.setVisible(false);
 				query_7_MenuItem.setVisible(false);
+				setVisibleAndManaged(((EmployeeEditorBox)tableStaffs.get(Employee.class).editorBox).getToggleAccBtn(), false);
 				break;
 			case ADMIN:
 				//hallelujah

@@ -1,15 +1,19 @@
 package TaxService.CustomUI.EditorBoxes;
 
-import TaxService.Callback;
 import TaxService.DAOs.*;
-import TaxService.Deliveries.AllDelivery;
 import TaxService.Netty.ClientAgent;
+import TaxService.Orders.CreateEmployeePlusAccountOrder;
 import TaxService.Orders.ReadAllOrder;
-import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.util.Pair;
 
 import java.lang.reflect.Field;
@@ -31,9 +35,10 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 	private TextField salary1, salary2;
 	private ComboBox<Education> education1, education2;
 
-	private HBox AccountBox;
+	private ToggleButton toggleAccBtn;
+	private VBox accountBox;
 	private TextField login;
-	private PasswordField pass1, pass2;
+	private PasswordField pass, passConf;
 	private ComboBox<Account.Roles> role;
 	private CheckBox blocked;
 	
@@ -42,31 +47,24 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 		super(Employee.class);
 
 		surname1 = new TextField();
-		surname1.setPrefWidth(150);
 		setLengthLimit(surname1, 30);
 		surname2 = new TextField();
-		surname2.setPrefWidth(150);
 		setLengthLimit(surname2, 30);
 		addField("Фамилия", surname1, surname2, false);
 
 		name1 = new TextField();
-		name1.setPrefWidth(150);
 		setLengthLimit(name1, 30);
 		name2 = new TextField();
-		name2.setPrefWidth(150);
 		setLengthLimit(name2, 30);
 		addField("Имя", name1, name2, false);
 
 		patronymic1 = new TextField();
-		patronymic1.setPrefWidth(150);
 		setLengthLimit(patronymic1, 30);
 		patronymic2 = new TextField();
-		patronymic2.setPrefWidth(150);
 		setLengthLimit(patronymic2, 30);
 		addField("Отчество", patronymic1, patronymic2, false);
 
 		department1 = new ComboBox<>();
-		department1.setPrefWidth(150);
 		department1.setOnShowing(event ->
 		{
 			department1.getSelectionModel().clearSelection();
@@ -74,7 +72,6 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 			ClientAgent.getInstance().send(new ReadAllOrder<Department>(Department.class, true, null));
 		});
 		department2 = new ComboBox<>();
-		department2.setPrefWidth(150);
 		department2.setOnShowing(event ->
 		{
 			department2.getSelectionModel().clearSelection();
@@ -84,13 +81,10 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 		addField("Отделение", department1, department2, false);
 
 		birthdate1 = new DatePicker();
-		birthdate1.setPrefWidth(140);
 		birthdate2 = new DatePicker();
-		birthdate2.setPrefWidth(140);
 		addField("Дата рождения", birthdate1, birthdate2, false);
 		
 		post1 = new ComboBox<>();
-		post1.setPrefWidth(200);
 		post1.setOnShowing(event ->
 		{
 			post1.getSelectionModel().clearSelection();
@@ -98,7 +92,6 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 			ClientAgent.getInstance().send(new ReadAllOrder<Post>(Post.class, true, null));
 		});
 		post2 = new ComboBox<>();
-		post2.setPrefWidth(200);
 		post2.setOnShowing(event ->
 		{
 			post2.getSelectionModel().clearSelection();
@@ -108,13 +101,10 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 		addField("Должность", post1, post2, false);
 
 		salary1 = new TextField();
-		salary1.setPrefWidth(100);
 		salary2 = new TextField();
-		salary2.setPrefWidth(100);
 		addField("Зарплата", salary1, salary2, false);
 
 		education1 = new ComboBox<>();
-		education1.setPrefWidth(150);
 		education1.setOnShowing(event ->
 		{
 			education1.getSelectionModel().clearSelection();
@@ -122,7 +112,6 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 			ClientAgent.getInstance().send(new ReadAllOrder<Education>(Education.class, true, null));
 		});
 		education2 = new ComboBox<>();
-		education2.setPrefWidth(150);
 		education2.setOnShowing(event ->
 		{
 			education2.getSelectionModel().clearSelection();
@@ -132,6 +121,59 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 		addField("Образование", education1, education2, false);
 
 		////
+
+		accountBox = new VBox(SPACING);
+		accountBox.setAlignment(Pos.TOP_CENTER);
+		accountBox.setVisible(false);
+		accountBox.setManaged(false);
+
+		login = new TextField();
+		setLengthLimit(login, 100);
+		addFieldToAccountBox("Логин", login);
+		pass = new PasswordField();
+		setLengthLimit(pass, 100);
+		addFieldToAccountBox("Пароль", pass);
+		passConf = new PasswordField();
+		setLengthLimit(passConf, 100);
+		addFieldToAccountBox("Ещё раз", passConf);
+		role = new ComboBox<>(FXCollections.observableArrayList(Account.Roles.values()));
+		addFieldToAccountBox("Роль", role);
+		blocked = new CheckBox();
+		addFieldToAccountBox("Заблокирован", blocked);
+
+		toggleAccBtn = new ToggleButton("При добавлении также создать аккаунт");
+		toggleAccBtn.setWrapText(true);
+		toggleAccBtn.setMaxWidth(Double.MAX_VALUE);
+		VBox.setMargin(toggleAccBtn, new Insets(10, 0, 0, 0));
+		toggleAccBtn.setOnAction(new EventHandler<ActionEvent>()
+		{
+			@Override
+			public void handle(ActionEvent event)
+			{
+				accountBox.setVisible(toggleAccBtn.isSelected());
+				accountBox.setManaged(toggleAccBtn.isSelected());
+			}
+		});
+
+		highBox.getChildren().addAll(toggleAccBtn, accountBox);
+	}
+
+	protected void addFieldToAccountBox(String name, Control primary)
+	{
+		primary.setPrefWidth(200);
+		VBox primaryBox = new VBox(SPACING);
+		Label label1 = new Label(name);
+		primaryBox.getChildren().addAll(label1, primary);
+		accountBox.getChildren().add(primaryBox);
+		primary.focusedProperty().addListener(new ChangeListener<Boolean>()
+		{
+			@Override
+			public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue)
+			{
+				if (newPropertyValue)
+					primary.setEffect(null);
+			}
+		});
 	}
 
 	@Override
@@ -146,6 +188,27 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 		int salary = Integer.parseInt(salary1.getText().trim());
 		Education education = education1.getSelectionModel().getSelectedItem();
 		return new Employee(surname, name, patronymic, department, birthdate, post, salary, education);
+	}
+
+	public Pair<Employee, Account> withdrawPrimaryAllPlusAccount()
+	{
+		String surname = surname1.getText().trim();
+		String name = name1.getText().trim();
+		String patronymic = patronymic1.getText().trim();
+		Department department = department1.getSelectionModel().getSelectedItem();
+		Date birthdate = Date.valueOf(birthdate1.getValue());
+		Post post = post1.getSelectionModel().getSelectedItem();
+		int salary = Integer.parseInt(salary1.getText().trim());
+		Education education = education1.getSelectionModel().getSelectedItem();
+		Employee employee = new Employee(surname, name, patronymic, department, birthdate, post, salary, education);
+
+		String login = this.login.getText();
+		String pass = this.pass.getText();
+		Account.Roles role = this.role.getSelectionModel().getSelectedItem();
+		boolean blocked = this.blocked.isSelected();
+		Account account = new Account(login, pass, null, role, blocked);
+
+		return new Pair<>(employee, account);
 	}
 
 	@Override
@@ -357,6 +420,30 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 				validateComboBox(education1, allRequired);
 	}
 
+	public boolean validatePrimaryPlusAccount(boolean allRequired)
+	{
+		if (!pass.getText().equals(passConf.getText()))
+		{
+			markAsInvalid(pass);
+			markAsInvalid(passConf);
+		}
+
+		return validateTextField(surname1, allRequired) &
+				validateTextField(name1, allRequired) &
+				validateTextField(patronymic1, allRequired) &
+				validateComboBox(department1, allRequired) &
+				validateBirthdate(birthdate1, allRequired) &
+				validateComboBox(post1, allRequired) &
+				validateTextPositiveIntField(salary1, allRequired) &
+				validateComboBox(education1, allRequired) &
+
+				validateTextField(login, allRequired) &
+				validateTextField(pass, allRequired) &
+				validateTextField(passConf, allRequired) &
+				pass.getText().equals(passConf.getText()) &
+				validateComboBox(role, allRequired);
+	}
+
 	@Override
 	public boolean validateSecondary(boolean allRequired)
 	{
@@ -469,6 +556,18 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 		education2.getEditor().clear();
 		education2.setValue(null);
 		education2.setEffect(null);
+
+		login.clear();
+		login.setEffect(null);
+		pass.clear();
+		pass.setEffect(null);
+		passConf.clear();
+		passConf.setEffect(null);
+		role.getSelectionModel().clearSelection();
+		role.getEditor().clear();
+		role.setValue(null);
+		role.setEffect(null);
+		blocked.setSelected(false);
 	}
 
 	@Override
@@ -485,5 +584,17 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 		ObservableList<Education> educations = sources.get(Education.class);
 		education1.setItems(educations);
 		education2.setItems(educations);
+	}
+
+	public ToggleButton getToggleAccBtn()
+	{
+		return toggleAccBtn;
+	}
+
+	public boolean createPlusAccount()
+	{
+		Pair<Employee, Account> pair = withdrawPrimaryAllPlusAccount();
+		ClientAgent.getInstance().send(new CreateEmployeePlusAccountOrder(pair.getKey(), pair.getValue()));
+		return true;
 	}
 }

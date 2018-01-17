@@ -414,21 +414,21 @@ public class ServerMain
 				stmt.executeUpdate(query);
 
 			//Установка защиты на уровне строк
-			execMe  = "CREATE VIEW employees_from_curr_department AS \n"
-					+ "\t(SELECT id FROM employee WHERE department_id = \n"
-					+ "\t\t(SELECT department_id FROM employee WHERE id =\n"
-					+ "\t\t\t(SELECT employee_id FROM account WHERE login = current_user)\n"
-					+ "\t\t)\n"
+			execMe  = "CREATE VIEW curr_department AS \n"
+					+ "\t(SELECT department_id as id FROM employee WHERE id =\n"
+					+ "\t\t(SELECT employee_id FROM account WHERE login = current_user)\n"
 					+ "\t);"
-					+ "GRANT SELECT ON employees_from_curr_department TO justuser;"
-					+ "GRANT SELECT ON employees_from_curr_department TO operator;"
-					+ "GRANT ALL ON employees_from_curr_department TO admin;";
+					+ "GRANT SELECT ON curr_department TO justuser;"
+					+ "GRANT SELECT ON curr_department TO operator;"
+					+ "GRANT SELECT ON curr_department TO admin;";
 			stmt.executeUpdate(execMe);
 
 			execMe  = "ALTER TABLE employee ENABLE ROW LEVEL SECURITY;\n"
 					+ "CREATE POLICY locale_policy ON employee\n"
 					+ "\tTO justuser, operator\n"
-					+ "\tUSING (id IN (SELECT id FROM employees_from_curr_department));\n"
+					+ "\tUSING (department_id =\n"
+					+ "\t\t(select id from curr_department)\n"
+					+ "\t);"
 					+ "CREATE POLICY locale_policy_admin ON employee\n"
 					+ "\tTO admin\n"
 					+ "\tUSING (true)";
@@ -438,11 +438,9 @@ public class ServerMain
 					+ "CREATE POLICY locale_policy ON payment\n"
 					+ "\tTO justuser, operator\n"
 					+ "\tUSING (department_id =\n"
-					+ "\t\t(select department_id from employee where id =\n"
-					+ "\t\t\t(select employee_id from account where login = current_user)\n"
-					+ "\t\t)\n"
-					+ "\t);\n"
-					+ "CREATE POLICY locale_policy_payment_insert ON payment\n"
+					+ "\t\t(SELECT id FROM curr_department)\n"
+					+ "\t);"
+					+ "CREATE POLICY locale_policy_insert ON payment\n"
 					+ "\tFOR INSERT\n"
 					+ "\tTO justuser, operator\n"
 					+ "\tWITH CHECK (true);"

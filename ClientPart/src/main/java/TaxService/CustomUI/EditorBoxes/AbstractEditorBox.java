@@ -29,15 +29,15 @@ import java.util.function.UnaryOperator;
 
 public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPane
 {
-	private static final double SPACING = 5.0;
+	protected static final double SPACING = 5.0;
 	private static Effect invalidEffect = new ColorAdjust(0, 0.5, 0, 0);
 	private static Tooltip autofillableTooltip = new Tooltip("При добавлении записи это поле генерируется автоматически");
 
 	protected Class<T> clazz;
 
-	private VBox primaryFieldsBox, secondaryFieldsBox;
-	private HBox fieldsBox;
-	private VBox highBox;
+	protected VBox primaryFieldsBox, secondaryFieldsBox;
+	protected HBox fieldsBox;
+	protected VBox highBox;
 
 	protected TextField id1, id2;
 	protected String filter;
@@ -50,13 +50,9 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 
 		primaryFieldsBox = new VBox(SPACING);
 		primaryFieldsBox.setAlignment(Pos.TOP_CENTER);
-		primaryFieldsBox.setMaxHeight(Double.MAX_VALUE);
-		VBox.setVgrow(primaryFieldsBox, Priority.ALWAYS);
 		secondaryFieldsBox = new VBox(SPACING);
 		secondaryFieldsBox.setAlignment(Pos.TOP_CENTER);
 		secondaryFieldsBox.setVisible(false);
-		secondaryFieldsBox.setMaxHeight(Double.MAX_VALUE);
-		VBox.setVgrow(secondaryFieldsBox, Priority.ALWAYS);
 
 		fieldsBox = new HBox(SPACING);
 		fieldsBox.getChildren().addAll(primaryFieldsBox, secondaryFieldsBox);

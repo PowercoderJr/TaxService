@@ -20,6 +20,7 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel>
 		pipeline.addLast(new BadMessagesFilter());
 		pipeline.addLast(new SimpleMessageHandler());
 		pipeline.addLast(new CreateOrderHandler());
+		pipeline.addLast(new CreateEmployeePlusAccountOrderHandler());
 		pipeline.addLast(new ReadPortionOrderHandler());
 		pipeline.addLast(new ReadAllOrderHandler());
 		pipeline.addLast(new UpdateOrderHandler());
