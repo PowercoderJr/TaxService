@@ -86,23 +86,29 @@
                 </HBox>
             </bottom>
             <top>
-                <HBox alignment="CENTER_LEFT" BorderPane.alignment="CENTER">
+                <HBox spacing="20.0">
                     <children>
-                        <VBox HBox.hgrow="ALWAYS">
+                  <ToggleButton maxHeight="1.7976931348623157E308" mnemonicParsing="false" onAction="#toggleOperationsPanel" selected="true" text="Панель операций" />
+                        <Label fx:id="currTableLabel" />
+                        <Label fx:id="filterIndicatorLabel" text="(активен фильтр)" visible="false" />
+                        <Label fx:id="notificationLabel" />
+                    </children>
+                    <BorderPane.margin>
+                        <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                    </BorderPane.margin>
+                </HBox>
+            </top>
+         <left>
+                <VBox fx:id="operationsPanel" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" prefWidth="417.0" BorderPane.alignment="CENTER">
+                    <children>
+                        <VBox maxHeight="1.7976931348623157E308" VBox.vgrow="ALWAYS">
                             <children>
-                                <HBox alignment="BOTTOM_LEFT" spacing="20.0">
+                                <VBox fx:id="editorBoxBox" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" spacing="5.0" VBox.vgrow="ALWAYS">
                                     <children>
-                                        <Label fx:id="currTableLabel" />
-                                        <Label fx:id="filterIndicatorLabel" text="(активен фильтр)" visible="false" />
-                                        <Label fx:id="notificationLabel" />
-                                    </children>
-                                </HBox>
-                                <HBox fx:id="editorBoxBox" alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="ALWAYS">
-                                    <children>
-                                        <GridPane hgap="5.0" vgap="5.0" HBox.hgrow="NEVER">
+                                        <GridPane hgap="5.0" maxWidth="1.7976931348623157E308" vgap="5.0" HBox.hgrow="NEVER" VBox.vgrow="NEVER">
                                             <columnConstraints>
-                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="-Infinity" />
-                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="-Infinity" />
+                                                <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
+                                                <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="-Infinity" percentWidth="50.0" />
                                             </columnConstraints>
                                             <rowConstraints>
                                                 <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
@@ -110,37 +116,43 @@
                                                 <RowConstraints minHeight="-Infinity" vgrow="SOMETIMES" />
                                             </rowConstraints>
                                             <children>
-                                                <Button fx:id="createBtn" mnemonicParsing="false" onAction="#createBtnClicked" prefHeight="50.0" prefWidth="160.0" text="Добавить" wrapText="true" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
-                                                <Button fx:id="updateBtn" mnemonicParsing="false" onAction="#updateBtnClicked" prefHeight="50.0" prefWidth="160.0" text="Изменить" wrapText="true" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
-                                                <Button fx:id="filterBtn" mnemonicParsing="false" onAction="#filterBtnClicked" prefHeight="50.0" prefWidth="160.0" text="Фильтровать" wrapText="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
-                                                <Button fx:id="deleteBtn" mnemonicParsing="false" onAction="#deleteBtnClicked" prefHeight="50.0" prefWidth="160.0" text="Удалить" wrapText="true" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
-                                                <Button fx:id="clearBtn" mnemonicParsing="false" onAction="#clearBtnClicked" prefHeight="50.0" prefWidth="160.0" text="Очистить поля" wrapText="true" GridPane.rowIndex="2" />
-                                                <Button fx:id="refreshBtn" mnemonicParsing="false" onAction="#refreshBtnClicked" prefHeight="50.0" prefWidth="160.0" text="Обновить таблицу" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                                <GridPane fx:id="updateConfirmPane" hgap="5.0" GridPane.columnIndex="1">
+                                                <Button fx:id="createBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#createBtnClicked" prefHeight="50.0" text="Добавить" wrapText="true" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
+                                                <Button fx:id="updateBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#updateBtnClicked" prefHeight="50.0" text="Изменить" wrapText="true" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
+                                                <Button fx:id="filterBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#filterBtnClicked" prefHeight="50.0" text="Фильтровать" wrapText="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
+                                                <Button fx:id="deleteBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#deleteBtnClicked" prefHeight="50.0" text="Удалить" wrapText="true" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
+                                                <Button fx:id="clearBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clearBtnClicked" prefHeight="50.0" text="Очистить поля" wrapText="true" GridPane.rowIndex="2" />
+                                                <Button fx:id="refreshBtn" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#refreshBtnClicked" prefHeight="50.0" text="Обновить таблицу" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                <GridPane fx:id="updateConfirmPane" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
                                                     <columnConstraints>
-                                                        <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="-Infinity" percentWidth="50.0" />
-                                                        <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="-Infinity" percentWidth="50.0" />
+                                                        <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
+                                                        <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="-Infinity" percentWidth="50.0" />
                                                     </columnConstraints>
                                                     <rowConstraints>
                                                         <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                                                     </rowConstraints>
                                                     <children>
-                                                        <Button fx:id="updateOkBtn" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#updateOkBtnClicked" prefHeight="50.0" prefWidth="75.0" text="ОК" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
-                                                        <Button fx:id="updateCancelBtn" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#updateCancelBtnClicked" prefHeight="50.0" prefWidth="75.0" text="Отмена" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
+                                                        <Button fx:id="updateOkBtn" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#updateOkBtnClicked" prefHeight="50.0" prefWidth="75.0" text="ОК" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+                                             <GridPane.margin>
+                                                <Insets />
+                                             </GridPane.margin></Button>
+                                                        <Button fx:id="updateCancelBtn" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#updateCancelBtnClicked" prefHeight="50.0" text="Отмена" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+                                             <GridPane.margin>
+                                                <Insets />
+                                             </GridPane.margin></Button>
                                                     </children>
                                                 </GridPane>
                                             </children>
                                         </GridPane>
                                     </children>
-                                </HBox>
+                                </VBox>
                             </children>
                         </VBox>
                     </children>
                     <BorderPane.margin>
-                        <Insets bottom="5.0" left="20.0" right="20.0" top="5.0" />
+                        <Insets left="20.0" />
                     </BorderPane.margin>
-                </HBox>
-            </top>
+                </VBox>
+         </left>
         </BorderPane>
     </children>
     <columnConstraints>

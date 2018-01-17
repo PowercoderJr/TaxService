@@ -12,7 +12,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.Effect;
@@ -36,9 +35,10 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 
 	protected Class<T> clazz;
 
-	protected HBox primaryFieldsBox, secondaryFieldsBox;
-	protected VBox fieldsBox;
-	protected HBox longBox;
+	private VBox primaryFieldsBox, secondaryFieldsBox;
+	private HBox fieldsBox;
+	private VBox highBox;
+
 	protected TextField id1, id2;
 	protected String filter;
 
@@ -48,48 +48,50 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 
 		//From deepest to general
 
-		primaryFieldsBox = new HBox(SPACING);
-		primaryFieldsBox.setAlignment(Pos.CENTER_LEFT);
-		HBox.setHgrow(primaryFieldsBox, Priority.ALWAYS);
-		secondaryFieldsBox = new HBox(SPACING);
-		secondaryFieldsBox.setAlignment(Pos.CENTER_LEFT);
+		primaryFieldsBox = new VBox(SPACING);
+		primaryFieldsBox.setAlignment(Pos.TOP_CENTER);
+		primaryFieldsBox.setMaxHeight(Double.MAX_VALUE);
+		VBox.setVgrow(primaryFieldsBox, Priority.ALWAYS);
+		secondaryFieldsBox = new VBox(SPACING);
+		secondaryFieldsBox.setAlignment(Pos.TOP_CENTER);
 		secondaryFieldsBox.setVisible(false);
-		HBox.setHgrow(secondaryFieldsBox, Priority.ALWAYS);
+		secondaryFieldsBox.setMaxHeight(Double.MAX_VALUE);
+		VBox.setVgrow(secondaryFieldsBox, Priority.ALWAYS);
 
-		fieldsBox = new VBox(SPACING);
+		fieldsBox = new HBox(SPACING);
 		fieldsBox.getChildren().addAll(primaryFieldsBox, secondaryFieldsBox);
 
-		longBox = new HBox(SPACING);
-		longBox.setPadding(new Insets(SPACING));
-		longBox.getChildren().add(fieldsBox);
+		highBox = new VBox(SPACING);
+		highBox.setPadding(new Insets(SPACING));
+		highBox.getChildren().add(fieldsBox);
 
-		this.setContent(longBox);
-		setVbarPolicy(ScrollBarPolicy.NEVER);
+		this.setContent(highBox);
+		setHbarPolicy(ScrollBarPolicy.NEVER);
 		HBox.setHgrow(this, Priority.ALWAYS);
 
 		//
 
 		id1 = new TextField();
-		id1.setPrefWidth(80);
 		id2 = new TextField();
-		id2.setPrefWidth(80);
 		id2.setVisible(false);
 		addField("ID", id1, id2, true);
 
-
-		setFitToHeight(true);
+		setFitToWidth(true);
+		setMaxHeight(Double.MAX_VALUE);
+		VBox.setVgrow(this, Priority.ALWAYS);
 	}
 
-	protected void addField(String name, Node primary, Node secondary, boolean autofillable)
+	protected void addField(String name, Control primary, Control secondary, boolean autofillable)
 	{
+		primary.setPrefWidth(200);
 		VBox primaryBox = new VBox(SPACING);
-		Label label = new Label(name);
+		Label label1 = new Label(name);
 		if (autofillable)
 		{
-			label.setTextFill(Color.web("#42A642"));
-			label.setTooltip(autofillableTooltip);
+			label1.setTextFill(Color.web("#42A642"));
+			label1.setTooltip(autofillableTooltip);
 		}
-		primaryBox.getChildren().addAll(label, primary);
+		primaryBox.getChildren().addAll(label1, primary);
 		primaryFieldsBox.getChildren().add(primaryBox);
 		primary.focusedProperty().addListener(new ChangeListener<Boolean>()
 		{
@@ -101,7 +103,10 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 			}
 		});
 
-		secondaryFieldsBox.getChildren().add(secondary);
+		secondary.setPrefWidth(200);
+		VBox secondaryBox = new VBox(SPACING);
+		secondaryBox.getChildren().addAll(new Label(), secondary);
+		secondaryFieldsBox.getChildren().add(secondaryBox);
 		secondary.focusedProperty().addListener(new ChangeListener<Boolean>()
 		{
 			@Override
@@ -116,6 +121,7 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 	public void setSecondaryVisible(boolean value)
 	{
 		secondaryFieldsBox.setVisible(value);
+		secondaryFieldsBox.setManaged(value);
 	}
 
 	static boolean validateTextField(TextField field, boolean isRequired)
@@ -213,7 +219,7 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 		return validateTextPositiveIntField(id1, isRequired);
 	}
 
-	protected static void markAsInvalid(Node field)
+	protected static void markAsInvalid(Control field)
 	{
 		field.setEffect(invalidEffect);
 	}
