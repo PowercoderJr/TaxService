@@ -41,6 +41,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -93,7 +94,9 @@ public class MainController
 	@FXML
 	public BorderPane borderPane;
 	@FXML
-	public HBox editorBoxBox;
+	public VBox operationsPanel;
+	@FXML
+	public VBox editorBoxBox;
 	@FXML
 	public Label currTableLabel;
 	@FXML
@@ -344,10 +347,11 @@ public class MainController
 			BorderPane.setMargin(tv, new Insets(0, 20, 0, 20));
 			tv.setPlaceholder(new Label("НЕТ ЗАПИСЕЙ"));
 			tv.getColumns().addAll(TableColumnsBuilder.buildForDAO(tableClazz));
+			tv.setTableMenuButtonVisible(true);
 
 			//Init editor box
 			AbstractEditorBox eb = (AbstractEditorBox) Class.forName("TaxService.CustomUI.EditorBoxes." + clazzName + "EditorBox").getConstructor().newInstance();
-			editorBoxBox.getChildren().add(0, eb);
+			editorBoxBox.getChildren().add(eb);
 			setVisibleAndManaged(eb, false);
 
 			//Menu item
@@ -363,6 +367,12 @@ public class MainController
 		{
 			e.printStackTrace();
 		}
+	}
+
+	public void toggleOperationsPanel(ActionEvent actionEvent)
+	{
+		setVisibleAndManaged(operationsPanel, ((ToggleButton) actionEvent.getSource()).isSelected());
+
 	}
 
 	public void createBtnClicked(ActionEvent actionEvent)
