@@ -36,9 +36,9 @@ public abstract class AbstractEditorBox<T extends AbstractDAO> extends ScrollPan
 
 	protected Class<T> clazz;
 
-	private HBox primaryFieldsBox, secondaryFieldsBox;
-	private VBox fieldsBox;
-	private HBox longBox;
+	protected HBox primaryFieldsBox, secondaryFieldsBox;
+	protected VBox fieldsBox;
+	protected HBox longBox;
 	protected TextField id1, id2;
 	protected String filter;
 

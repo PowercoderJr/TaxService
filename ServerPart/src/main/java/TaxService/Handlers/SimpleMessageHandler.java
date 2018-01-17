@@ -172,7 +172,7 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                         sublist.add(rs.getObject(i).toString());
                                     list.add(sublist);
                                 }
-                                EmployeeCRUD employeeCRUD = new EmployeeCRUD(connection);
+                                EmployeeCRUD employeeCRUD = new EmployeeCRUD(connection, ServerAgent.getInstance().getSuperConnection());
                                 header = "Платежи, которые оформил(а) " + employeeCRUD
                                         .read(Long.parseLong(tokens[2]), true, null) + " (" + (list.size() - 1) + " зап.)";
                                 break;
@@ -228,7 +228,7 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                     sublist.set(3, ServerAgent.df.format(Date.valueOf(sublist.get(3))));
                                     list.add(sublist);
                                 }
-                                EmployeeCRUD employeeCRUD = new EmployeeCRUD(connection);
+                                EmployeeCRUD employeeCRUD = new EmployeeCRUD(connection, ServerAgent.getInstance().getSuperConnection());
                                 header = "Платежи, которые оформил(а) " + employeeCRUD
                                         .read(Long.parseLong(tokens[2]), true, null) + ", начиная с " + ServerAgent.df
                                         .format(Date.valueOf(tokens[3])) + " (" + (list.size() - 1) + " зап.)";
@@ -329,7 +329,7 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                 String tmp = rs.getObject(1).toString();
                                 sublist.add(tmp.substring(0, tmp.indexOf('.') + 3));
                                 list.add(sublist);
-                                PostCRUD postCRUD = new PostCRUD(connection);
+                                PostCRUD postCRUD = new PostCRUD(connection, ServerAgent.getInstance().getSuperConnection());
                                 header = "Средний размер зарплаты среди должности " + postCRUD.read(Long.parseLong(tokens[2]),
                                         true, null);
                                 break;
@@ -389,7 +389,7 @@ public class SimpleMessageHandler extends AbstractHandler<String>
                                     sublist.set(2, sublist.get(2).substring(0, sublist.get(2).indexOf('.') + 3));
                                     list.add(sublist);
                                 }
-                                OwntypeCRUD owntypeCRUD = new OwntypeCRUD(connection);
+                                OwntypeCRUD owntypeCRUD = new OwntypeCRUD(connection, ServerAgent.getInstance().getSuperConnection());
                                 header = "Предприятия типа \"" + owntypeCRUD.read(Long.parseLong(tokens[2]), true, null) +
                                         "\", которые оформили платежей на сумму меньше, чем " + tokens[3] +
                                         "   - " + (list.size() - 1) + " зап.";

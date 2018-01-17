@@ -31,12 +31,13 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 		Paytype.init();
 	}
 
-	protected Connection connection;
+	protected Connection connection, superConnection;
 	protected Class<T> clazz;
 
-	public AbstractCRUD(Connection connection, Class<T> clazz)
+	public AbstractCRUD(Connection connection, Connection superConnection, Class<T> clazz)
 	{
 		this.connection = connection;
+		this.superConnection = superConnection;
 		this.clazz = clazz;
 	}
 
@@ -230,7 +231,7 @@ public abstract class AbstractCRUD<T extends AbstractDAO>
 		if (AbstractDAO.class.isAssignableFrom(clazz))
 		{
 			Class crudClass = Class.forName("TaxService.CRUDs." + clazz.getSimpleName() + "CRUD");
-			AbstractCRUD instance = (AbstractCRUD) crudClass.getConstructor(Connection.class).newInstance(connection);
+			AbstractCRUD instance = (AbstractCRUD) crudClass.getConstructor(Connection.class, Connection.class).newInstance(superConnection, superConnection);
 			return instance.read(Long.parseLong(value), true, null);
 		}
 

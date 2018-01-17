@@ -13,20 +13,20 @@ import TaxService.DAOs.Department;
 
 public class DepartmentCRUD extends AbstractRandomableCRUD<Department>
 {
-	public DepartmentCRUD(Connection connection)
+	public DepartmentCRUD(Connection connection, Connection superConnection)
 	{
-		super(connection, Department.class);
+		super(connection, superConnection, Department.class);
 	}
 
 	@Override
 	protected Department generateRandomBean() throws SQLException
 	{
-		CityCRUD cityCRUD = new CityCRUD(connection);
+		CityCRUD cityCRUD = new CityCRUD(connection, superConnection);
 		City city = cityCRUD.readRandom(true, null);
 
 		String name = "Отделение №" + (rnd.nextInt(90) + 1) + " города " + city;
 
-		DeptypeCRUD deptypeCRUD = new DeptypeCRUD(connection);
+		DeptypeCRUD deptypeCRUD = new DeptypeCRUD(connection, superConnection);
 		Deptype deptype = deptypeCRUD.readRandom(true, null);
 
 		BigDecimal startyear = new BigDecimal(1960 + rnd.nextInt(55));

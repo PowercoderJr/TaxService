@@ -11,8 +11,8 @@ import java.util.Arrays;
 
 public class AccountCRUD extends AbstractCRUD<Account>
 {
-	public AccountCRUD(Connection connection)
+	public AccountCRUD(Connection connection, Connection superConnection)
 	{
-		super(connection, Account.class);
+		super(connection, superConnection, Account.class);
 	}
 }

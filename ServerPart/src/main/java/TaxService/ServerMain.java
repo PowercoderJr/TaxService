@@ -25,22 +25,22 @@ public class ServerMain
 				System.out.println("Dropping'n'creating completed in " + (System.currentTimeMillis() - timeZero) + " ms");
 
 				timeZero = System.currentTimeMillis();
-				DepartmentCRUD departmentCRUD = new DepartmentCRUD(superConnection);
+				DepartmentCRUD departmentCRUD = new DepartmentCRUD(superConnection, superConnection);
 				departmentCRUD.insertRandomBeans(100);
 				System.out.println("Departments generation completed in " + (System.currentTimeMillis() - timeZero) + " ms");
 
 				timeZero = System.currentTimeMillis();
-				EmployeeCRUD employeeCRUD = new EmployeeCRUD(superConnection);
+				EmployeeCRUD employeeCRUD = new EmployeeCRUD(superConnection, superConnection);
 				employeeCRUD.insertRandomBeans(1000);
 				System.out.println("Employees generation completed in " + (System.currentTimeMillis() - timeZero) + " ms");
 
 				timeZero = System.currentTimeMillis();
-				CompanyCRUD companyCRUD = new CompanyCRUD(superConnection);
+				CompanyCRUD companyCRUD = new CompanyCRUD(superConnection, superConnection);
 				companyCRUD.insertRandomBeans(100);
 				System.out.println("Companies generation completed in " + (System.currentTimeMillis() - timeZero) + " ms");
 
 				timeZero = System.currentTimeMillis();
-				PaymentCRUD paymentCRUD = new PaymentCRUD(superConnection);
+				PaymentCRUD paymentCRUD = new PaymentCRUD(superConnection, superConnection);
 				paymentCRUD.insertRandomBeans(10000);
 				System.out.println("Payments generation completed in " + (System.currentTimeMillis() - timeZero) + " ms");
 
@@ -80,7 +80,7 @@ public class ServerMain
 			for (Class<? extends AbstractRefDAO> item : refTables)
 			{
 				stmt.executeUpdate("CREATE TABLE " + item.getSimpleName().toLowerCase() + "(id serial not null,name varchar(100) not null unique,primary key(id))");
-				AbstractRefCRUD crud = (AbstractRefCRUD) ServerAgent.getInstance().getCrudForClass(item, connection);
+				AbstractRefCRUD crud = (AbstractRefCRUD) ServerAgent.getInstance().getCrudForClass(item, connection, connection);
 				crud.fillFromSource();
 			}
 			//Создание таблиц

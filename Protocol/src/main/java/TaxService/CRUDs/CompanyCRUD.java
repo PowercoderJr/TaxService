@@ -12,9 +12,9 @@ import java.sql.Statement;
 
 public class CompanyCRUD extends AbstractRandomableCRUD<Company>
 {
-	public CompanyCRUD(Connection connection)
+	public CompanyCRUD(Connection connection, Connection superConnection)
 	{
-		super(connection, Company.class);
+		super(connection, superConnection, Company.class);
 	}
 
 	@Override
@@ -22,7 +22,7 @@ public class CompanyCRUD extends AbstractRandomableCRUD<Company>
 	{
 		String name = RandomHelper.getRandomCompany();
 
-		OwntypeCRUD owntypeCRUD = new OwntypeCRUD(connection);
+		OwntypeCRUD owntypeCRUD = new OwntypeCRUD(connection, superConnection);
 		Owntype owntype = owntypeCRUD.readRandom(true, null);
 
 		String phone = RandomHelper.getRandomPhone();

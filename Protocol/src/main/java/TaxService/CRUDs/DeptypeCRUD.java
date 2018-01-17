@@ -6,8 +6,8 @@ import java.sql.Connection;
 
 public class DeptypeCRUD extends AbstractRefCRUD<Deptype>
 {
-	public DeptypeCRUD(Connection connection)
+	public DeptypeCRUD(Connection connection, Connection superConnection)
 	{
-		super(connection, Deptype.class);
+		super(connection, superConnection, Deptype.class);
 	}
 }

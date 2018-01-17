@@ -8,9 +8,8 @@ import TaxService.Orders.ReadAllOrder;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.util.Pair;
 
 import java.lang.reflect.Field;
@@ -31,6 +30,12 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 	private ComboBox<Post> post1, post2;
 	private TextField salary1, salary2;
 	private ComboBox<Education> education1, education2;
+
+	private HBox AccountBox;
+	private TextField login;
+	private PasswordField pass1, pass2;
+	private ComboBox<Account.Roles> role;
+	private CheckBox blocked;
 	
 	public EmployeeEditorBox()
 	{
@@ -125,6 +130,8 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 			ClientAgent.getInstance().send(new ReadAllOrder<Education>(Education.class, true, null));
 		});
 		addField("Образование", education1, education2, false);
+
+		////
 	}
 
 	@Override

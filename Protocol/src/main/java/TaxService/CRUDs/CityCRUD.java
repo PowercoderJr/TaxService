@@ -6,8 +6,8 @@ import java.sql.Connection;
 
 public class CityCRUD extends AbstractRefCRUD<City>
 {
-	public CityCRUD(Connection connection)
+	public CityCRUD(Connection connection, Connection superConnection)
 	{
-		super(connection, City.class);
+		super(connection, superConnection, City.class);
 	}
 }

@@ -6,8 +6,8 @@ import java.sql.Connection;
 
 public class OwntypeCRUD extends AbstractRefCRUD<Owntype>
 {
-	public OwntypeCRUD(Connection connection)
+	public OwntypeCRUD(Connection connection, Connection superConnection)
 	{
-		super(connection, Owntype.class);
+		super(connection, superConnection, Owntype.class);
 	}
 }
