@@ -35,15 +35,12 @@ public class CompanyEditorBox extends AbstractEditorBox<Company>
 		super(Company.class);
 
 		name1 = new TextField();
-		name1.setPrefWidth(200);
 		setLengthLimit(name1, 100);
 		name2 = new TextField();
-		name2.setPrefWidth(200);
 		setLengthLimit(name2, 100);
 		addField("Название", name1, name2, false);
 		
 		owntype1 = new ComboBox<>();
-		owntype1.setPrefWidth(170);
 		owntype1.setOnShowing(event ->
 		{
 			owntype1.getSelectionModel().clearSelection();
@@ -51,7 +48,6 @@ public class CompanyEditorBox extends AbstractEditorBox<Company>
 			ClientAgent.getInstance().send(new ReadAllOrder<Owntype>(Owntype.class, true, null));
 		});
 		owntype2 = new ComboBox<>();
-		owntype2.setPrefWidth(170);
 		owntype2.setOnShowing(event ->
 		{
 			owntype2.getSelectionModel().clearSelection();
@@ -61,33 +57,27 @@ public class CompanyEditorBox extends AbstractEditorBox<Company>
 		addField("Форма собственности", owntype1, owntype2, false);
 
 		phone1 = new MaskField();
-		phone1.setPrefWidth(150);
 		phone1.setMask("+38(0DD)DDD-DD-DD");
 		phone1.setWhatMask("-----##-###-##-##");
 		phone1.setPlaceholder("+38(0__)___-__-__");
 		phone2 = new MaskField();
-		phone2.setPrefWidth(150);
 		phone2.setMask("+38(0DD)DDD-DD-DD");
 		phone2.setWhatMask("-----##-###-##-##");
 		phone2.setPlaceholder("+38(0__)___-__-__");
 		addField("Телефон", phone1, phone2, false);
 
 		startyear1 = new MaskField();
-		startyear1.setPrefWidth(150);
 		startyear1.setMask("DDDD");
 		startyear1.setWhatMask("####");
 		startyear1.setPlaceholder("____");
 		startyear2 = new MaskField();
-		startyear2.setPrefWidth(150);
 		startyear2.setMask("DDDD");
 		startyear2.setWhatMask("####");
 		startyear2.setPlaceholder("____");
 		addField("Год открытия", startyear1, startyear2, false);
 
 		statesize1 = new TextField();
-		statesize1.setPrefWidth(100);
 		statesize2 = new TextField();
-		statesize2.setPrefWidth(100);
 		addField("Штат", statesize1, statesize2, false);
 	}
 

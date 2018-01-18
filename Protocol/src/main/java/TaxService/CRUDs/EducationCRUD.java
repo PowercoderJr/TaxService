@@ -6,8 +6,8 @@ import java.sql.Connection;
 
 public class EducationCRUD extends AbstractRefCRUD<Education>
 {
-	public EducationCRUD(Connection connection)
+	public EducationCRUD(Connection connection, Connection superConnection)
 	{
-		super(connection, Education.class);
+		super(connection, superConnection, Education.class);
 	}
 }

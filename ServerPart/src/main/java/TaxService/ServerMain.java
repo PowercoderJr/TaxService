@@ -25,22 +25,22 @@ public class ServerMain
 				System.out.println("Dropping'n'creating completed in " + (System.currentTimeMillis() - timeZero) + " ms");
 
 				timeZero = System.currentTimeMillis();
-				DepartmentCRUD departmentCRUD = new DepartmentCRUD(superConnection);
+				DepartmentCRUD departmentCRUD = new DepartmentCRUD(superConnection, superConnection);
 				departmentCRUD.insertRandomBeans(100);
 				System.out.println("Departments generation completed in " + (System.currentTimeMillis() - timeZero) + " ms");
 
 				timeZero = System.currentTimeMillis();
-				EmployeeCRUD employeeCRUD = new EmployeeCRUD(superConnection);
+				EmployeeCRUD employeeCRUD = new EmployeeCRUD(superConnection, superConnection);
 				employeeCRUD.insertRandomBeans(1000);
 				System.out.println("Employees generation completed in " + (System.currentTimeMillis() - timeZero) + " ms");
 
 				timeZero = System.currentTimeMillis();
-				CompanyCRUD companyCRUD = new CompanyCRUD(superConnection);
+				CompanyCRUD companyCRUD = new CompanyCRUD(superConnection, superConnection);
 				companyCRUD.insertRandomBeans(100);
 				System.out.println("Companies generation completed in " + (System.currentTimeMillis() - timeZero) + " ms");
 
 				timeZero = System.currentTimeMillis();
-				PaymentCRUD paymentCRUD = new PaymentCRUD(superConnection);
+				PaymentCRUD paymentCRUD = new PaymentCRUD(superConnection, superConnection);
 				paymentCRUD.insertRandomBeans(10000);
 				System.out.println("Payments generation completed in " + (System.currentTimeMillis() - timeZero) + " ms");
 
@@ -80,7 +80,7 @@ public class ServerMain
 			for (Class<? extends AbstractRefDAO> item : refTables)
 			{
 				stmt.executeUpdate("CREATE TABLE " + item.getSimpleName().toLowerCase() + "(id serial not null,name varchar(100) not null unique,primary key(id))");
-				AbstractRefCRUD crud = (AbstractRefCRUD) ServerAgent.getInstance().getCrudForClass(item, connection);
+				AbstractRefCRUD crud = (AbstractRefCRUD) ServerAgent.getInstance().getCrudForClass(item, connection, connection);
 				crud.fillFromSource();
 			}
 			//Создание таблиц
@@ -414,21 +414,21 @@ public class ServerMain
 				stmt.executeUpdate(query);
 
 			//Установка защиты на уровне строк
-			execMe  = "CREATE VIEW employees_from_curr_department AS \n"
-					+ "\t(SELECT id FROM employee WHERE department_id = \n"
-					+ "\t\t(SELECT department_id FROM employee WHERE id =\n"
-					+ "\t\t\t(SELECT employee_id FROM account WHERE login = current_user)\n"
-					+ "\t\t)\n"
+			execMe  = "CREATE VIEW curr_department AS \n"
+					+ "\t(SELECT department_id as id FROM employee WHERE id =\n"
+					+ "\t\t(SELECT employee_id FROM account WHERE login = current_user)\n"
 					+ "\t);"
-					+ "GRANT SELECT ON employees_from_curr_department TO justuser;"
-					+ "GRANT SELECT ON employees_from_curr_department TO operator;"
-					+ "GRANT ALL ON employees_from_curr_department TO admin;";
+					+ "GRANT SELECT ON curr_department TO justuser;"
+					+ "GRANT SELECT ON curr_department TO operator;"
+					+ "GRANT SELECT ON curr_department TO admin;";
 			stmt.executeUpdate(execMe);
 
 			execMe  = "ALTER TABLE employee ENABLE ROW LEVEL SECURITY;\n"
 					+ "CREATE POLICY locale_policy ON employee\n"
 					+ "\tTO justuser, operator\n"
-					+ "\tUSING (id IN (SELECT id FROM employees_from_curr_department));\n"
+					+ "\tUSING (department_id =\n"
+					+ "\t\t(select id from curr_department)\n"
+					+ "\t);"
 					+ "CREATE POLICY locale_policy_admin ON employee\n"
 					+ "\tTO admin\n"
 					+ "\tUSING (true)";
@@ -438,11 +438,9 @@ public class ServerMain
 					+ "CREATE POLICY locale_policy ON payment\n"
 					+ "\tTO justuser, operator\n"
 					+ "\tUSING (department_id =\n"
-					+ "\t\t(select department_id from employee where id =\n"
-					+ "\t\t\t(select employee_id from account where login = current_user)\n"
-					+ "\t\t)\n"
-					+ "\t);\n"
-					+ "CREATE POLICY locale_policy_payment_insert ON payment\n"
+					+ "\t\t(SELECT id FROM curr_department)\n"
+					+ "\t);"
+					+ "CREATE POLICY locale_policy_insert ON payment\n"
 					+ "\tFOR INSERT\n"
 					+ "\tTO justuser, operator\n"
 					+ "\tWITH CHECK (true);"

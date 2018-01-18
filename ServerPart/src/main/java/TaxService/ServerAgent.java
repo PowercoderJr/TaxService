@@ -15,6 +15,7 @@ import java.io.Closeable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -38,6 +39,7 @@ public class ServerAgent implements Closeable
 
 	public static Mutex connectionsMutex = new Mutex();
 	private Map<ChannelId, Pair<Connection, Long>> connections;
+	private Connection superConnection;
 
 	private NioEventLoopGroup acceptorGroup;
 	private NioEventLoopGroup handlerGroup;
@@ -58,8 +60,9 @@ public class ServerAgent implements Closeable
 					.childHandler(new ServerInitializer())
 					.childOption(ChannelOption.SO_KEEPALIVE, true);
 			future = bootstrap.localAddress(PORT).bind().sync();
+			superConnection = DriverManager.getConnection("jdbc:postgresql://localhost/TaxService", "postgres", "userpass");
 		}
-		catch (InterruptedException e)
+		catch (InterruptedException | SQLException e)
 		{
 			e.printStackTrace();
 		}
@@ -115,6 +118,7 @@ public class ServerAgent implements Closeable
 			for (Pair<Connection, Long> pair : connections.values())
 				pair.getKey().close();
 			connections.clear();
+			superConnection.close();
 		}
 		catch (SQLException e)
 		{
@@ -198,14 +202,14 @@ public class ServerAgent implements Closeable
 		return 0;
 	}
 
-	public <T extends AbstractDAO> AbstractCRUD getCrudForClass(Class<T> clazz, Connection connection)
+	public <T extends AbstractDAO> AbstractCRUD getCrudForClass(Class<T> clazz, Connection connection, Connection superConnection)
 	{
 		AbstractCRUD instance = null;
 		if (connection != null)
 			try
 			{
 				Class crudClass = Class.forName("TaxService.CRUDs." + clazz.getSimpleName() + "CRUD");
-				instance = (AbstractCRUD) crudClass.getDeclaredConstructor(Connection.class).newInstance(connection);
+				instance = (AbstractCRUD) crudClass.getDeclaredConstructor(Connection.class, Connection.class).newInstance(connection, superConnection);
 			}
 			catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e)
 			{
@@ -216,11 +220,16 @@ public class ServerAgent implements Closeable
 
 	public <T extends AbstractDAO> AbstractCRUD getCrudForClass(Class<T> clazz, ChannelId channelId)
 	{
-		return getCrudForClass(clazz, connections.get(channelId).getKey());
+		return getCrudForClass(clazz, connections.get(channelId).getKey(), superConnection);
 	}
 
 	public Map<ChannelId, Pair<Connection, Long>> getConnections()
 	{
 		return connections;
+	}
+
+	public Connection getSuperConnection()
+	{
+		return superConnection;
 	}
 }

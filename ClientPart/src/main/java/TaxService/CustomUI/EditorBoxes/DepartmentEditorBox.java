@@ -43,15 +43,12 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 		super(Department.class);
 
 		name1 = new TextField();
-		name1.setPrefWidth(200);
 		setLengthLimit(name1, 100);
 		name2 = new TextField();
-		name2.setPrefWidth(200);
 		setLengthLimit(name2, 100);
 		addField("Название", name1, name2, false);
 
 		deptype1 = new ComboBox<>();
-		deptype1.setPrefWidth(150);
 		deptype1.setOnShowing(event ->
 		{
 			deptype1.getSelectionModel().clearSelection();
@@ -59,7 +56,6 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 			ClientAgent.getInstance().send(new ReadAllOrder<Deptype>(Deptype.class, true, null));
 		});
 		deptype2 = new ComboBox<>();
-		deptype2.setPrefWidth(150);
 		deptype2.setOnShowing(event ->
 		{
 			deptype2.getSelectionModel().clearSelection();
@@ -69,24 +65,20 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 		addField("Тип отделения", deptype1, deptype2, false);
 
 		startyear1 = new MaskField();
-		startyear1.setPrefWidth(150);
 		startyear1.setMask("DDDD");
 		startyear1.setWhatMask("####");
 		startyear1.setPlaceholder("____");
 		startyear2 = new MaskField();
-		startyear2.setPrefWidth(150);
 		startyear2.setMask("DDDD");
 		startyear2.setWhatMask("####");
 		startyear2.setPlaceholder("____");
 		addField("Год открытия", startyear1, startyear2, false);
 
 		phone1 = new MaskField();
-		phone1.setPrefWidth(150);
 		phone1.setMask("+38(0DD)DDD-DD-DD");
 		phone1.setWhatMask("-----##-###-##-##");
 		phone1.setPlaceholder("+38(0__)___-__-__");
 		phone2 = new MaskField();
-		phone2.setPrefWidth(150);
 		phone2.setMask("+38(0DD)DDD-DD-DD");
 		phone2.setWhatMask("-----##-###-##-##");
 		phone2.setPlaceholder("+38(0__)___-__-__");
@@ -94,7 +86,6 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 
 
 		city1 = new ComboBox<>();
-		city1.setPrefWidth(150);
 		city1.setOnShowing(event ->
 		{
 			city1.getSelectionModel().clearSelection();
@@ -102,7 +93,6 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 			ClientAgent.getInstance().send(new ReadAllOrder<City>(City.class, true, null));
 		});
 		city2 = new ComboBox<>();
-		city2.setPrefWidth(150);
 		city2.setOnShowing(event ->
 		{
 			city2.getSelectionModel().clearSelection();
@@ -112,18 +102,14 @@ public class DepartmentEditorBox extends AbstractEditorBox<Department>
 		addField("Город", city1, city2, false);
 
 		street1 = new TextField();
-		street1.setPrefWidth(150);
 		setLengthLimit(street1, 30);
 		street2 = new TextField();
-		street2.setPrefWidth(150);
 		setLengthLimit(street2, 30);
 		addField("Улица", street1, street2, false);
 
 		house1 = new TextField();
-		house1.setPrefWidth(70);
 		setLengthLimit(house1, 6);
 		house2 = new TextField();
-		house2.setPrefWidth(70);
 		setLengthLimit(house2, 6);
 		addField("Дом", house1, house2, false);
 	}

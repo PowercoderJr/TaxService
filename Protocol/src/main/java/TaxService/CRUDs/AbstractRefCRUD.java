@@ -15,9 +15,9 @@ import java.sql.SQLException;
 
 public abstract class AbstractRefCRUD<T extends AbstractRefDAO> extends AbstractCRUD<T>
 {
-	public AbstractRefCRUD(Connection connection, Class<T> clazz)
+	public AbstractRefCRUD(Connection connection, Connection superConnection, Class<T> clazz)
 	{
-		super(connection, clazz);
+		super(connection, superConnection, clazz);
 	}
 
 	public void fillFromSource() throws SQLException

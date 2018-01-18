@@ -37,7 +37,6 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 		super(Payment.class);
 
 		paytype1 = new ComboBox<>();
-		paytype1.setPrefWidth(170);
 		paytype1.setOnShowing(event ->
 		{
 			paytype1.getSelectionModel().clearSelection();
@@ -45,7 +44,6 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 			ClientAgent.getInstance().send(new ReadAllOrder<Paytype>(Paytype.class, true, null));
 		});
 		paytype2 = new ComboBox<>();
-		paytype2.setPrefWidth(170);
 		paytype2.setOnShowing(event ->
 		{
 			paytype2.getSelectionModel().clearSelection();
@@ -55,20 +53,15 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 		addField("Тип платежа", paytype1, paytype2, false);
 
 		date1 = new DatePicker();
-		date1.setPrefWidth(140);
 		date2 = new DatePicker();
-		date2.setPrefWidth(140);
 		date2.setVisible(false); //Будет генерироваться автоматически при добавлении записи, изменить нельзя
 		addField("Дата", date1, date2, true);
 
 		amount1 = new TextField();
-		amount1.setPrefWidth(100);
 		amount2 = new TextField();
-		amount2.setPrefWidth(100);
 		addField("Сумма", amount1, amount2, false);
 
 		employee1 = new ComboBox<>();
-		employee1.setPrefWidth(200);
 		employee1.setOnShowing(event ->
 		{
 			employee1.getSelectionModel().clearSelection();
@@ -76,7 +69,6 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 			ClientAgent.getInstance().send(new ReadAllOrder<Employee>(Employee.class, true, null));
 		});
 		employee2 = new ComboBox<>();
-		employee2.setPrefWidth(200);
 		employee2.setOnShowing(event ->
 		{
 			employee2.getSelectionModel().clearSelection();
@@ -87,7 +79,6 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 		addField("Сотрудник-оформитель", employee1, employee2, true);
 
 		department1 = new ComboBox<>();
-		department1.setPrefWidth(200);
 		department1.setOnShowing(event ->
 		{
 			department1.getSelectionModel().clearSelection();
@@ -95,7 +86,6 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 			ClientAgent.getInstance().send(new ReadAllOrder<Department>(Department.class, true, null));
 		});
 		department2 = new ComboBox<>();
-		department2.setPrefWidth(200);
 		department2.setOnShowing(event ->
 		{
 			department2.getSelectionModel().clearSelection();
@@ -105,7 +95,6 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 		addField("Отделение-оформитель", department1, department2, false);
 
 		company1 = new ComboBox<>();
-		company1.setPrefWidth(200);
 		company1.setOnShowing(event ->
 		{
 			company1.getSelectionModel().clearSelection();
@@ -113,7 +102,6 @@ public class PaymentEditorBox extends AbstractEditorBox<Payment>
 			ClientAgent.getInstance().send(new ReadAllOrder<Company>(Company.class, true, null));
 		});
 		company2 = new ComboBox<>();
-		company2.setPrefWidth(200);
 		company2.setOnShowing(event ->
 		{
 			company2.getSelectionModel().clearSelection();

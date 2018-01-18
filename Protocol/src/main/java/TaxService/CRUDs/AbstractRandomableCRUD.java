@@ -14,9 +14,9 @@ public abstract class AbstractRandomableCRUD<T extends AbstractDAO> extends Abst
 {
 	protected static Random rnd = new Random();
 
-	public AbstractRandomableCRUD(Connection connection, Class<T> clazz)
+	public AbstractRandomableCRUD(Connection connection, Connection superConnection, Class<T> clazz)
 	{
-		super(connection, clazz);
+		super(connection, superConnection, clazz);
 	}
 
 	protected abstract T generateRandomBean() throws SQLException;

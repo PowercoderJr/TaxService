@@ -243,12 +243,19 @@ public class UserManagerController
 	private void clearCreateForm()
 	{
 		loginCrField.clear();
+		loginCrField.setEffect(null);
 		pass1CrField.clear();
+		pass1CrField.setEffect(null);
 		pass2CrField.clear();
+		pass2CrField.setEffect(null);
 		ownerCrCb.getSelectionModel().clearSelection();
 		ownerCrCb.getEditor().clear();
+		ownerCrCb.setValue(null);
+		ownerCrCb.setEffect(null);
 		roleCrCb.getSelectionModel().clearSelection();
 		roleCrCb.getEditor().clear();
+		roleCrCb.setValue(null);
+		roleCrCb.setEffect(null);
 		blockedCrChb.setSelected(false);
 	}
 

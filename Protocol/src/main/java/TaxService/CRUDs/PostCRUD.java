@@ -6,8 +6,8 @@ import java.sql.Connection;
 
 public class PostCRUD extends AbstractRefCRUD<Post>
 {
-	public PostCRUD(Connection connection)
+	public PostCRUD(Connection connection, Connection superConnection)
 	{
-		super(connection, Post.class);
+		super(connection, superConnection, Post.class);
 	}
 }

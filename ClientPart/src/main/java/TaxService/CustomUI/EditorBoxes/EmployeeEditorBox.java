@@ -37,31 +37,24 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 		super(Employee.class);
 
 		surname1 = new TextField();
-		surname1.setPrefWidth(150);
 		setLengthLimit(surname1, 30);
 		surname2 = new TextField();
-		surname2.setPrefWidth(150);
 		setLengthLimit(surname2, 30);
 		addField("Фамилия", surname1, surname2, false);
 
 		name1 = new TextField();
-		name1.setPrefWidth(150);
 		setLengthLimit(name1, 30);
 		name2 = new TextField();
-		name2.setPrefWidth(150);
 		setLengthLimit(name2, 30);
 		addField("Имя", name1, name2, false);
 
 		patronymic1 = new TextField();
-		patronymic1.setPrefWidth(150);
 		setLengthLimit(patronymic1, 30);
 		patronymic2 = new TextField();
-		patronymic2.setPrefWidth(150);
 		setLengthLimit(patronymic2, 30);
 		addField("Отчество", patronymic1, patronymic2, false);
 
 		department1 = new ComboBox<>();
-		department1.setPrefWidth(150);
 		department1.setOnShowing(event ->
 		{
 			department1.getSelectionModel().clearSelection();
@@ -69,7 +62,6 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 			ClientAgent.getInstance().send(new ReadAllOrder<Department>(Department.class, true, null));
 		});
 		department2 = new ComboBox<>();
-		department2.setPrefWidth(150);
 		department2.setOnShowing(event ->
 		{
 			department2.getSelectionModel().clearSelection();
@@ -79,13 +71,10 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 		addField("Отделение", department1, department2, false);
 
 		birthdate1 = new DatePicker();
-		birthdate1.setPrefWidth(140);
 		birthdate2 = new DatePicker();
-		birthdate2.setPrefWidth(140);
 		addField("Дата рождения", birthdate1, birthdate2, false);
-		
+
 		post1 = new ComboBox<>();
-		post1.setPrefWidth(200);
 		post1.setOnShowing(event ->
 		{
 			post1.getSelectionModel().clearSelection();
@@ -93,7 +82,6 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 			ClientAgent.getInstance().send(new ReadAllOrder<Post>(Post.class, true, null));
 		});
 		post2 = new ComboBox<>();
-		post2.setPrefWidth(200);
 		post2.setOnShowing(event ->
 		{
 			post2.getSelectionModel().clearSelection();
@@ -103,13 +91,10 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 		addField("Должность", post1, post2, false);
 
 		salary1 = new TextField();
-		salary1.setPrefWidth(100);
 		salary2 = new TextField();
-		salary2.setPrefWidth(100);
 		addField("Зарплата", salary1, salary2, false);
 
 		education1 = new ComboBox<>();
-		education1.setPrefWidth(150);
 		education1.setOnShowing(event ->
 		{
 			education1.getSelectionModel().clearSelection();
@@ -117,7 +102,6 @@ public class EmployeeEditorBox extends AbstractEditorBox<Employee>
 			ClientAgent.getInstance().send(new ReadAllOrder<Education>(Education.class, true, null));
 		});
 		education2 = new ComboBox<>();
-		education2.setPrefWidth(150);
 		education2.setOnShowing(event ->
 		{
 			education2.getSelectionModel().clearSelection();
